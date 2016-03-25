@@ -18,12 +18,12 @@ var OCR = {
     },
     recognize: function(image) {
         $('#result').text('');
-        $('.hide:visible').fadeOut('slow');
+        $('.hide:visible').fadeOut(2000);
         var data = new FormData();
         data.append("apikey", this.apiKey);
         data.append("language", "chs");
-        data.append("isOverlayRequired", false),
-        data.append("file", this.dataURI2Blob(image), "image.png");             
+        data.append("isOverlayRequired", true),
+        data.append("file", this.dataURI2Blob(image), "image.png");
         $.ajax({
             url: this.apiUrl,
             type: 'POST',
@@ -38,7 +38,7 @@ var OCR = {
                 && typeof res.ParsedResults[0].ParsedText != 'undefined') {
                 var ocrText = res.ParsedResults[0].ParsedText.trim();
                 $('#result').text(ocrText);
-                $('.hide:hidden').fadeIn('slow', function() { translate.init(ocrText); }).css('display', 'inline-block');
+                $('.hide:hidden').fadeIn(2000, function() { translate.init(ocrText); }).css('display', 'inline-block');
                 adjustTextarea(document.querySelector('#result'), 24);
             } else {
                 alert("An error occurred. Check the console log for more details.");
@@ -57,39 +57,55 @@ var adjustTextarea = function(el, minHeight) {
 
 var translate = {
     youdaoUrl: "https://fanyi.youdao.com/openapi.do?keyfrom=friskfly&key=1410212834&type=data&doctype=jsonp&version=1.1&callback=translate.youdao_callback&q=",
-    yandexUrl: "https://translate.yandex.net/api/v1.5/tr.json/translate?key=trnsl.1.1.20160303T163724Z.5f03d81e233214a0.2a3088b8385dd6e0adffec8d224d405f5a1fe171&lang=zh-en&text=",
-    jsonp: null,
+    yandexUrl: "https://translate.yandex.net/api/v1.5/tr.json/translate?key=trnsl.1.1.20160303T163724Z.5f03d81e233214a0.2a3088b8385dd6e0adffec8d224d405f5a1fe171&lang=zh-en&callback=translate.yandex_callback&text=",
+    youdao: { jsonp: null },
+    yandex: { jsonp: null },
     translation: null,
     youdao_callback: function(response) {
         if (typeof(response.translation) != "undefined" && response.translation.length > 0) {
-            $('.translate1').text('');
+            $('.youdao').text();
             $.each(response.translation, function(i, val) {
-                if (i > 0) { $('.translate1').append('<br/>'); }
-                $('.translate1').append(val);
+                if (i > 0) { $('.youdao').append('<br/>'); }
+                $('.youdao').append(val);
             });
-            $('.translate1').fadeIn('slow');
-            translate.jsonp.remove();
+            $('.youdao').fadeIn(2000);
+            translate.youdao.jsonp.remove();
+            return true;
         }
+        console.error("unexpected Youdao response:");
+        console.error(response);
+        return false;
     },
-    youdao: function(txt) {
-        if (!document.getElementById('translate_script') || typeof(translate.jsonp) === "undefined") {
-            translate.jsonp = document.createElement("script");
-            translate.jsonp.id = "translate_script";
-            document.body.appendChild(translate.jsonp);
+    initYoudao: function(txt) {
+        if (!document.getElementById('youdao_script') || typeof translate.youdao.jsonp === "undefined") {
+            translate.youdao.jsonp = document.createElement("script");
+            translate.youdao.jsonp.id = "youdao_script";
+            document.body.appendChild(translate.youdao.jsonp);
         }
-        translate.jsonp.src = this.youdaoUrl + encodeURIComponent(txt);
+        translate.youdao.jsonp.src = this.youdaoUrl + encodeURIComponent(txt);
     },
-    yandex: function(txt) {
-        $.post(this.yandexUrl +  encodeURIComponent(txt), function(res) {
-            $('.translate2 > pre').text('');
-            if (res.code === 200 && typeof res.text[0] !== 'undefined') {
-                $('.translate2 > pre').text(res.text[0].trim()).fadeIn('slow');
-            }
-        });
+    yandex_callback: function(response) {
+        if (response.code == 200 && response.text.length > 0) {        
+            $('.yandex').text(response.text[0].trim());
+            $('.yandex').fadeIn(2000);
+            translate.yandex.jsonp.remove();
+            return true;
+        }
+        console.error("unexpected Yandex response:");
+        console.error(response);
+        return false;
+    },
+    initYandex: function(txt) {
+        if (!document.getElementById('yandex_script') || typeof translate.yandex.jsonp === "undefined") {
+            translate.yandex.jsonp = document.createElement("script");
+            translate.yandex.jsonp.id = "yandex_script";
+            document.body.appendChild(translate.yandex.jsonp);
+        }
+        translate.yandex.jsonp.src = this.yandexUrl + encodeURIComponent(txt);
     },
     init: function(txt) {
-        this.youdao(txt);
-        this.yandex(txt);
+        this.initYoudao(txt);
+        this.initYandex(txt);
     }
 };
 

@@ -1,0 +1,22 @@
+{
+  "name": "ocr-translator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.html",
+  "scripts": {
+    "test": "xdg-open http://localhost"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ozmartian/ocr-translator.git"
+  },
+  "author": "Pete Alexandrou <pete@ozmartians.com>",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/ozmartian/ocr-translator/issues"
+  },
+  "homepage": "https://github.com/ozmartian/ocr-translator#readme",
+  "dependencies": {
+    "material-design-lite": "^1.1.3"
+  }
+}
