@@ -120,7 +120,7 @@ var dkrm = new Darkroom('#target', {
         crop: { quickCropKey: 67 },
         save: {
             callback: function() {
-                this.darkroom.selfDestroy();
+                //this.darkroom.selfDestroy();
                 var newImage = dkrm.canvas.toDataURL();
                 OCR.recognize(newImage);
             }
@@ -133,6 +133,38 @@ var dkrm = new Darkroom('#target', {
     }
 });
 
+var imageutil = {
+    render: function(src) {
+        var image = new Image();
+        image.onload = function() {
+            var ctx = dkrm.canvas.getContext("2d");
+            ctx.clearRect(0, 0, dkrm.canvas.width, dkrm.canvas.height);
+            canvas.width = image.width;
+            canvas.height = image.height;
+            ctx.drawImage(image, 0, 0, image.width, image.height);
+        };
+        image.src = src;
+    },
+    loadImage: function(src) {
+        if (!src.type.match(/image.*/)) {
+            alert('Invalid image file: ', src.type);
+            return;
+        }
+        var reader = new FileReader();
+        reader.onload = function(e) { this.render(e.target.result); }
+        reader.readAsDataURL(src);
+    },
+    init: function() {
+        var target = $('.wrapper');
+        target.on('dragover', function(e) { e.preventDefault(); });
+        target.on('drop', function(e) {
+            e.preventDefault();
+            console.log(e);
+            this.loadImage(e.dataTransfer.files[0]); 
+        });
+    }
+};
+
 var showProgress = function(progress) {
     console.log(progress);  
 };
@@ -140,3 +172,5 @@ var showProgress = function(progress) {
 var showResult = function(result) {
     console.log(result);
 };
+
+imageutil.init();
