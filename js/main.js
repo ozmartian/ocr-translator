@@ -14,7 +14,7 @@ var OCR = {
         for (var i = 0; i < byteString.length; i++) {
             ia[i] = byteString.charCodeAt(i);
         }
-        return new Blob([ia], { type: mimeString }); 
+        return new Blob([ia], { type: mimeString });
     },
     recognize: function(image) {
         $('#result').text('');
@@ -23,7 +23,7 @@ var OCR = {
         data.append("apikey", this.apiKey);
         data.append("language", "chs");
         data.append("isOverlayRequired", true),
-        data.append("file", this.dataURI2Blob(image), "image.png");
+            data.append("file", this.dataURI2Blob(image), "image.png");
         $.ajax({
             url: this.apiUrl,
             type: 'POST',
@@ -62,7 +62,7 @@ var translate = {
     yandex: { jsonp: null },
     translation: null,
     youdao_callback: function(response) {
-        if (typeof(response.translation) != "undefined" && response.translation.length > 0) {
+        if (typeof (response.translation) != "undefined" && response.translation.length > 0) {
             $('.youdao').text();
             $.each(response.translation, function(i, val) {
                 if (i > 0) { $('.youdao').append('<br/>'); }
@@ -85,7 +85,7 @@ var translate = {
         translate.youdao.jsonp.src = this.youdaoUrl + encodeURIComponent(txt);
     },
     yandex_callback: function(response) {
-        if (response.code == 200 && response.text.length > 0) {        
+        if (response.code == 200 && response.text.length > 0) {
             $('.yandex').text(response.text[0].trim());
             $('.yandex').fadeIn(2000);
             translate.yandex.jsonp.remove();
@@ -114,13 +114,13 @@ var dkrm = new Darkroom('#target', {
     minHeight: 100,
     maxWidth: 600,
     maxHeight: 500,
-    ratio: 4/3,
+    ratio: 4 / 3,
     backgroundColor: '#FFF',
     plugins: {
         crop: { quickCropKey: 67 },
         save: {
             callback: function() {
-                //this.darkroom.selfDestroy();
+                this.darkroom.selfDestroy();
                 var newImage = dkrm.canvas.toDataURL();
                 OCR.recognize(newImage);
             }
@@ -133,6 +133,7 @@ var dkrm = new Darkroom('#target', {
     }
 });
 
+/*
 var imageutil = {
     render: function(src) {
         var image = new Image();
@@ -146,31 +147,19 @@ var imageutil = {
         image.src = src;
     },
     loadImage: function(src) {
-        if (!src.type.match(/image.*/)) {
-            alert('Invalid image file: ', src.type);
-            return;
-        }
         var reader = new FileReader();
         reader.onload = function(e) { this.render(e.target.result); }
         reader.readAsDataURL(src);
     },
     init: function() {
-        var target = $('.wrapper');
+        var target = $('.drop-target');
         target.on('dragover', function(e) { e.preventDefault(); });
         target.on('drop', function(e) {
             e.preventDefault();
-            console.log(e);
-            this.loadImage(e.dataTransfer.files[0]); 
+            e.dataTransfer = e.originalEvent && e.originalEvent.dataTransfer;
+            console.log(e.dataTransfer.getData());
+            this.loadImage(e.dataTransfer.files[0]);
         });
     }
 };
-
-var showProgress = function(progress) {
-    console.log(progress);  
-};
-
-var showResult = function(result) {
-    console.log(result);
-};
-
-imageutil.init();
+*/

@@ -40,8 +40,8 @@ body {
     font-weight: 300;
     background-color: #FEFEFE;
     color: #555;
-    margin: auto;
-    padding: 20px;
+    margin: 20px auto 0;
+    padding: 35px;
     table-layout: fixed;
     width: 850px;
 }
@@ -133,11 +133,6 @@ h1 {
     background: white;
     padding: 10px;
     margin: 5px 0;
-    /*
-    border: 1px solid #e2e2e2;
-    border-bottom: 1px solid #ccc;
-    border-right: 1px solid #ccc;
-    */
 }
 
 .image-container.target {
