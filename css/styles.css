@@ -223,6 +223,8 @@ textarea {
     white-space: pre-wrap;
     word-wrap: break-word;
     overflow: hidden;
+    border: none;
+    outline: none;
 }
 
 .youdao, .yandex {
