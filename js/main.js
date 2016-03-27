@@ -38,8 +38,10 @@ var OCR = {
                 && typeof res.ParsedResults[0].ParsedText != 'undefined') {
                 var ocrText = res.ParsedResults[0].ParsedText.trim();
                 $('#result').text(ocrText);
-                $('.hide:hidden').fadeIn(2000, function() { translate.init(ocrText); }).css('display', 'inline-block');
-                adjustTextarea(document.querySelector('#result'), 24);
+                $('.hide:hidden').fadeIn(2000, function() {
+                    adjustTextarea(document.getElementById('result'), 24);
+                    translate.init(ocrText);
+                }).css('display', 'inline-block');
             } else {
                 alert("An error occurred. Check the console log for more details.");
                 console.log(res);
