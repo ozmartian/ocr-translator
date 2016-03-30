@@ -47,7 +47,7 @@ var OCR = {
                 $('#result').text(ocrText);
                 $('.hide:hidden').fadeIn(2000, function() {
                     OCR.adjustTextarea(document.getElementById('result'));
-                    imgEditor.progress('translating text...');
+                    imgEditor.progress('translating text');
                     translate.init(ocrText);
                 }).css('display', 'inline-block');
             } else {
@@ -141,7 +141,7 @@ var imgEditor = {
             plugins: {
                 save: {
                     callback: function() {
-                        imgEditor.progress('converting image to text...');
+                        imgEditor.progress('converting image to text');
                         this.darkroom.selfDestroy();
                         var newImage = dkrm.canvas.toDataURL();
                         OCR.recognize(newImage);
