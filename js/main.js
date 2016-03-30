@@ -127,13 +127,14 @@ var imgEditor = {
             $('.progress:hidden').show();
         } else {
             $('.progress').fadeOut('slow');
+            $('.progress > .label').text(null);
         }
     },
     init: function(el) {
         dkrm = new Darkroom(el, {
             minWidth: 100,
             minHeight: 100,
-            maxWidth: 800,
+            maxWidth: 850,
             //maxHeight: 500,
             ratio: 4 / 3,
             backgroundColor: '#FFF',
@@ -146,8 +147,7 @@ var imgEditor = {
                         OCR.recognize(newImage);
                     }
                 }
-            },
-            initialize: function() { }
+            }
         });
     }
 };

@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>OCR Playground</title>
+        <title>OCR Translator</title>
         <link rel="stylesheet" href="css/material.css" />
         <link rel="stylesheet" href="css/darkroom.css" />
         <link rel="stylesheet" href="css/styles.css" />
@@ -12,11 +12,12 @@
 
     <body>
 
+        <div class="progress">
+            <div class="label"></div>
+            <div class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
+        </div>
+
         <div class="wrapper">
-            <div class="progress">
-                <div class="label"></div>
-                <div class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
-            </div>
             <div class="image-container target">
                 <img src="img/placeholder.png" id="target" />
             </div>
@@ -28,6 +29,12 @@
 
         <div class="youdao hide"></div>
         <div class="yandex hide"></div>
+        
+        <div class="reset hide">
+            <button onclick="window.location.reload();" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored">
+                Start Again
+            </button>
+        </div>
         
         <script src="js/material.js"></script>
         <script src="js/fabric.js"></script>
