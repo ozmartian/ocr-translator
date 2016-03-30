@@ -269,3 +269,29 @@ textarea {
 .darkroom-container {
     margin-top: 20px;
 }
+
+.progress {
+    display: none;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.progress > .label {
+    color: #3f51b5;
+    font-size: 0.9rem;    
+}
+
+.progress > div:first-child {
+    animation-name: blink;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+}
+
+@keyframes blink {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+.mdl-progress {
+    width: 100%;
+}
