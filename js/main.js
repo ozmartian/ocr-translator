@@ -25,7 +25,7 @@ var OCR = {
     },
     recognize: function(image) {
         $('#result').text('');
-        $('.hide:visible').fadeOut(2000);
+        $('.hidden').removeClass('in');
         var data = new FormData();
         data.append("apikey", this.apiKey);
         data.append("language", "chs");
@@ -45,11 +45,13 @@ var OCR = {
                 && typeof res.ParsedResults[0].ParsedText != 'undefined') {
                 var ocrText = res.ParsedResults[0].ParsedText.trim();
                 $('#result').text(ocrText);
-                $('.hide:hidden').fadeIn(2000, function() {
-                    OCR.adjustTextarea(document.getElementById('result'));
-                    imgEditor.progress('translating text');
-                    translate.init(ocrText);
-                }).css('display', 'inline-block');
+                $('#result, .reset')
+                    .addClass('in')
+                    .css('display', 'inline-block');
+                OCR.adjustTextarea(document.getElementById('result'));
+                //imgEditor.progress('translating text');
+                NProgress.set(0.6);
+                translate.init(ocrText);
             } else {
                 alert("An error occurred. Check the console log for more details.");
                 console.log(res);
@@ -66,14 +68,16 @@ var translate = {
     translation: null,
     youdao_callback: function(response) {
         translate.youdao.done = true;
-        if (translate.youdao.done && translate.yandex.done) { imgEditor.progress(); }
+        if (translate.youdao.done && translate.yandex.done) { NProgress.done(); }
         if (typeof (response.translation) != "undefined" && response.translation.length > 0) {
             $('.youdao').text();
             $.each(response.translation, function(i, val) {
                 if (i > 0) { $('.youdao').append('<br/>'); }
                 $('.youdao').append(val);
             });
-            $('.youdao').fadeIn(2000);
+            $('.youdao')
+                .addClass('in')
+                .css('display', 'inline-block');
             translate.youdao.jsonp.remove();
             return true;
         }
@@ -92,10 +96,12 @@ var translate = {
     },
     yandex_callback: function(response) {
         translate.yandex.done = true;
-        if (translate.youdao.done && translate.yandex.done) { imgEditor.progress(); }
+        if (translate.youdao.done && translate.yandex.done) { NProgress.done(); }
         if (response.code == 200 && response.text.length > 0) {
             $('.yandex').text(response.text[0].trim());
-            $('.yandex').fadeIn(2000);
+            $('.yandex')
+                .addClass('in')
+                .css('display', 'inline-block');
             translate.yandex.jsonp.remove();
             return true;
         }
@@ -115,33 +121,27 @@ var translate = {
     init: function(txt) {
         this.initYoudao(txt);
         this.initYandex(txt);
+        $('.reset > button').on('click',function(e) { window.location.reload(); });
     }
 };
 
 var dkrm;
 var imgEditor = {
-    progress: function(txt) {
-        var el = $('.progress:hidden');
-        if (txt || el.length) {
-            $('.progress > .label').text(txt);
-            $('.progress:hidden').show();
-        } else {
-            $('.progress').fadeOut('slow');
-            $('.progress > .label').text(null);
-        }
+    enableTools: function() {
+        $('.darkroom-button-group button').slice(3).removeAttr('disabled');
+    },
+    disableTools: function() {
+        $('.darkroom-button-group button').slice(3).attr('disabled', 'disabled');
     },
     init: function(el) {
         dkrm = new Darkroom(el, {
-            minWidth: 100,
-            minHeight: 100,
-            maxWidth: 850,
-            //maxHeight: 500,
-            ratio: 4 / 3,
-            backgroundColor: '#FFF',
+            minWidth: 200,
+            minHeight: 200,
+            backgroundColor: 'transparent',
             plugins: {
                 save: {
                     callback: function() {
-                        imgEditor.progress('converting image to text');
+                        NProgress.start(0.2);
                         this.darkroom.selfDestroy();
                         var newImage = dkrm.canvas.toDataURL();
                         OCR.recognize(newImage);
@@ -153,3 +153,6 @@ var imgEditor = {
 };
 
 imgEditor.init('#target');
+
+dkrm.onchange = function() { if ($('img.ocr-placeholder').length != 0) { imgEditor.enableTools(); } };
+window.onload = function() { imgEditor.disableTools(); }

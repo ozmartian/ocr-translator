@@ -1,46 +1,49 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OCR Translator</title>
+    <link rel="stylesheet" href="css/fonts.css" />
+    <link rel="stylesheet" href="css/bootstrap.css" />
+    <link rel="stylesheet" href="css/darkroom.css" />
+    <link rel="stylesheet" href="css/nprogress.css" />
+    <link rel="stylesheet" href="css/styles.css" />
+</head>
 
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>OCR Translator</title>
-        <link rel="stylesheet" href="css/material.css" />
-        <link rel="stylesheet" href="css/darkroom.css" />
-        <link rel="stylesheet" href="css/styles.css" />
-    </head>
+<body>
 
-    <body>
-
-        <div class="progress">
-            <div class="label"></div>
-            <div class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
-        </div>
+    <div class="row">
 
         <div class="wrapper">
             <div class="image-container target">
-                <img src="img/placeholder.png" id="target" />
+                <img src="img/placeholder.png" id="target" class="ocr-placeholder" />
             </div>
         </div>
-        
-        <form>
-            <textarea id="result" name="result" class="hide" rows="1"></textarea>
+
+        <form class="text-center">
+            <textarea id="result" name="result" class="fade" rows="1"></textarea>
         </form>
 
-        <div class="youdao hide"></div>
-        <div class="yandex hide"></div>
-        
-        <div class="reset hide">
-            <button onclick="window.location.reload();" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored">
-                Start Again
+        <div class="translations">
+            <div class="youdao fade"></div>
+            <div class="yandex fade"></div>
+        </div>
+
+        <div class="reset fade text-center">
+            <button type="button" class="btn btn-default btn-lg" aria-label="Start Again">
+                <span class="glyphicon glyphicon-repeat" aria-hidden="true"></span> Start Again
             </button>
         </div>
-        
-        <script src="js/material.js"></script>
-        <script src="js/fabric.js"></script>
-        <script src="js/darkroom.js"></script>
-        <script src="js/jquery.js"></script>
-        <script src="js/main.js"></script>
 
-    </body>
+    </div>
+       
+    <script src="js/jquery.js"></script>
+    <script src="js/bootstrap.js"></script>
+    <script src="js/fabric.js"></script>
+    <script src="js/darkroom.js"></script>
+    <script src="js/nprogress.js"></script>
+    <script src="js/main.js"></script>
+
+</body>
 </html>
