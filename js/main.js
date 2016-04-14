@@ -133,10 +133,23 @@ var imgEditor = {
     disableTools: function() {
         $('.darkroom-button-group button').slice(3).attr('disabled', 'disabled');
     },
+    resizeHandler: function() {
+        /*
+        window.innerWidth
+        window.innerHeight
+        */
+        var frameDim = window.innerWidth + window.innerHeight;
+        var imgDim = dkrm.sourceImage.width + dkrm.sourceImage.height;
+        if (imgDim > frameDim) {
+            
+        }        
+    },
     init: function(el) {
         dkrm = new Darkroom(el, {
+            /*
             minWidth: 200,
             minHeight: 200,
+            */
             backgroundColor: 'transparent',
             plugins: {
                 save: {
@@ -154,5 +167,8 @@ var imgEditor = {
 
 imgEditor.init('#target');
 
-dkrm.onchange = function() { if ($('img.ocr-placeholder').length != 0) { imgEditor.enableTools(); } };
+dkrm.onchange = function() {
+    if ($('img.ocr-placeholder').length != 0) { imgEditor.enableTools(); }
+    imgEditor.resizeHandler();
+};
 window.onload = function() { imgEditor.disableTools(); }
