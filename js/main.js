@@ -53,6 +53,7 @@ var OCR = {
                 NProgress.set(0.6);
                 translate.init(ocrText);
             } else {
+                NProgress.done();
                 alert("An error occurred. Check the console log for more details.");
                 console.log(res);
             }
@@ -83,6 +84,8 @@ var translate = {
         }
         console.error("unexpected Youdao response:");
         console.error(response);
+        NProgress.done();
+        
         return false;
     },
     initYoudao: function(txt) {
@@ -107,6 +110,7 @@ var translate = {
         }
         console.error("unexpected Yandex response:");
         console.error(response);
+        NProgress.done();
         return false;
     },
     initYandex: function(txt) {
@@ -129,21 +133,33 @@ var dkrm;
 var imgEditor = {
     enableTools: function() {
         $('.darkroom-button-group button').slice(3).removeAttr('disabled');
+        window.setTimeout(function() { $('[data-toggle="tooltip"]').tooltip(); }, 500);
     },
     disableTools: function() {
         $('.darkroom-button-group button').slice(3).attr('disabled', 'disabled');
+        $('[data-toggle="tooltip"]').tooltip();
     },
-    resizeHandler: function() {
-        /*
-        window.innerWidth
-        window.innerHeight
-        */
-        var frameDim = window.innerWidth + window.innerHeight;
-        var imgDim = dkrm.sourceImage.width + dkrm.sourceImage.height;
-        if (imgDim > frameDim) {
+    errorHandler: function(msg, title, obj) {
+        if (!title) { title = "Error Alert"; }
+        NProgress.done();
+        $('#error #title').text(title);
+        $('#error #message').text(msg);
+        console.error('ERROR:');
+        console.error(msg);
+        if (obj) { console.error(obj); }
+        $('#error').modal();
+    },
+    // resizeHandler: function() {
+    //     /*
+    //     window.innerWidth
+    //     window.innerHeight
+    //     */
+    //     var frameDim = window.innerWidth + window.innerHeight;
+    //     var imgDim = dkrm.sourceImage.width + dkrm.sourceImage.height;
+    //     if (imgDim > frameDim) {
             
-        }        
-    },
+    //     }        
+    // },
     init: function(el) {
         dkrm = new Darkroom(el, {
             /*
@@ -162,6 +178,8 @@ var imgEditor = {
                 }
             }
         });
+        
+        window.onload = function() { imgEditor.disableTools(); };
     }
 };
 
@@ -169,6 +187,5 @@ imgEditor.init('#target');
 
 dkrm.onchange = function() {
     if ($('img.ocr-placeholder').length != 0) { imgEditor.enableTools(); }
-    imgEditor.resizeHandler();
+    // imgEditor.resizeHandler();
 };
-window.onload = function() { imgEditor.disableTools(); }

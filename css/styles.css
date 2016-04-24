@@ -181,13 +181,12 @@ textarea {
     border: 1px solid #222;
 }
 
-.darkroom-button:hover {
+.darkroom-button:active, .darkroom-button:hover {
+    height: 38px;
     cursor: pointer;
     position: relative;
     top: -1px;
-    background-color: #555;
-    border-top: 1px solid #222;
-    border-bottom: 1px solid #222;
+    background-color: #444;
 }
 
 .darkroom-button:hover .darkroom-icon {
@@ -196,7 +195,8 @@ textarea {
 }
 
 .darkroom-button:hover:enabled .darkroom-icon {
-    fill:#48BFF5;
+    /*fill:#AAA;*/
+    opacity:0.4;
 }
 
 img.ocr-placeholder {
@@ -243,4 +243,34 @@ img.ocr-placeholder {
 
 .translations div {
     padding: 20px;
+}
+
+.tooltip > .tooltip-inner {
+    font-weight: 500;
+    font-size: 1.3rem;
+    color: #FFF;
+}
+
+.fade {
+    -webkit-transition: opacity .01s linear;
+    -o-transition: opacity .01s linear;
+    transition: opacity .01s linear;
+}
+
+.modal {
+    top: 30%;
+}
+
+.modal-backdrop {
+    background-color: #FFF;
+    opacity: 0.5 !important;
+}
+
+.modal-header {
+    padding: 15px 15px 0;
+}
+
+.modal-title {
+    font-size: 2.2rem;
+    color: red;
 }
