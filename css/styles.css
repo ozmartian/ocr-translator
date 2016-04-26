@@ -5,7 +5,6 @@ body {
     margin: 0 auto;
     table-layout: fixed;
     width: 850px;
-    overflow: hidden;
     background: #FFF;
 }
 
@@ -107,9 +106,9 @@ h1 {
 
 #result {
     font-size: 2rem;
-    width: 85%;
-    border-top: 1px dashed #CCC;
-    border-bottom: 1px dashed #CCC;
+    width: 100%;
+    border-top: 1px dashed #AAA;
+    border-bottom: 1px dashed #AAA;
     text-align: center;
     outline: none;
     box-shadow: none;
@@ -237,12 +236,18 @@ img.ocr-placeholder {
     width: 100%;
 }
 
+.reset button {
+    outline: none !important;
+    border: none !important;
+}
+
 .translations {
     margin-bottom: 28px;
 }
 
 .translations div {
     padding: 20px;
+    border-bottom: 1px dashed #AAA;
 }
 
 .tooltip > .tooltip-inner {
