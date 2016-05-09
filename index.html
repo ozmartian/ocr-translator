@@ -5,6 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>OCR Translator</title>
+    <link rel="icon" href="img/app-icon.ico" />
     <link rel="stylesheet" href="css/fonts.css" />
     <link rel="stylesheet" href="css/bootstrap.css" />
     <link rel="stylesheet" href="css/darkroom.css" />
@@ -22,20 +23,24 @@
             </div>
         </div>
 
-        <form class="text-center">
-            <textarea id="result" name="result" class="fade" rows="1"></textarea>
-        </form>
+        <div class="output hide">
 
-        <div class="translations">
-            <div class="youdao fade"></div>
-            <div class="yandex fade"></div>
-        </div>
+            <form class="text-center">
+                <textarea id="result" name="result" class="fade" rows="1"></textarea>
+            </form>
 
-        <div class="reset fade text-center">
-            <button type="button" class="btn btn-default btn" aria-label="Reset">
-                <span class="glyphicon glyphicon-repeat" aria-hidden="true"></span>
-                &nbsp;Reset
-            </button>
+            <div class="translations">
+                <div class="youdao fade"></div>
+                <div class="yandex fade"></div>
+            </div>
+
+            <div class="reset fade text-center">
+                <button type="button" class="btn btn-default btn" aria-label="Reset">
+                    <span class="glyphicon glyphicon-repeat" aria-hidden="true"></span>
+                    &nbsp;Reset
+                </button>
+            </div>
+
         </div>
 
     </div>
@@ -48,7 +53,7 @@
                     <h4 id="title" class="modal-title">Error Alert!</h4>
                 </div>
                 <div class="modal-body">
-                    <p id="message">qdqwd</p>
+                    <p id="message"></p>
                 </div>
             </div>
 
@@ -56,6 +61,7 @@
     </div>
 
     <script src="js/jquery.js"></script>
+    <script src="js/jquery.dump.js"></script>
     <script src="js/bootstrap.js"></script>
     <script src="js/fabric.js"></script>
     <script src="js/darkroom.js"></script>

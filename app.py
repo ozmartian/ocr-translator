@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 
-import webview
-import sys
-import threading
+from PyQt5.QtCore import QUrl
+from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWebKit import QWebSettings
+from PyQt5.QtWebKitWidgets import QWebView
+
+import sys, threading
 
 try:
     from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
     from SimpleHTTPServer import SimpleHTTPRequestHandler
 except ImportError:
     from http.server import SimpleHTTPRequestHandler, HTTPServer
-
 
 def start_server():
     HandlerClass = SimpleHTTPRequestHandler
@@ -26,6 +28,12 @@ if __name__ == '__main__':
     t = threading.Thread(target=start_server)
     t.daemon = True
     t.start()
-    
-    webview.create_window("OCR Translator", "http://127.0.0.1:23948/index.html", width=800, height=600, resizable=True, min_size=(400, 200))
-    sys.exit()
+      
+    app = QApplication(sys.argv) 
+    view = QWebView()
+    QWebSettings.globalSettings().setObjectCacheCapacities(0, 0, 0)
+    view.show()
+    view.setUrl(QUrl('http://127.0.0.1:23948/index.html')) 
+    QWebSettings.globalSettings().setObjectCacheCapacities(0, 0, 1)
+
+    sys.exit(app.exec_())

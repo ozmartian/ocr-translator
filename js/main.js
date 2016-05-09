@@ -1,4 +1,4 @@
-var OCR = {
+var OCR = {w
     apiKey: "9235904c3b88957",
     apiUrl: "https://api.ocr.space/parse/image",
     timeout: 60000,
@@ -45,11 +45,11 @@ var OCR = {
                 && typeof res.ParsedResults[0].ParsedText != 'undefined') {
                 var ocrText = res.ParsedResults[0].ParsedText.trim();
                 $('#result').text(ocrText);
+                $('.output.hide').removeClass('hide');
                 $('#result, .reset')
                     .addClass('in')
                     .css('display', 'inline-block');
                 OCR.adjustTextarea(document.getElementById('result'));
-                //imgEditor.progress('translating text');
                 NProgress.set(0.6);
                 translate.init(ocrText);
             } else {
@@ -149,23 +149,8 @@ var imgEditor = {
         if (obj) { console.error(obj); }
         $('#error').modal();
     },
-    // resizeHandler: function() {
-    //     /*
-    //     window.innerWidth
-    //     window.innerHeight
-    //     */
-    //     var frameDim = window.innerWidth + window.innerHeight;
-    //     var imgDim = dkrm.sourceImage.width + dkrm.sourceImage.height;
-    //     if (imgDim > frameDim) {
-            
-    //     }        
-    // },
     init: function(el) {
         dkrm = new Darkroom(el, {
-            /*
-            minWidth: 200,
-            minHeight: 200,
-            */
             backgroundColor: 'transparent',
             plugins: {
                 save: {
@@ -187,5 +172,4 @@ imgEditor.init('#target');
 
 dkrm.onchange = function() {
     if ($('img.ocr-placeholder').length != 0) { imgEditor.enableTools(); }
-    // imgEditor.resizeHandler();
 };
