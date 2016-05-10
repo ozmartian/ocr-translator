@@ -3,13 +3,13 @@
 import wx, sys, time
 import pyscreenshot as ImageGrab
 
+
 class SelectableFrame(wx.Frame):
     c1 = None
     c2 = None
 
     def __init__(self, parent=None, id=-1, title=""):
-        #wx.Frame.__init__(self, parent, id, title, size=wx.DisplaySize(), style=wx.FRAME_NO_TASKBAR)
-        wx.Frame.__init__(self, parent, id, title, pos=(0, 0), size=wx.DisplaySize(), style=wx.FRAME_NO_TASKBAR)
+        wx.Frame.__init__(self, parent, id, title, pos=(0, 0), size=wx.DisplaySize(), style=wx.FRAME_NO_TASKBAR | wx.NO_BORDER)
 
         self.panel = wx.Panel(self, size=self.GetSize())
 
@@ -28,6 +28,9 @@ class SelectableFrame(wx.Frame):
         
         self.SetTransparent(150)
 
+
+    def OnClose(self, event):
+        self.Close()
     
     def OnMouseMove(self, event):
         if event.Dragging() and event.LeftIsDown():
@@ -46,7 +49,7 @@ class SelectableFrame(wx.Frame):
         if key == wx.WXK_ESCAPE:
             sys.exit()
         elif key == wx.WXK_RETURN or key == wx.WXK_NUMPAD_ENTER:
-            self.DoScreenshot()
+            app.DoScreenshot()
         event.Skip()
         
     def OnReset(self, event=None):
@@ -62,32 +65,29 @@ class SelectableFrame(wx.Frame):
         dc.SetBrush(wx.Brush(wx.Colour(100, 100, 100), wx.SOLID))
 
         dc.DrawRectangle(self.c1.x, self.c1.y, self.c2.x - self.c1.x, self.c2.y - self.c1.y)
-        
-    def Done(self):
-        self.OnReset()
-        self.panel.Close()
-        self.Close()
 
+
+class MyApp(wx.App):
+    frame = None
+
+    def OnInit(self):
+        self.frame = SelectableFrame()
+        self.frame.Show(True)
+        self.SetTopWindow(self.frame)
+
+        return True
+        
     def DoScreenshot(self):
-        print("START: " + str(self.c1.x) + " " + str(self.c1.y))
-        print("END: " + str(self.c2.x) + " " + str(self.c2.y))
-        self.Done()
-        #im = p.screenshot(region=(self.c1.x, self.c1.y, self.c2.x - self.c1.x, self.c2.y - self.c1.y))
-        im = ImageGrab.grab(bbox=(self.c1.x, self.c1.y, self.c2.x, self.c2.y))
+        # print("START: " + str(app.c1.x) + " " + str(app.c1.y))
+        # print("END: 
+        coords = [ self.frame.c1.x, self.frame.c1.y, self.frame.c2.x, self.frame.c2.y ]
+        self.frame.Destroy()
+        im = ImageGrab.grab(bbox=(coords[0], coords[1], coords[2], coords[3]))
         filename = "/tmp/ocr-screenshot-" + time.strftime('%Y%m%d-%H%M%S') + ".png"
         im.save(filename)
 
         sys.exit(0)
 
-class MyApp(wx.App):
 
-    def OnInit(self):
-        frame = SelectableFrame()
-        frame.Show(True)
-        self.SetTopWindow(frame)
-
-        return True
-
-
-app = MyApp(0)
+app = MyApp(False)
 app.MainLoop()
