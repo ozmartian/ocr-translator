@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import wx, time, sys
+import wx, time
 
 #--------------------------------------------------------------------------------------------------------#
 
@@ -10,8 +10,14 @@ class MainFrame(wx.Frame):
 
     def __init__(self, parent=None, id=-1, title=""):
         wx.Frame.__init__(self, parent, id, title, pos=(0, 0), size=wx.DisplaySize(), style=wx.FRAME_NO_TASKBAR | wx.NO_BORDER | wx.STAY_ON_TOP)
+
+        self.SetTransparent(150)
+
+        self.Bind(wx.EVT_CLOSE, self.OnClose)        
+        self.SetCursor(wx.Cursor(wx.CURSOR_CROSS))
         
         self.panel = wx.Panel(self, size=self.GetSize())
+        self.panel.SetBackgroundColour(wx.Colour(0, 0, 0))
 
         self.panel.Bind(wx.EVT_MOTION, self.OnMouseMove)
         self.panel.Bind(wx.EVT_LEFT_DOWN, self.OnMouseSelect)
@@ -20,15 +26,6 @@ class MainFrame(wx.Frame):
         self.panel.Bind(wx.EVT_PAINT, self.OnPaint)
         self.panel.Bind(wx.EVT_KEY_DOWN, self.OnKeyDown)
         
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
-        
-        self.SetCursor(wx.Cursor(wx.CURSOR_CROSS))
-
-        self.panel.SetBackgroundColour(wx.Colour(0, 0, 0))
-        #self.panel.SetBackgroundStyle(wx.BG_STYLE_COLOUR)
-
-        self.SetTransparent(150)
-             
     def OnClose(self, event):
         self.Destroy()
         
@@ -74,12 +71,6 @@ class MainFrame(wx.Frame):
 
     def TakeScreenshot(self, data):
         if isinstance(data, ScreenshotData):
-            #dcScreen = wx.ScreenDC()
-            #bmp = wx.Bitmap(data.width, data.height)
-            #memDC = wx.MemoryDC()
-            #memDC.SelectObject(bmp)
-            #memDC.Blit(0, 0, data.width, data.height, dcScreen, data.x, data.y)
-            #memDC.SelectObject(wx.NullBitmap)
             global app
             bmp = app.GetDesktop().GetSubBitmap(wx.Rect(data.x, data.y, data.width, data.height))
             img = bmp.ConvertToImage()
