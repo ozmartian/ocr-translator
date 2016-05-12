@@ -1,4 +1,4 @@
-var OCR = {w
+var OCR = {
     apiKey: "9235904c3b88957",
     apiUrl: "https://api.ocr.space/parse/image",
     timeout: 60000,
@@ -14,10 +14,14 @@ var OCR = {w
         for (var i = 0; i < byteString.length; i++) {
             ia[i] = byteString.charCodeAt(i);
         }
-        return new Blob([ia], { type: mimeString });
+        return new Blob([ia], {
+            type: mimeString
+        });
     },
     adjustTextarea: function(el, minHeight) {
-        if (!minHeight) { minHeight = 24; }
+        if (!minHeight) {
+            minHeight = 24;
+        }
         var outerHeight = parseInt(window.getComputedStyle(el).height, 10);
         var diff = outerHeight - el.clientHeight;
         el.style.height = 0;
@@ -41,8 +45,7 @@ var OCR = {w
             processData: false,
             timeout: OCR.timeout
         }).done(function(res) {
-            if (res.OCRExitCode === 1 && !res.IsErroredOnProcessing
-                && typeof res.ParsedResults[0].ParsedText != 'undefined') {
+            if (res.OCRExitCode === 1 && !res.IsErroredOnProcessing && typeof res.ParsedResults[0].ParsedText != 'undefined') {
                 var ocrText = res.ParsedResults[0].ParsedText.trim();
                 $('#result').text(ocrText);
                 $('.output.hide').removeClass('hide');
@@ -64,16 +67,26 @@ var OCR = {w
 var translate = {
     youdaoUrl: "https://fanyi.youdao.com/openapi.do?keyfrom=friskfly&key=1410212834&type=data&doctype=jsonp&version=1.1&callback=translate.youdao_callback&q=",
     yandexUrl: "https://translate.yandex.net/api/v1.5/tr.json/translate?key=trnsl.1.1.20160303T163724Z.5f03d81e233214a0.2a3088b8385dd6e0adffec8d224d405f5a1fe171&lang=zh-en&callback=translate.yandex_callback&text=",
-    youdao: { jsonp: null, done: false },
-    yandex: { jsonp: null, done: false },
+    youdao: {
+        jsonp: null,
+        done: false
+    },
+    yandex: {
+        jsonp: null,
+        done: false
+    },
     translation: null,
     youdao_callback: function(response) {
         translate.youdao.done = true;
-        if (translate.youdao.done && translate.yandex.done) { NProgress.done(); }
-        if (typeof (response.translation) != "undefined" && response.translation.length > 0) {
+        if (translate.youdao.done && translate.yandex.done) {
+            NProgress.done();
+        }
+        if (typeof(response.translation) != "undefined" && response.translation.length > 0) {
             $('.youdao').text();
             $.each(response.translation, function(i, val) {
-                if (i > 0) { $('.youdao').append('<br/>'); }
+                if (i > 0) {
+                    $('.youdao').append('<br/>');
+                }
                 $('.youdao').append(val);
             });
             $('.youdao')
@@ -85,7 +98,7 @@ var translate = {
         console.error("unexpected Youdao response:");
         console.error(response);
         NProgress.done();
-        
+
         return false;
     },
     initYoudao: function(txt) {
@@ -99,7 +112,9 @@ var translate = {
     },
     yandex_callback: function(response) {
         translate.yandex.done = true;
-        if (translate.youdao.done && translate.yandex.done) { NProgress.done(); }
+        if (translate.youdao.done && translate.yandex.done) {
+            NProgress.done();
+        }
         if (response.code == 200 && response.text.length > 0) {
             $('.yandex').text(response.text[0].trim());
             $('.yandex')
@@ -125,31 +140,56 @@ var translate = {
     init: function(txt) {
         this.initYoudao(txt);
         this.initYandex(txt);
-        $('.reset > button').on('click',function(e) { window.location.reload(); });
+        $('.reset > button').on('click', function(e) {
+            window.location.reload();
+        });
     }
 };
 
 var dkrm;
 var imgEditor = {
+    imgfile: '',
     enableTools: function() {
         $('.darkroom-button-group button').slice(3).removeAttr('disabled');
-        window.setTimeout(function() { $('[data-toggle="tooltip"]').tooltip(); }, 500);
+        window.setTimeout(function() {
+            $('[data-toggle="tooltip"]').tooltip();
+        }, 500);
     },
     disableTools: function() {
         $('.darkroom-button-group button').slice(3).attr('disabled', 'disabled');
         $('[data-toggle="tooltip"]').tooltip();
     },
+    getParam: function(name, url) {
+        if (!url) {
+            url = window.location.href;
+        }
+        name = name.replace(/[\[\]]/g, "\\$&");
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)");
+        results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
+    },
     errorHandler: function(msg, title, obj) {
-        if (!title) { title = "Error Alert"; }
+        if (!title) {
+            title = "Error Alert";
+        }
         NProgress.done();
         $('#error #title').text(title);
         $('#error #message').text(msg);
         console.error('ERROR:');
         console.error(msg);
-        if (obj) { console.error(obj); }
+        if (obj) {
+            console.error(obj);
+        }
         $('#error').modal();
     },
     init: function(el) {
+        var img = this.getParam('img');
+        if (img.length > 0) {
+            this.imgfile = decodeURIComponent(img);
+            document.getElementById('target').src = "tmp/" + this.imgfile;
+        }
         dkrm = new Darkroom(el, {
             backgroundColor: 'transparent',
             plugins: {
@@ -163,13 +203,11 @@ var imgEditor = {
                 }
             }
         });
-        
-        window.onload = function() { imgEditor.disableTools(); };
+
+        window.onload = function() { if (!imgEditor.imgfile.length) { imgEditor.disableTools(); }};
     }
 };
 
 imgEditor.init('#target');
 
-dkrm.onchange = function() {
-    if ($('img.ocr-placeholder').length != 0) { imgEditor.enableTools(); }
-};
+dkrm.onchange = function() { if ($('img.ocr-placeholder').length != 0) { imgEditor.enableTools(); }};

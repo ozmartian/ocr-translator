@@ -1,17 +1,30 @@
 #!/usr/bin/env python3
 
-import wx, time
+from PyQt5.QtCore import QUrl, Qt
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWebKit import QWebSettings
+from PyQt5.QtWebKitWidgets import QWebView
+
+import sys, threading
+import wx, time, urllib, os
+
+try:
+    from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
+    from SimpleHTTPServer import SimpleHTTPRequestHandler
+except ImportError:
+    from http.server import SimpleHTTPRequestHandler, HTTPServer
 
 #--------------------------------------------------------------------------------------------------------#
 
-class MainFrame(wx.Frame):
+class ScreenshotFrame(wx.Frame):
     c1 = None
     c2 = None
 
     def __init__(self, parent=None, id=-1, title=""):
         wx.Frame.__init__(self, parent, id, title, pos=(0, 0), size=wx.DisplaySize(), style=wx.FRAME_NO_TASKBAR | wx.NO_BORDER | wx.STAY_ON_TOP)
 
-        self.SetTransparent(150)
+        self.SetTransparent(130)
 
         self.Bind(wx.EVT_CLOSE, self.OnClose)        
         self.SetCursor(wx.Cursor(wx.CURSOR_CROSS))
@@ -71,10 +84,11 @@ class MainFrame(wx.Frame):
 
     def TakeScreenshot(self, data):
         if isinstance(data, ScreenshotData):
-            global app
-            bmp = app.GetDesktop().GetSubBitmap(wx.Rect(data.x, data.y, data.width, data.height))
+            global screenshoter, filename
+            bmp = screenshoter.GetDesktop().GetSubBitmap(wx.Rect(data.x, data.y, data.width, data.height))
             img = bmp.ConvertToImage()
-            filename = "/tmp/ocr-screenshot-" + time.strftime('%Y%m%d-%H%M%S') + ".png"
+            filename = os.path.dirname(os.path.realpath(__file__))
+            filename = os.path.join(filename, "tmp", time.strftime('%Y%m%d-%H%M%S')) + ".png"
             img.SaveFile(filename, wx.BITMAP_TYPE_PNG)
         
 #--------------------------------------------------------------------------------------------------------#
@@ -84,7 +98,7 @@ class Screenshoter(wx.App):
     
     def OnInit(self):
         self.SaveDesktop()
-        self.frame = MainFrame(None)
+        self.frame = ScreenshotFrame(None)
         self.frame.Show(True)
         self.SetTopWindow(self.frame)
         return True
@@ -112,5 +126,47 @@ class ScreenshotData:
 
 #--------------------------------------------------------------------------------------------------------#
 
-app = Screenshoter(False)
-app.MainLoop()
+class WebKitHelper:
+    def __init__(self, filename):
+        t = threading.Thread(target=self.start_server)
+        t.daemon = True
+        t.start()
+        
+        app = QApplication([])
+        QWebSettings.globalSettings().setObjectCacheCapacities(0, 0, 0)
+        view = QWebView()
+        view.setWindowTitle("OCR Translator")
+        view.setWindowIcon(QIcon(os.path.join(os.path.dirname(os.path.realpath(__file__)), "img", "ocr-translator.svg")))
+        view.setContextMenuPolicy(Qt.NoContextMenu)
+        view.setUrl(QUrl('http://127.0.0.1:23948/index.html?img=' + self.getFileName(filename)))
+        QWebSettings.globalSettings().setObjectCacheCapacities(0, 0, 1)
+        page = view.page()
+        frame = page.mainFrame()
+        view.show()
+        sys.exit(app.exec_())
+    
+    def loadFinished(self, ok):
+        return None
+    
+    def getFileName(self, path):
+        return path.split('\\').pop().split('/').pop()
+    
+    def start_server(self):
+        HandlerClass = SimpleHTTPRequestHandler
+        ServerClass = HTTPServer
+        Protocol = "HTTP/1.0"
+        port = 23948
+        server_address = ('127.0.0.1', port)
+        HandlerClass.protocol_version = Protocol
+        httpd = ServerClass(server_address, HandlerClass)
+        httpd.serve_forever()
+
+#--------------------------------------------------------------------------------------------------------#
+
+filename = None
+
+screenshoter = Screenshoter(False)
+screenshoter.MainLoop()
+
+if filename is not None:
+    webkit = WebKitHelper(filename)
