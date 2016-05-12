@@ -160,9 +160,7 @@ var imgEditor = {
         $('[data-toggle="tooltip"]').tooltip();
     },
     getParam: function(name, url) {
-        if (!url) {
-            url = window.location.href;
-        }
+        if (!url) { url = window.location.href; }
         name = name.replace(/[\[\]]/g, "\\$&");
         var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)");
         results = regex.exec(url);
@@ -171,22 +169,18 @@ var imgEditor = {
         return decodeURIComponent(results[2].replace(/\+/g, " "));
     },
     errorHandler: function(msg, title, obj) {
-        if (!title) {
-            title = "Error Alert";
-        }
+        if (!title) { title = "Error Alert"; }
         NProgress.done();
         $('#error #title').text(title);
         $('#error #message').text(msg);
         console.error('ERROR:');
         console.error(msg);
-        if (obj) {
-            console.error(obj);
-        }
+        if (obj) { console.error(obj); }
         $('#error').modal();
     },
     init: function(el) {
         var img = this.getParam('img');
-        if (img.length > 0) {
+        if (img != null && img.length > 0) {
             this.imgfile = decodeURIComponent(img);
             document.getElementById('target').src = "tmp/" + this.imgfile;
         }
