@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 
-from PyQt5.QtCore import QUrl, Qt
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QApplication
-from PyQt5.QtWebKit import QWebSettings
-from PyQt5.QtWebKitWidgets import QWebView
-
 import sys, threading
 import wx, time, urllib, os
+
+from random import randint
+
+from PyQt5.QtCore import QUrl, Qt, QSize
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QApplication, QVBoxLayout
+from PyQt5.QtWebKitWidgets import QWebView, QWebPage
 
 try:
     from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
@@ -23,15 +24,12 @@ class ScreenshotFrame(wx.Frame):
 
     def __init__(self, parent=None, id=-1, title=""):
         wx.Frame.__init__(self, parent, id, title, pos=(0, 0), size=wx.DisplaySize(), style=wx.FRAME_NO_TASKBAR | wx.NO_BORDER | wx.STAY_ON_TOP)
-
+        self.parent = parent
         self.SetTransparent(130)
-
         self.Bind(wx.EVT_CLOSE, self.OnClose)        
         self.SetCursor(wx.Cursor(wx.CURSOR_CROSS))
-        
         self.panel = wx.Panel(self, size=self.GetSize())
         self.panel.SetBackgroundColour(wx.Colour(0, 0, 0))
-
         self.panel.Bind(wx.EVT_MOTION, self.OnMouseMove)
         self.panel.Bind(wx.EVT_LEFT_DOWN, self.OnMouseSelect)
         self.panel.Bind(wx.EVT_RIGHT_DOWN, self.OnReset)
@@ -127,26 +125,23 @@ class ScreenshotData:
 #--------------------------------------------------------------------------------------------------------#
 
 class WebKitHelper:
+    address = None
+    port = None
+    view = None
+    
     def __init__(self, filename):
         t = threading.Thread(target=self.start_server)
         t.daemon = True
         t.start()
         
-        app = QApplication([])
-        QWebSettings.globalSettings().setObjectCacheCapacities(0, 0, 0)
-        view = QWebView()
-        view.setWindowTitle("OCR Translator")
-        view.setWindowIcon(QIcon(os.path.join(os.path.dirname(os.path.realpath(__file__)), "img", "ocr-translator.svg")))
-        view.setContextMenuPolicy(Qt.NoContextMenu)
-        view.setUrl(QUrl('http://127.0.0.1:23948/index.html?img=' + self.getFileName(filename)))
-        QWebSettings.globalSettings().setObjectCacheCapacities(0, 0, 1)
-        page = view.page()
-        frame = page.mainFrame()
-        view.show()
+        app = QApplication(sys.argv)
+        self.view = QWebView()
+        self.view.setWindowTitle("OCR Translator")
+        self.view.setWindowIcon(QIcon(os.path.join(os.path.dirname(os.path.realpath(__file__)), "img", "ocr-translator.svg")))
+        self.view.setContextMenuPolicy(Qt.NoContextMenu)
+        self.view.load(QUrl("http://" + self.address + ":" + str(self.port) + "/index.html?img=" + self.getFileName(filename)))
+        self.view.showMaximized()
         sys.exit(app.exec_())
-    
-    def loadFinished(self, ok):
-        return None
     
     def getFileName(self, path):
         return path.split('\\').pop().split('/').pop()
@@ -155,8 +150,9 @@ class WebKitHelper:
         HandlerClass = SimpleHTTPRequestHandler
         ServerClass = HTTPServer
         Protocol = "HTTP/1.0"
-        port = 23948
-        server_address = ('127.0.0.1', port)
+        self.address = "127.0.0.1"
+        self.port = randint(2000, 4000)
+        server_address = (self.address, self.port)
         HandlerClass.protocol_version = Protocol
         httpd = ServerClass(server_address, HandlerClass)
         httpd.serve_forever()
@@ -169,4 +165,4 @@ screenshoter = Screenshoter(False)
 screenshoter.MainLoop()
 
 if filename is not None:
-    webkit = WebKitHelper(filename)
+    WebKitHelper(filename)

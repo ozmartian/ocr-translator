@@ -1,12 +1,21 @@
 body {
+    min-width: 100%;
+    max-height: 100%;
+    min-height: 100%;
+    position: absolute;
+    display: table;
+    text-align: center;
     font-family: "Roboto", sans-serif;
     font-weight: 400;
     color: #555;
     margin: 0 auto;
-    table-layout: fixed;
-    width: 430px;
-    background-color: rgba(0,0,0,0);
+    background-color: rgba(0, 0, 0, 0);
     overflow: visible;
+}
+
+body > div.row {
+    display: table-cell;
+    vertical-align: middle;
 }
 
 a {
@@ -28,7 +37,10 @@ a {
     font-size: 62.5%;
 }
 
-.copy p, .copy pre, .copy ul, .copy dl {
+.copy p,
+.copy pre,
+.copy ul,
+.copy dl {
     font-size: 1.6em;
     line-height: 1.5;
 }
@@ -56,11 +68,6 @@ a {
     font-weight: bold;
 }
 
-.container {
-    width: 400px;
-    margin: auto;
-}
-
 h1 {
     font-size: 52px;
     margin: 0;
@@ -77,18 +84,9 @@ h1 {
     padding: 0;
 }
 
-.image-container, #result {
+.image-container,
+#result {
     display: inline-block;
-    padding: 10px;
-    margin: 5px 0;
-}
-
-.image-container.target {
-    margin-top: 40px;
-}
-
-.image-container img {
-    max-width: 100%;
 }
 
 lo .darkroom-image-container {
@@ -97,17 +95,12 @@ lo .darkroom-image-container {
     background: transparent;
 }
 
-.wrapper {
-    text-align: center;
-}
-
 .field-wrapper > input {
     width: 100%;
 }
 
 #result {
     font-size: 2rem;
-    width: 100%;
     border-top: 1px dashed #AAA;
     border-bottom: 1px dashed #AAA;
     text-align: center;
@@ -115,7 +108,8 @@ lo .darkroom-image-container {
     box-shadow: none;
 }
 
-.hide, #result.hide {
+.hide,
+#result.hide {
     display: none;
 }
 
@@ -130,9 +124,9 @@ textarea {
     font-weight: 300;
 }
 
-.youdao, .yandex {
+.youdao,
+.yandex {
     text-align: center;
-    width: 100%;
     font-family: monospace;
     /*margin-top: 15px;*/
     position: relative;
@@ -147,7 +141,8 @@ textarea {
     color: #5723AB;
 }
 
-.youdao::after, .yandex::after {
+.youdao::after,
+.yandex::after {
     content: "";
     opacity: 1s;
     top: 0;
@@ -168,11 +163,6 @@ textarea {
     background-size: 50px;
 }
 
-.darkroom-container {
-    position: relative;
-    top: 35px;
-}
-
 #nprogress .bar {
     height: 6px !important;
 }
@@ -181,7 +171,8 @@ textarea {
     border: 1px solid #222;
 }
 
-.darkroom-button:active, .darkroom-button:hover {
+.darkroom-button:active,
+.darkroom-button:hover {
     height: 38px;
     cursor: pointer;
     position: relative;
@@ -197,6 +188,10 @@ textarea {
 .darkroom-button:hover:enabled .darkroom-icon {
     /*fill:#AAA;*/
     opacity: 0.4;
+}
+
+#darkroom-icons {
+    display: none;
 }
 
 img.ocr-placeholder {
