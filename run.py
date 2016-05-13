@@ -8,7 +8,7 @@ from random import randint
 from PyQt5.QtCore import QUrl, Qt, QSize
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QVBoxLayout, QSizePolicy
-from PyQt5.QtWebKitWidgets import QWebView, QWebPage
+from PyQt5.QtWebKitWidgets import QWebView
 
 try:
     from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
@@ -140,10 +140,17 @@ class WebKitHelper:
         self.view.setWindowIcon(QIcon(os.path.join(os.path.dirname(os.path.realpath(__file__)), "img", "ocr-translator.svg")))
         self.view.setContextMenuPolicy(Qt.NoContextMenu)
         self.view.load(QUrl("http://" + self.address + ":" + str(self.port) + "/index.html?img=" + self.getFileName(filename)))
-        self.view.setAutoFillBackground(True)
-        self.view.setBaseSize(800, 800)
+        self.view.loadFinished.connect(self.loadHandler)
         self.view.show()
         sys.exit(app.exec_())
+        
+    def loadHandler(self):
+        print("page size = ")
+        self.view.page
+        margins = self.view.contentsMargins()
+        frame = self.view.page().mainFrame()
+        self.view.page().setViewportSize(frame.contentsSize())
+        self.view.resize(frame.contentsSize())
     
     def getFileName(self, path):
         return path.split('\\').pop().split('/').pop()
