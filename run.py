@@ -25,7 +25,7 @@ class ScreenshotFrame(wx.Frame):
     def __init__(self, parent=None, id=-1, title=""):
         wx.Frame.__init__(self, parent, id, title, pos=(0, 0), size=wx.DisplaySize(), style=wx.FRAME_NO_TASKBAR | wx.NO_BORDER | wx.STAY_ON_TOP)
         self.parent = parent
-        self.SetTransparent(130)
+        self.SetTransparent(185)
         self.Bind(wx.EVT_CLOSE, self.OnClose)        
         self.SetCursor(wx.Cursor(wx.CURSOR_CROSS))
         self.panel = wx.Panel(self, size=self.GetSize())
