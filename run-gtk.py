@@ -1,14 +1,10 @@
 #!/usr/bin/env python3
 
-import sys, threading
+import sys, threading, atexit
 import wx, time, urllib, os
+import wx.html2 as webview
 
 from random import randint
-
-from PyQt5.QtCore import QUrl, Qt, QSize
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QApplication, QVBoxLayout, QSizePolicy
-from PyQt5.QtWebKitWidgets import QWebView
 
 try:
     from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
@@ -54,11 +50,11 @@ class ScreenshotFrame(wx.Frame):
         
     def OnKeyDown(self, event):
         key = event.GetKeyCode()
-        if key == wx.WXK_ESCAPE:
-            self.Close()
+        if key == wx.WXK_ESCAPE: self.Close()
         elif (key == wx.WXK_RETURN or key == wx.WXK_NUMPAD_ENTER) and self.RegionSelected():
-            data = ScreenshotData(self.c1.x, self.c1.y, self.c2.x - self.c1.x, self.c2.y - self.c1.y)
-            self.TakeScreenshot(data)
+            global shotdata
+            shotdata = ScreenshotData(self.c1.x, self.c1.y, self.c2.x - self.c1.x, self.c2.y - self.c1.y)
+            self.TakeScreenshot()
             self.Close()
         event.Skip()
         
@@ -67,8 +63,7 @@ class ScreenshotFrame(wx.Frame):
         self.SetCursor(wx.Cursor(wx.CURSOR_CROSS))
 
     def OnPaint(self, event):
-        if not self.RegionSelected():
-            return
+        if not self.RegionSelected(): return
         dc = wx.PaintDC(self.panel)
         dc.SetPen(wx.Pen(wx.WHITE, 1, wx.LONG_DASH))
         dc.SetBrush(wx.Brush(wx.Colour(100, 100, 100), wx.SOLID))
@@ -78,14 +73,14 @@ class ScreenshotFrame(wx.Frame):
         if self.c1 is None or self.c2 is None: return False
         else: return True
 
-    def TakeScreenshot(self, data):
-        if isinstance(data, ScreenshotData):
-            global screenshoter, filename
-            bmp = screenshoter.GetDesktop().GetSubBitmap(wx.Rect(data.x, data.y, data.width, data.height))
+    def TakeScreenshot(self):
+        global screenshoter, shotdata
+        if isinstance(shotdata, ScreenshotData):
+            bmp = screenshoter.GetDesktop().GetSubBitmap(wx.Rect(shotdata.x, shotdata.y, shotdata.width, shotdata.height))
             img = bmp.ConvertToImage()
-            filename = os.path.dirname(os.path.realpath(__file__))
-            filename = os.path.join(filename, "tmp", time.strftime('%Y%m%d-%H%M%S')) + ".png"
-            img.SaveFile(filename, wx.BITMAP_TYPE_PNG)
+            shotdata.filename = os.path.dirname(os.path.realpath(__file__))
+            shotdata.filename = os.path.join(shotdata.filename, "tmp", time.strftime('%Y%m%d-%H%M%S')) + ".png"
+            img.SaveFile(shotdata.filename, wx.BITMAP_TYPE_PNG)
         
 #--------------------------------------------------------------------------------------------------------#
 
@@ -108,12 +103,17 @@ class Screenshoter(wx.App):
         memDC.SelectObject(wx.NullBitmap)
         
     def GetDesktop(self):
-        if self.bmp.IsOk():
-            return self.bmp
+        if self.bmp.IsOk(): return self.bmp
 
 #--------------------------------------------------------------------------------------------------------#
 
 class ScreenshotData:
+    x = 0
+    y = 0
+    width = 0
+    height = 0
+    filename = ""
+    
     def __init__(self, x, y, width, height):
         self.x = x
         self.y = y
@@ -127,33 +127,32 @@ class WebKitHelper:
     port = None
     view = None
     
-    def __init__(self, filename):
-        t = threading.Thread(target=self.start_server)
+    def __init__(self):
+        t = threading.Thread(target=self.WebServer)
         t.daemon = True
         t.start()
+        
+        global shotdata
+        
+        viewWidth = shotdata.width + 85
+        viewHeight = shotdata.height + 185
+        size = QSize(viewWidth, viewHeight)
         
         app = QApplication(sys.argv)
         self.view = QWebView()
         self.view.setWindowTitle("OCR Translator")
         self.view.setWindowIcon(QIcon(os.path.join(os.path.dirname(os.path.realpath(__file__)), "img", "ocr-translator.svg")))
         self.view.setContextMenuPolicy(Qt.NoContextMenu)
-        self.view.load(QUrl("http://" + self.address + ":" + str(self.port) + "/index.html?img=" + self.getFileName(filename)))
-        self.view.loadFinished.connect(self.loadHandler)
+        self.view.load(QUrl("http://" + self.address + ":" + str(self.port) + "/index.html?img=" + self.GetFileName(shotdata.filename)))
+        self.view.page().setViewportSize(size)
+        self.view.resize(size)
         self.view.show()
         sys.exit(app.exec_())
-        
-    def loadHandler(self):
-        print("page size = ")
-        self.view.page
-        margins = self.view.contentsMargins()
-        frame = self.view.page().mainFrame()
-        self.view.page().setViewportSize(frame.contentsSize())
-        self.view.resize(frame.contentsSize())
     
-    def getFileName(self, path):
+    def GetFileName(self, path):
         return path.split('\\').pop().split('/').pop()
     
-    def start_server(self):
+    def WebServer(self):
         HandlerClass = SimpleHTTPRequestHandler
         ServerClass = HTTPServer
         Protocol = "HTTP/1.0"
@@ -166,10 +165,18 @@ class WebKitHelper:
 
 #--------------------------------------------------------------------------------------------------------#
 
-filename = None
+def Cleanup():
+    import util
+    temppath = os.path.join(os.path.dirname(os.path.realpath(__file__)), "tmp", "**")
+    util.DeleteFiles(temppath)
+
+#--------------------------------------------------------------------------------------------------------#
+
+atexit.register(Cleanup)
+
+shotdata = None
 
 screenshoter = Screenshoter(False)
 screenshoter.MainLoop()
 
-if filename is not None:
-    WebKitHelper(filename)
+WebKitHelper()
