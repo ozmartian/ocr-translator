@@ -104,12 +104,18 @@ lo .darkroom-image-container {
 }
 
 #result {
+    font-family: "Noto Sans", Arial, sans-serif;
     font-size: 2rem;
     border-top: 1px dashed #AAA;
     border-bottom: 1px dashed #AAA;
     text-align: center;
     outline: none;
     box-shadow: none;
+    margin-top: 25px;
+    width: 100%;
+    overflow: visible;
+    padding: 20px;
+    white-space: nowrap;
 }
 
 .hide,

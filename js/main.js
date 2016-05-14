@@ -4,7 +4,7 @@ var OCR = {
         "https://api.ocr.space/parse/image",
         "https://apifree2.ocr.space/parse/image"
     ],
-    timeout: 60000,
+    timeout: 8000,
     dataURI2Blob: function(dataURI) {
         var byteString;
         if (dataURI.split(',')[0].indexOf('base64') >= 0) {
@@ -67,6 +67,10 @@ var OCR = {
                 alert("An error occurred. Check the console log for more details.");
                 console.log(res);
                 return false;
+            }
+        }).fail(function(jqXHR, status, error) {
+            if (status === "timeout") {
+                OCR.recognize(image, 1);
             }
         });
     }
@@ -206,15 +210,7 @@ var imgEditor = {
                         NProgress.start(0.2);
                         this.darkroom.selfDestroy();
                         var newImage = dkrm.canvas.toDataURL();
-                        try {
-                            if (!OCR.recognize(newImage, 0)) {
-                                throw "retry";
-                            }
-                        } catch (err) {
-                            if (!OCR.recognize(newImage, 1)) {
-                                throw "Could not connect to OCR servers!";
-                            }
-                        }
+                        OCR.recognize(newImage, 0);
                     }
                 }
             }
