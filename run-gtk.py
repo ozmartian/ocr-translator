@@ -122,33 +122,32 @@ class ScreenshotData:
 
 #--------------------------------------------------------------------------------------------------------#
 
-class WebKitHelper:
+class BrowserFrame(wx.Frame):
     address = None
     port = None
     view = None
     
-    def __init__(self):
+    def __init__(self, parent=None, id=-1, title=""):
+        wx.Frame.__init__(self, parent, id, title="OCR Translator", pos=(50, 50), size=(800, 400), style=wx.DEFAULT_FRAME_STYLE)
+
         t = threading.Thread(target=self.WebServer)
         t.daemon = True
         t.start()
         
         global shotdata
-        
         viewWidth = shotdata.width + 85
-        viewHeight = shotdata.height + 185
-        size = QSize(viewWidth, viewHeight)
+        viewHeight = shotdata.height + 185       
         
-        app = QApplication(sys.argv)
-        self.view = QWebView()
-        self.view.setWindowTitle("OCR Translator")
-        self.view.setWindowIcon(QIcon(os.path.join(os.path.dirname(os.path.realpath(__file__)), "img", "ocr-translator.svg")))
-        self.view.setContextMenuPolicy(Qt.NoContextMenu)
-        self.view.load(QUrl("http://" + self.address + ":" + str(self.port) + "/index.html?img=" + self.GetFileName(shotdata.filename)))
-        self.view.page().setViewportSize(size)
-        self.view.resize(size)
-        self.view.show()
-        sys.exit(app.exec_())
-    
+        self.current = "http://" + self.address + ":" + str(self.port) + "/index.html?img=" + self.GetFileName(shotdata.filename)
+        self.SetSize((viewWidth, viewHeight))
+        self.panel = wx.Panel(self, size=self.GetSize())
+        self.wv = webview.WebView.New(self.panel, size=self.GetSize())
+        self.wv.EnableContextMenu(False)
+        self.panel.SetFocus()       
+        self.icon = wx.Icon(os.path.join(os.path.dirname(os.path.realpath(__file__)), "img", "ocr-translator.svg"), wx.BITMAP_TYPE_PNG)
+        self.SetIcon(self.icon)
+        self.wv.LoadURL(self.current)
+                     
     def GetFileName(self, path):
         return path.split('\\').pop().split('/').pop()
     
@@ -162,6 +161,22 @@ class WebKitHelper:
         HandlerClass.protocol_version = Protocol
         httpd = ServerClass(server_address, HandlerClass)
         httpd.serve_forever()
+
+#--------------------------------------------------------------------------------------------------------#
+
+class BrowserApp(wx.App):
+    def OnInit(self):
+        self.frame = BrowserFrame(None)
+        self.frame.Show(True)
+        self.SetTopWindow(self.frame)
+        self.frame.Bind(wx.EVT_CLOSE, self.OnClose)
+        return True
+        
+    def OnClose(self, event):
+        global Cleanup
+        Cleanup()
+        self.Destroy()
+        sys.exit(0)
 
 #--------------------------------------------------------------------------------------------------------#
 
@@ -179,4 +194,5 @@ shotdata = None
 screenshoter = Screenshoter(False)
 screenshoter.MainLoop()
 
-WebKitHelper()
+browser = BrowserApp(False)
+browser.MainLoop()

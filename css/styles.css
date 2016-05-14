@@ -284,12 +284,11 @@ img.ocr-placeholder {
 }
 
 .footer {
-    border-top: 1px solid #FAFAFA;
+    /*border-top: 1px solid #FAFAFA;*/
     bottom: 0;
     height: 40px;
     width: 100%;
-    background: #000 url('../img/app-logo.png') right center no-repeat;
-    background-size: 200px 40px;
+    background: #000;
     position: fixed;
     box-shadow: 0 -1px 10px #444;
 }
@@ -298,11 +297,22 @@ img.ocr-placeholder {
     color: #FFF;
     position: fixed;
     float: left;
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     left: 10px;
     display: block;
     line-height: 40px;
-    left: 10px;
+    left: 20px;
     font-family: "Roboto Light", sans-serif;
-    font-weight: normal;
+    font-weight: 300;
+}
+
+.footer > .logo {
+    width: 260px;
+    height: 85px;
+    background: transparent url('../img/app-logo.png') no-repeat center right;
+    background-size: 260px 85px;
+    right: 0;
+    bottom: 0;
+    position: absolute;
+    display: inline-block;
 }

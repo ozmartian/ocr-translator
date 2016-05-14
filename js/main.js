@@ -1,6 +1,9 @@
 var OCR = {
     apiKey: "9235904c3b88957",
-    apiUrl: "https://api.ocr.space/parse/image",
+    apiUrl: [
+        "https://api.ocr.space/parse/image",
+        "https://apifree2.ocr.space/parse/image"
+    ],
     timeout: 60000,
     dataURI2Blob: function(dataURI) {
         var byteString;
@@ -27,7 +30,10 @@ var OCR = {
         el.style.height = 0;
         el.style.height = Math.max(minHeight, el.scrollHeight + diff) + 'px';
     },
-    recognize: function(image) {
+    recognize: function(image, index) {
+        if (!index) {
+            index = 0;
+        }
         $('#result').text('');
         $('.hidden').removeClass('in');
         var data = new FormData();
@@ -36,7 +42,7 @@ var OCR = {
         data.append("isOverlayRequired", true);
         data.append("file", this.dataURI2Blob(image), "image.png");
         $.ajax({
-            url: this.apiUrl,
+            url: this.apiUrl[index],
             type: 'POST',
             data: data,
             dataType: 'json',
@@ -55,10 +61,12 @@ var OCR = {
                 OCR.adjustTextarea(document.getElementById('result'));
                 NProgress.set(0.6);
                 translate.init(ocrText);
+                return true;
             } else {
                 NProgress.done();
                 alert("An error occurred. Check the console log for more details.");
                 console.log(res);
+                return false;
             }
         });
     }
@@ -198,7 +206,15 @@ var imgEditor = {
                         NProgress.start(0.2);
                         this.darkroom.selfDestroy();
                         var newImage = dkrm.canvas.toDataURL();
-                        OCR.recognize(newImage);
+                        try {
+                            if (!OCR.recognize(newImage, 0)) {
+                                throw "retry";
+                            }
+                        } catch (err) {
+                            if (!OCR.recognize(newImage, 1)) {
+                                throw "Could not connect to OCR servers!";
+                            }
+                        }
                     }
                 }
             }

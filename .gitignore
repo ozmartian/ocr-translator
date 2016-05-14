@@ -1,3 +1,4 @@
 tmp/*
 .directory
 .vscode
+jsconfig.json
