@@ -64,6 +64,7 @@ var OCR = {
                 return true;
             } else {
                 NProgress.done();
+                document.body.style.cursor = "default";
                 alert("An error occurred. Check the console log for more details.");
                 console.log(res);
                 return false;
@@ -92,6 +93,7 @@ var translate = {
         translate.youdao.done = true;
         if (translate.youdao.done && translate.yandex.done) {
             NProgress.done();
+            document.body.style.cursor = "default";
         }
         if (typeof(response.translation) != "undefined" && response.translation.length > 0) {
             $('.youdao').text();
@@ -110,6 +112,7 @@ var translate = {
         console.error("unexpected Youdao response:");
         console.error(response);
         NProgress.done();
+        document.body.style.cursor = "default";
 
         return false;
     },
@@ -126,6 +129,7 @@ var translate = {
         translate.yandex.done = true;
         if (translate.youdao.done && translate.yandex.done) {
             NProgress.done();
+            document.body.style.cursor = "default";
         }
         if (response.code == 200 && response.text.length > 0) {
             $('.yandex').text(response.text[0].trim());
@@ -138,6 +142,7 @@ var translate = {
         console.error("unexpected Yandex response:");
         console.error(response);
         NProgress.done();
+        document.body.style.cursor = "default";
         return false;
     },
     initYandex: function(txt) {
@@ -187,6 +192,7 @@ var imgEditor = {
             title = "Error Alert";
         }
         NProgress.done();
+        document.body.style.cursor = "default";
         $('#error #title').text(title);
         $('#error #message').text(msg);
         console.error('ERROR:');
@@ -208,6 +214,7 @@ var imgEditor = {
                 save: {
                     callback: function() {
                         NProgress.start(0.2);
+                        document.body.style.cursor = "wait";
                         this.darkroom.selfDestroy();
                         var newImage = dkrm.canvas.toDataURL();
                         OCR.recognize(newImage, 0);

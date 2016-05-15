@@ -120,6 +120,10 @@ h1 {
     width: 100%;
 }
 
+.wrapper {
+    margin-bottom: 15px;
+}
+
 #result {
     font-family: "Noto Sans", Arial, sans-serif;
     font-size: 2rem;
