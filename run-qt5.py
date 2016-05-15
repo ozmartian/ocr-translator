@@ -79,11 +79,9 @@ class ScreenshotFrame(wx.Frame):
 
     def TakeScreenshot(self):
         global screenshoter, shotdata
-        print(shotdata)
         bmp = screenshoter.GetDesktop().GetSubBitmap(wx.Rect(shotdata.x, shotdata.y, shotdata.width, shotdata.height))
         img = bmp.ConvertToImage()
-        shotdata.filename = os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "tmp", time.strftime('%Y%m%d-%H%M%S')) +  ".png"
-        print(shotdata)
+        shotdata.filename = os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "tmp", time.strftime('%Y%m%d-%H%M%S')) + ".png"
         img.SaveFile(shotdata.filename, wx.BITMAP_TYPE_PNG)
         
 #--------------------------------------------------------------------------------------------------------#
