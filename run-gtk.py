@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import sys, threading, atexit
-import wx, time, urllib, os
+import wx, time, os, util
 import wx.html2 as webview
 
 from random import randint
@@ -53,7 +53,7 @@ class ScreenshotFrame(wx.Frame):
         if key == wx.WXK_ESCAPE: self.Close()
         elif (key == wx.WXK_RETURN or key == wx.WXK_NUMPAD_ENTER) and self.RegionSelected():
             global shotdata
-            shotdata = ScreenshotData(self.c1.x, self.c1.y, self.c2.x - self.c1.x, self.c2.y - self.c1.y)
+            shotdata.Save(self.c1.x, self.c1.y, self.c2.x - self.c1.x, self.c2.y - self.c1.y)
             self.TakeScreenshot()
             self.Close()
         event.Skip()
@@ -75,12 +75,10 @@ class ScreenshotFrame(wx.Frame):
 
     def TakeScreenshot(self):
         global screenshoter, shotdata
-        if isinstance(shotdata, ScreenshotData):
-            bmp = screenshoter.GetDesktop().GetSubBitmap(wx.Rect(shotdata.x, shotdata.y, shotdata.width, shotdata.height))
-            img = bmp.ConvertToImage()
-            shotdata.filename = os.path.dirname(os.path.realpath(__file__))
-            shotdata.filename = os.path.join(shotdata.filename, "tmp", time.strftime('%Y%m%d-%H%M%S')) + ".png"
-            img.SaveFile(shotdata.filename, wx.BITMAP_TYPE_PNG)
+        bmp = screenshoter.GetDesktop().GetSubBitmap(wx.Rect(shotdata.x, shotdata.y, shotdata.width, shotdata.height))
+        img = bmp.ConvertToImage()
+        shotdata.filename = os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "tmp", time.strftime('%Y%m%d-%H%M%S')) + ".png"
+        img.SaveFile(shotdata.filename, wx.BITMAP_TYPE_PNG)
         
 #--------------------------------------------------------------------------------------------------------#
 
@@ -114,11 +112,12 @@ class ScreenshotData:
     height = 0
     filename = ""
     
-    def __init__(self, x, y, width, height):
+    def Save(self, x, y, width, height, filename=""):
         self.x = x
         self.y = y
         self.width = width
         self.height = height
+        self.filename= filename
 
 #--------------------------------------------------------------------------------------------------------#
 
@@ -129,28 +128,27 @@ class BrowserFrame(wx.Frame):
     
     def __init__(self, parent=None, id=-1, title=""):
         wx.Frame.__init__(self, parent, id, title="OCR Translator", pos=(50, 50), size=(800, 400), style=wx.DEFAULT_FRAME_STYLE)
-
+        
         t = threading.Thread(target=self.WebServer)
         t.daemon = True
         t.start()
         
         global shotdata
         viewWidth = shotdata.width + 85
-        viewHeight = shotdata.height + 185       
-        
-        self.current = "http://" + self.address + ":" + str(self.port) + "/index.html?img=" + self.GetFileName(shotdata.filename)
+        if viewWidth < 600: viewWidth = 600
+        viewHeight = shotdata.height + 185
+        if viewHeight < 550: viewHeight = 550
         self.SetSize((viewWidth, viewHeight))
+        
         self.panel = wx.Panel(self, size=self.GetSize())
-        self.wv = webview.WebView.New(self.panel, size=self.GetSize())
-        self.wv.EnableContextMenu(False)
-        self.panel.SetFocus()       
-        self.icon = wx.Icon(os.path.join(os.path.dirname(os.path.realpath(__file__)), "img", "ocr-translator.svg"), wx.BITMAP_TYPE_PNG)
-        self.SetIcon(self.icon)
-        self.wv.LoadURL(self.current)
-                     
-    def GetFileName(self, path):
-        return path.split('\\').pop().split('/').pop()
-    
+        self.SetIcon(wx.Icon(os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "img", "ocr-translator.png"), wx.BITMAP_TYPE_PNG))
+        self.current = "http://" + self.address + ":" + str(self.port) + "/index.html?img=" + util.GetFileNameFromPath(shotdata.filename)
+        self.view = webview.WebView.New(self.panel, size=self.GetSize(), url=self.current)
+        self.view.EnableContextMenu(False)
+        self.panel.SetFocus()
+        self.Fit()
+        self.Centre()
+                        
     def WebServer(self):
         HandlerClass = SimpleHTTPRequestHandler
         ServerClass = HTTPServer
@@ -181,18 +179,18 @@ class BrowserApp(wx.App):
 #--------------------------------------------------------------------------------------------------------#
 
 def Cleanup():
-    import util
-    temppath = os.path.join(os.path.dirname(os.path.realpath(__file__)), "tmp", "**")
+    temppath = os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "tmp", "**")
     util.DeleteFiles(temppath)
 
 #--------------------------------------------------------------------------------------------------------#
 
 atexit.register(Cleanup)
 
-shotdata = None
+shotdata = ScreenshotData()
 
 screenshoter = Screenshoter(False)
 screenshoter.MainLoop()
 
-browser = BrowserApp(False)
-browser.MainLoop()
+if len(shotdata.filename) and os.path.isfile(shotdata.filename):
+    browser = BrowserApp(False)
+    browser.MainLoop()

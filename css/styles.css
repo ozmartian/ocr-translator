@@ -1,3 +1,21 @@
+html {
+    background: #FFF url('../img/window-background.jpg') no-repeat;
+    float: left;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 0;
+    background-position: 50% 100%;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
 body {
     width: 100%;
     height: 100%;
@@ -12,9 +30,7 @@ body {
     font-weight: 400;
     color: #555;
     margin: 0 auto;
-    overflow: visible;
-    background: rgb(172, 177, 194);
-    ;
+    background: transparent;
 }
 
 body > div.row {
@@ -93,7 +109,8 @@ h1 {
     display: inline-block;
 }
 
-lo .darkroom-image-container {
+.darkroom-image-container,
+.image-container.target {
     border: 1px solid #ACACAC;
     box-shadow: 0 1px 20px #999;
     background: transparent;
@@ -106,12 +123,9 @@ lo .darkroom-image-container {
 #result {
     font-family: "Noto Sans", Arial, sans-serif;
     font-size: 2rem;
-    border-top: 1px dashed #AAA;
-    border-bottom: 1px dashed #AAA;
     text-align: center;
     outline: none;
-    box-shadow: none;
-    margin-top: 25px;
+    margin-top: 8px;
     width: 100%;
     overflow: visible;
     padding: 20px;
@@ -121,6 +135,10 @@ lo .darkroom-image-container {
 .hide,
 #result.hide {
     display: none;
+}
+
+form > textarea {
+    box-shadow: 0 1px 10px #666;
 }
 
 textarea {
@@ -138,39 +156,24 @@ textarea {
 .yandex {
     text-align: center;
     font-family: monospace;
-    /*margin-top: 15px;*/
     position: relative;
-    white-space: pre;
 }
 
 .youdao {
-    color: #134E08;
+    background: url(../img/youdao-logo.png) no-repeat center 5px;
+    background-size: 75px;
+    color: #0F4605;
+    background-color: #EDE7F6;
+    box-shadow: 0 1px 10px #666;
 }
 
 .yandex {
-    color: #5723AB;
-}
-
-.youdao::after,
-.yandex::after {
-    content: "";
-    opacity: 1s;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    position: absolute;
-    z-index: -1;
-}
-
-.youdao::after {
-    background: url(../img/youdao-logo.png) no-repeat right top;
-    background-size: 90px;
-}
-
-.yandex::after {
-    background: url(../img/yandex-logo.png) no-repeat right top;
-    background-size: 50px;
+    background: url(../img/yandex-logo.png) no-repeat center 5px;
+    background-size: 45px;
+    color: #3C1084;
+    background-color: #E8F5E9;
+    margin-top: 8px;
+    box-shadow: 0 1px 10px #666;
 }
 
 #nprogress .bar {
@@ -244,16 +247,17 @@ img.ocr-placeholder {
 
 .reset button {
     outline: none !important;
-    border: none !important;
+    border: 1px #1565C0 solid;
+    width: 285px;
 }
 
 .translations {
-    margin-bottom: 28px;
+    margin-bottom: 20px;
 }
 
 .translations div {
-    padding: 20px;
-    border-bottom: 1px dashed #AAA;
+    padding: 35px 0 20px;
+    display: block !important;
 }
 
 .tooltip > .tooltip-inner {
@@ -303,7 +307,7 @@ img.ocr-placeholder {
     color: #FFF;
     position: fixed;
     float: left;
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     left: 10px;
     display: block;
     line-height: 40px;

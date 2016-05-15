@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import sys, threading, atexit
-import wx, time, urllib, os
+import wx, time, os, util
 
 from random import randint
 
@@ -57,7 +57,7 @@ class ScreenshotFrame(wx.Frame):
         if key == wx.WXK_ESCAPE: self.Close()
         elif (key == wx.WXK_RETURN or key == wx.WXK_NUMPAD_ENTER) and self.RegionSelected():
             global shotdata
-            shotdata = ScreenshotData(self.c1.x, self.c1.y, self.c2.x - self.c1.x, self.c2.y - self.c1.y)
+            shotdata.Save(self.c1.x, self.c1.y, self.c2.x - self.c1.x, self.c2.y - self.c1.y)
             self.TakeScreenshot()
             self.Close()
         event.Skip()
@@ -79,12 +79,12 @@ class ScreenshotFrame(wx.Frame):
 
     def TakeScreenshot(self):
         global screenshoter, shotdata
-        if isinstance(shotdata, ScreenshotData):
-            bmp = screenshoter.GetDesktop().GetSubBitmap(wx.Rect(shotdata.x, shotdata.y, shotdata.width, shotdata.height))
-            img = bmp.ConvertToImage()
-            shotdata.filename = os.path.dirname(os.path.realpath(__file__))
-            shotdata.filename = os.path.join(shotdata.filename, "tmp", time.strftime('%Y%m%d-%H%M%S')) + ".png"
-            img.SaveFile(shotdata.filename, wx.BITMAP_TYPE_PNG)
+        print(shotdata)
+        bmp = screenshoter.GetDesktop().GetSubBitmap(wx.Rect(shotdata.x, shotdata.y, shotdata.width, shotdata.height))
+        img = bmp.ConvertToImage()
+        shotdata.filename = os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "tmp", time.strftime('%Y%m%d-%H%M%S')) +  ".png"
+        print(shotdata)
+        img.SaveFile(shotdata.filename, wx.BITMAP_TYPE_PNG)
         
 #--------------------------------------------------------------------------------------------------------#
 
@@ -118,11 +118,12 @@ class ScreenshotData:
     height = 0
     filename = ""
     
-    def __init__(self, x, y, width, height):
+    def Save(self, x, y, width, height, filename=""):
         self.x = x
         self.y = y
         self.width = width
         self.height = height
+        self.filename= filename
 
 #--------------------------------------------------------------------------------------------------------#
 
@@ -132,31 +133,29 @@ class WebKitHelper:
     view = None
     
     def __init__(self):
-        t = threading.Thread(target=self.start_server)
+        t = threading.Thread(target=self.WebServer)
         t.daemon = True
         t.start()
-        
+                      
         global shotdata
-        
         viewWidth = shotdata.width + 85
+        if viewWidth < 600: viewWidth = 600
         viewHeight = shotdata.height + 185
+        if viewHeight < 550: viewHeight = 550
         size = QSize(viewWidth, viewHeight)
-        
+
         app = QApplication(sys.argv)
         self.view = QWebView()
         self.view.setWindowTitle("OCR Translator")
-        self.view.setWindowIcon(QIcon(os.path.join(os.path.dirname(os.path.realpath(__file__)), "img", "ocr-translator.svg")))
+        self.view.setWindowIcon(QIcon(os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "img", "ocr-translator.svg")))
         self.view.setContextMenuPolicy(Qt.NoContextMenu)
-        self.view.load(QUrl("http://" + self.address + ":" + str(self.port) + "/index.html?img=" + self.getFileName(shotdata.filename)))
+        self.view.load(QUrl("http://" + self.address + ":" + str(self.port) + "/index.html?img=" + util.GetFileNameFromPath(shotdata.filename)))
         self.view.page().setViewportSize(size)
         self.view.resize(size)
         self.view.show()
         sys.exit(app.exec_())
     
-    def getFileName(self, path):
-        return path.split('\\').pop().split('/').pop()
-    
-    def start_server(self):
+    def WebServer(self):
         HandlerClass = SimpleHTTPRequestHandler
         ServerClass = HTTPServer
         Protocol = "HTTP/1.0"
@@ -169,18 +168,17 @@ class WebKitHelper:
 
 #--------------------------------------------------------------------------------------------------------#
 
-def cleanup():
-    import util
-    temppath = os.path.join(os.path.dirname(os.path.realpath(__file__)), "tmp")
-    util.DeleteFiles(temppath + "/**")
+def Cleanup():
+    temppath = os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "tmp", "**")
+    util.DeleteFiles(temppath)
 
 #--------------------------------------------------------------------------------------------------------#
 
-atexit.register(cleanup)
+atexit.register(Cleanup)
 
-shotdata = None
+shotdata = ScreenshotData()
 
 screenshoter = Screenshoter(False)
 screenshoter.MainLoop()
 
-WebKitHelper()
+if len(shotdata.filename) and os.path.isfile(shotdata.filename): WebKitHelper()

@@ -1,4 +1,8 @@
+#!/usr/bin/env python
+
 import glob, os, sys
+
+#--------------------------------------------------------------------------------------------------------#
 
 def DeleteFiles(path):
     try:
@@ -7,4 +11,8 @@ def DeleteFiles(path):
             os.remove(file)
     except:
         print("Error deleting file " + path + ":", sys.exc_info()[0])
-        #raise
+
+#--------------------------------------------------------------------------------------------------------#
+
+def GetFileNameFromPath(path):
+    return path.split('\\').pop().split('/').pop()
