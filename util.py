@@ -16,3 +16,9 @@ def DeleteFiles(path):
 
 def GetFileNameFromPath(path):
     return path.split('\\').pop().split('/').pop()
+    
+#--------------------------------------------------------------------------------------------------------#
+
+def Cleanup():
+    temppath = os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "tmp", "**")
+    DeleteFiles(temppath)

@@ -166,13 +166,7 @@ class WebKitHelper:
 
 #--------------------------------------------------------------------------------------------------------#
 
-def Cleanup():
-    temppath = os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "tmp", "**")
-    util.DeleteFiles(temppath)
-
-#--------------------------------------------------------------------------------------------------------#
-
-atexit.register(Cleanup)
+atexit.register(util.Cleanup)
 
 shotdata = ScreenshotData()
 
