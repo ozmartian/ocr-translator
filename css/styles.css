@@ -181,7 +181,16 @@ textarea {
 }
 
 #nprogress .bar {
-    height: 6px !important;
+    top: 40px;
+    height: 10px !important;
+}
+
+#nprogress .spinner {
+    top: 12px !important;
+}
+
+#nprogress .peg {
+    display: none !important;
 }
 
 .darkroom-toolbar {
@@ -194,7 +203,7 @@ textarea {
     cursor: pointer;
     position: relative;
     top: -1px;
-    background-color: #444;
+    background-color: #000;
 }
 
 .darkroom-button:hover .darkroom-icon {
@@ -321,10 +330,10 @@ img.ocr-placeholder {
 }
 
 .footer > .logo {
-    width: 260px;
+    width: 250px;
     height: 85px;
     background: transparent url('../img/app-logo.png') no-repeat center right;
-    background-size: 260px 85px;
+    background-size: 250px 85px;
     right: 0;
     bottom: 0;
     position: absolute;

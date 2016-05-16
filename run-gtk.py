@@ -1,10 +1,18 @@
 #!/usr/bin/env python3
 
-import sys, threading, atexit
-import wx, time, os, util
+import atexit
+import os
+import sys
+import threading
+import time
+from random import randint
+from shutil import rmtree
+from tempfile import mkdtemp
+
+import wx
 import wx.html2 as webview
 
-from random import randint
+import util
 
 try:
     from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
@@ -32,6 +40,7 @@ class ScreenshotFrame(wx.Frame):
         self.panel.Bind(wx.EVT_LEFT_UP, self.OnMouseUp)
         self.panel.Bind(wx.EVT_PAINT, self.OnPaint)
         self.panel.Bind(wx.EVT_KEY_DOWN, self.OnKeyDown)
+        self.panel.Bind(wx.EVT_CHAR_HOOK, self.OnKeyDown)
         
     def OnClose(self, event):
         self.Destroy()
@@ -51,7 +60,7 @@ class ScreenshotFrame(wx.Frame):
     def OnKeyDown(self, event):
         key = event.GetKeyCode()
         if key == wx.WXK_ESCAPE: self.Close()
-        elif (key == wx.WXK_RETURN or key == wx.WXK_NUMPAD_ENTER) and self.RegionSelected():
+        elif key in [wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER] and self.RegionSelected():
             global shotdata
             shotdata.Save(self.c1.x, self.c1.y, self.c2.x - self.c1.x, self.c2.y - self.c1.y)
             self.TakeScreenshot()
@@ -59,7 +68,7 @@ class ScreenshotFrame(wx.Frame):
         event.Skip()
         
     def OnReset(self, event):
-        wx.PaintDC(self.panel).Clear()
+        self.Refresh()
         self.SetCursor(wx.Cursor(wx.CURSOR_CROSS))
 
     def OnPaint(self, event):
@@ -77,7 +86,7 @@ class ScreenshotFrame(wx.Frame):
         global screenshoter, shotdata
         bmp = screenshoter.GetDesktop().GetSubBitmap(wx.Rect(shotdata.x, shotdata.y, shotdata.width, shotdata.height))
         img = bmp.ConvertToImage()
-        shotdata.filename = os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "tmp", time.strftime('%Y%m%d-%H%M%S')) + ".png"
+        shotdata.filename = os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "temp", time.strftime('%Y%m%d-%H%M%S')) + ".png"
         img.SaveFile(shotdata.filename, wx.BITMAP_TYPE_PNG)
         
 #--------------------------------------------------------------------------------------------------------#
@@ -142,13 +151,19 @@ class BrowserFrame(wx.Frame):
         
         self.panel = wx.Panel(self, size=self.GetSize())
         self.SetIcon(wx.Icon(os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "img", "ocr-translator.png"), wx.BITMAP_TYPE_PNG))
-        self.current = "http://" + self.address + ":" + str(self.port) + "/index.html?img=" + util.GetFileNameFromPath(shotdata.filename)
+        self.current = "http://" + self.address + ":" + str(self.port) + "/index.html?img=" + shotdata.filename.split('\\').pop().split('/').pop()
         self.view = webview.WebView.New(self.panel, size=self.GetSize(), url=self.current)
         self.view.EnableContextMenu(False)
-        self.panel.SetFocus()
-        self.Fit()
-        self.Centre()
-                        
+        
+        #self.info = html.HtmlWindow(parent, id=-1, pos=wx.DefaultPosition, size=(285, 100), style=html.HW_SCROLLBAR_NEVER)
+        #if "gtk2" in wx.PlatformInfo: self.info.SetStandardFonts()
+               
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(self.view, 1, wx.EXPAND)        
+        self.panel.SetSizer(sizer)
+        
+        self.Center()
+
     def WebServer(self):
         HandlerClass = SimpleHTTPRequestHandler
         ServerClass = HTTPServer
@@ -185,5 +200,5 @@ screenshoter = Screenshoter(False)
 screenshoter.MainLoop()
 
 if len(shotdata.filename) and os.path.isfile(shotdata.filename):
-    browser = BrowserApp(False)
-    browser.MainLoop()
+    app = BrowserApp()
+    app.MainLoop()

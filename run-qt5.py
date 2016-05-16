@@ -1,14 +1,19 @@
 #!/usr/bin/env python3
 
-import sys, threading, atexit
-import wx, time, os, util
-
+import atexit
+import os
+import sys
+import threading
+import time
 from random import randint
 
-from PyQt5.QtCore import QUrl, Qt, QSize
+import wx
+from PyQt5.QtCore import QSize, Qt, QUrl
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWebKitWidgets import QWebView
+from PyQt5.QtWidgets import QApplication
+
+import util
 
 try:
     from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
@@ -36,6 +41,7 @@ class ScreenshotFrame(wx.Frame):
         self.panel.Bind(wx.EVT_LEFT_UP, self.OnMouseUp)
         self.panel.Bind(wx.EVT_PAINT, self.OnPaint)
         self.panel.Bind(wx.EVT_KEY_DOWN, self.OnKeyDown)
+        self.panel.Bind(wx.EVT_CHAR_HOOK, self.OnKeyDown)
         
     def OnClose(self, event):
         self.Destroy()
@@ -55,7 +61,7 @@ class ScreenshotFrame(wx.Frame):
     def OnKeyDown(self, event):
         key = event.GetKeyCode()
         if key == wx.WXK_ESCAPE: self.Close()
-        elif (key == wx.WXK_RETURN or key == wx.WXK_NUMPAD_ENTER) and self.RegionSelected():
+        elif key in [wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER] and self.RegionSelected():
             global shotdata
             shotdata.Save(self.c1.x, self.c1.y, self.c2.x - self.c1.x, self.c2.y - self.c1.y)
             self.TakeScreenshot()
@@ -63,7 +69,8 @@ class ScreenshotFrame(wx.Frame):
         event.Skip()
         
     def OnReset(self, event):
-        wx.PaintDC(self.panel).Clear()
+        #wx.PaintDC(self.panel).Clear()
+        self.panel.Refresh()
         self.SetCursor(wx.Cursor(wx.CURSOR_CROSS))
 
     def OnPaint(self, event):
@@ -81,7 +88,7 @@ class ScreenshotFrame(wx.Frame):
         global screenshoter, shotdata
         bmp = screenshoter.GetDesktop().GetSubBitmap(wx.Rect(shotdata.x, shotdata.y, shotdata.width, shotdata.height))
         img = bmp.ConvertToImage()
-        shotdata.filename = os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "tmp", time.strftime('%Y%m%d-%H%M%S')) + ".png"
+        shotdata.filename = os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "temp", time.strftime('%Y%m%d-%H%M%S')) + ".png"
         img.SaveFile(shotdata.filename, wx.BITMAP_TYPE_PNG)
         
 #--------------------------------------------------------------------------------------------------------#
@@ -116,7 +123,7 @@ class ScreenshotData:
     height = 0
     filename = ""
     
-    def Save(self, x, y, width, height, filename=""):
+    def Save(self, x=0, y=0, width=0, height=0, filename=""):
         self.x = x
         self.y = y
         self.width = width
@@ -147,7 +154,7 @@ class WebKitHelper:
         self.view.setWindowTitle("OCR Translator")
         self.view.setWindowIcon(QIcon(os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "img", "ocr-translator.svg")))
         self.view.setContextMenuPolicy(Qt.NoContextMenu)
-        self.view.load(QUrl("http://" + self.address + ":" + str(self.port) + "/index.html?img=" + util.GetFileNameFromPath(shotdata.filename)))
+        self.view.load(QUrl("http://" + self.address + ":" + str(self.port) + "/index.html?img=" + shotdata.filename.split('\\').pop().split('/').pop()))
         self.view.page().setViewportSize(size)
         self.view.resize(size)
         self.view.show()

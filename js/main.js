@@ -206,7 +206,7 @@ var imgEditor = {
         var img = this.getParam('img');
         if (img != null && img.length > 0) {
             this.imgfile = decodeURIComponent(img);
-            document.getElementById('target').src = "tmp/" + this.imgfile;
+            document.getElementById('target').src = "temp/" + this.imgfile;
         }
         dkrm = new Darkroom(el, {
             backgroundColor: 'transparent',
@@ -225,9 +225,11 @@ var imgEditor = {
 
         window.onload = function() {
             $('[data-toggle="tooltip"]').tooltip();
-            if (!imgEditor.imgfile.length) {
-                imgEditor.disableTools();
+            if (imgEditor.imgfile.length > 0) {
+                $(".darkroom-button-group:first-child").remove();
+                return;
             }
+            imgEditor.disableTools();
         };
     }
 };
