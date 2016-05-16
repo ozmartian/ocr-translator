@@ -211,8 +211,8 @@ textarea {
     top: 1px;
 }
 
-.darkroom-button:hover:enabled .darkroom-icon {
-    /*fill:#AAA;*/
+.darkroom-button:hover:enabled .darkroom-icon,
+.darkroom-button.darkroom-button-active .darkroom-icon {
     opacity: 0.4;
 }
 

@@ -5,7 +5,8 @@
         "type": "python",
         "request": "launch",
         "stopOnEntry": true,
-        "program": "/usr/bin/python ${file}",
+        "program": "${file}",
+        "pythonPath": "c:/Program Files (x86)/Python34/python.exe",
         "debugOptions": [
             "WaitOnAbnormalExit",
             "WaitOnNormalExit",
@@ -17,6 +18,7 @@
         "request": "launch",
         "stopOnEntry": true,
         "program": "${file}",
+        "pythonPath": "c:/Program Files (x86)/Python34/python.exe",
         "externalConsole": true,
         "debugOptions": [
             "WaitOnAbnormalExit",
