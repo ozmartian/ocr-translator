@@ -208,10 +208,7 @@ var imgEditor = {
         if (img != null && img.length > 0) {
             this.imagepath = "temp/" + decodeURIComponent(img);
         }
-
         document.querySelector('img#target').src = imgEditor.imagepath;
-        alert("image path: " + imgEditor.imagepath);
-
         dkrm = new Darkroom(el, {
             backgroundColor: 'transparent',
             plugins: {

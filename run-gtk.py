@@ -5,6 +5,7 @@ import os
 import sys
 import threading
 import time
+import urllib.parse
 from random import randint
 
 import wx
@@ -80,7 +81,7 @@ class ScreenshotFrame(wx.Frame):
         global screenshoter, shotdata
         bmp = screenshoter.bmp.GetSubBitmap(wx.Rect(shotdata.x, shotdata.y, shotdata.width, shotdata.height))
         img = bmp.ConvertToImage()
-        shotdata.filename = os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "temp", time.strftime('%Y%m%d-%H%M%S')) + ".png"
+        shotdata.filename = os.path.join(util.GetWorkingPath(), "temp", time.strftime('%Y%m%d-%H%M%S')) + ".png"
         img.SaveFile(shotdata.filename, wx.BITMAP_TYPE_PNG)
         
 #--------------------------------------------------------------------------------------------------------#
@@ -119,34 +120,29 @@ class BrowserFrame(wx.Frame):
     view = None
     
     def __init__(self, parent=None, id=-1, title=""):
-        wx.Frame.__init__(self, parent, id, title="OCR Translator", pos=(50, 50), size=(800, 400), style=wx.DEFAULT_FRAME_STYLE)
-        
+        wx.Frame.__init__(self, parent, id, title="OCR Translator", pos=(50, 50), size=(800, 400), style=wx.DEFAULT_FRAME_STYLE)        
         self.address = "127.0.0.1"
         self.port = randint(2000, 4000)
-        
         t = threading.Thread(target=util.WebServer, args=(self.address, self.port))
         t.daemon = True
         t.start()
-        
         global shotdata
         viewWidth = shotdata.width + 85
         if viewWidth < 600: viewWidth = 600
         viewHeight = shotdata.height + 185
         if viewHeight < 550: viewHeight = 550
         self.SetSize((viewWidth, viewHeight))
-        
         self.panel = wx.Panel(self, size=self.GetSize())
-        self.SetIcon(wx.Icon(os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "img", "ocr-translator.png"), wx.BITMAP_TYPE_PNG))
-        self.current = "http://" + self.address + ":" + str(self.port) + "/index.html?img=" + shotdata.filename.split('\\').pop().split('/').pop()
+        self.SetIcon(wx.Icon(os.path.join(util.GetWorkingPath(), "img", "ocr-translator.png"), wx.BITMAP_TYPE_PNG))
+        qryparam = urllib.parse.urlencode({'img':shotdata.filename.split('\\').pop().split('/').pop()})
+        self.current = "http://" + self.address + ":" + str(self.port) + "/index.html#?" + qryparam
         self.view = webview.WebView.New(self.panel, size=self.GetSize(), url=self.current)
-        self.view.EnableContextMenu(False)
-              
+        self.view.EnableContextMenu(False)              
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(self.view, 1, wx.EXPAND)        
         self.panel.SetSizer(sizer)
-        
         self.Center()
-
+        
 #--------------------------------------------------------------------------------------------------------#
 
 class BrowserApp(wx.App):

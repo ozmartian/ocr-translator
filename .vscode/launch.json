@@ -18,7 +18,7 @@
         "request": "launch",
         "stopOnEntry": true,
         "program": "${file}",
-        "pythonPath": "c:/Program Files (x86)/Python34/python.exe",
+        "pythonPath": "/usr/bin/python",
         "externalConsole": true,
         "debugOptions": [
             "WaitOnAbnormalExit",
