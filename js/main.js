@@ -54,7 +54,7 @@ var OCR = {
             if (res.OCRExitCode === 1 && !res.IsErroredOnProcessing && typeof res.ParsedResults[0].ParsedText != 'undefined') {
                 var ocrText = res.ParsedResults[0].ParsedText.trim();
                 $('#result').text(ocrText);
-                $('.output.hide').removeClass('hide');
+                $('.overlay.hide, .output.hide').removeClass('hide');
                 $('#result, .reset')
                     .addClass('in')
                     .css('display', 'inline-block');
@@ -215,7 +215,7 @@ var imgEditor = {
                     callback: function() {
                         NProgress.start(0.2);
                         document.body.style.cursor = "wait";
-                        this.darkroom.selfDestroy();
+                        //this.darkroom.selfDestroy();
                         var newImage = dkrm.canvas.toDataURL();
                         OCR.recognize(newImage, 0);
                     }

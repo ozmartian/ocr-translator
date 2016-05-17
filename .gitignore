@@ -1,4 +1,7 @@
-tmp/*
+temp
 .directory
 .vscode
 jsconfig.json
+__pycache__
+dist
+build

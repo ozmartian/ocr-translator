@@ -120,10 +120,6 @@ h1 {
     width: 100%;
 }
 
-.wrapper {
-    margin-bottom: 15px;
-}
-
 #result {
     font-family: "Noto Sans", Arial, sans-serif;
     font-size: 2rem;
@@ -159,7 +155,8 @@ textarea {
 .youdao,
 .yandex {
     text-align: center;
-    font-family: monospace;
+    font-family: "Roboto Light";
+    font-size: 1.6rem;
     position: relative;
 }
 
@@ -266,6 +263,7 @@ img.ocr-placeholder {
 
 .translations {
     margin-bottom: 20px;
+    line-height: 1.4;
 }
 
 .translations div {
@@ -325,7 +323,7 @@ img.ocr-placeholder {
     display: block;
     line-height: 40px;
     left: 20px;
-    font-family: "Roboto Light", sans-serif;
+    font-family: "Roboto", sans-serif;
     font-weight: 300;
 }
 
@@ -338,4 +336,14 @@ img.ocr-placeholder {
     bottom: 0;
     position: absolute;
     display: inline-block;
+}
+
+.overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: -1;
 }
