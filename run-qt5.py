@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
 import atexit
+import base64
 import os
 import sys
 import threading
 import time
+import urllib.parse
 from random import randint
 
 import wx
@@ -81,10 +83,17 @@ class ScreenshotFrame(wx.Frame):
         else: return True
 
     def TakeScreenshot(self):
+<<<<<<< 495f0ea962483d1c16f763a340b8b927d954b73d
         global shotdata
         bmp = shotdata.bmp.GetSubBitmap(wx.Rect(shotdata.x, shotdata.y, shotdata.width, shotdata.height))
+=======
+        global screenshoter, shotdata
+        bmp = screenshoter.bmp.GetSubBitmap(wx.Rect(shotdata.x, shotdata.y, shotdata.width, shotdata.height))
+        shotdata.filename = base64.b64encode(bmp.ConvertToImage().GetData())
+>>>>>>> pyinstaller fixes, now working as self hosted desktop app on Linux.. Windows to be tested
         img = bmp.ConvertToImage()
-        shotdata.filename = os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "temp", time.strftime('%Y%m%d-%H%M%S')) + ".png"
+        shotdata.filename = os.path.join(util.GetWorkingPath(), "temp", time.strftime('%Y%m%d-%H%M%S')) + ".png"
+        print("\n   Saving screenshot to: " + shotdata.filename + "\n")
         img.SaveFile(shotdata.filename, wx.BITMAP_TYPE_PNG)
         
 #--------------------------------------------------------------------------------------------------------#
@@ -93,12 +102,17 @@ class Screenshoter(wx.App):
     bmp = None
     
     def OnInit(self):
+<<<<<<< 495f0ea962483d1c16f763a340b8b927d954b73d
         global shotdata
         shotdata = util.SaveDesktop(shotdata)
         self.frame = ScreenshotFrame(None,
             pos=(shotdata.desktopRect.GetX(), shotdata.desktopRect.GetY()),
             size=(shotdata.desktopRect.GetWidth(), shotdata.desktopRect.GetHeight())
         )
+=======
+        self.bmp = util.SaveDesktop();
+        self.frame = ScreenshotFrame(None, size=(self.bmp.GetWidth(), self.bmp.GetHeight()))
+>>>>>>> pyinstaller fixes, now working as self hosted desktop app on Linux.. Windows to be tested
         self.frame.Show(True)
         self.SetTopWindow(self.frame)
         return True
@@ -131,24 +145,25 @@ class WebKitHelper:
     def __init__(self):
         self.address = "127.0.0.1"
         self.port = randint(2000, 4000)
-        
         t = threading.Thread(target=util.WebServer, args=(self.address, self.port))
         t.daemon = True
-        t.start()
-                      
+        t.start()                      
         global shotdata
+        shotdata.width = 600
+        shotdata.height = 537
         viewWidth = shotdata.width + 85
         if viewWidth < 600: viewWidth = 600
         viewHeight = shotdata.height + 185
         if viewHeight < 550: viewHeight = 550
         size = QSize(viewWidth, viewHeight)
-
         app = QApplication(sys.argv)
         self.view = QWebView()
         self.view.setWindowTitle("OCR Translator")
-        self.view.setWindowIcon(QIcon(os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "img", "ocr-translator.svg")))
+        self.view.setWindowIcon(QIcon(os.path.join(util.GetWorkingPath(), "img", "ocr-translator.svg")))
         self.view.setContextMenuPolicy(Qt.NoContextMenu)
-        self.view.load(QUrl("http://" + self.address + ":" + str(self.port) + "/index.html?img=" + shotdata.filename.split('\\').pop().split('/').pop()))
+        qryparam = urllib.parse.urlencode({'img':shotdata.filename.split('\\').pop().split('/').pop()})
+        print("\n   Query parameter to WebView: " + qryparam + "\n")
+        self.view.load(QUrl("http://" + self.address + ":" + str(self.port) + "/index.html#?" + qryparam))
         self.view.page().setViewportSize(size)
         self.view.resize(size)
         self.view.show()

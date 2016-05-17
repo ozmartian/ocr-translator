@@ -165,7 +165,7 @@ var translate = {
 
 var dkrm;
 var imgEditor = {
-    imgfile: '',
+    imagepath: '',
     enableTools: function() {
         $('.darkroom-button-group button').slice(3).removeAttr('disabled');
         window.setTimeout(function() {
@@ -204,10 +204,14 @@ var imgEditor = {
     },
     init: function(el) {
         var img = this.getParam('img');
+        this.imagepath = "img/placeholder.png";
         if (img != null && img.length > 0) {
-            this.imgfile = decodeURIComponent(img);
-            document.getElementById('target').src = "temp/" + this.imgfile;
+            this.imagepath = "temp/" + decodeURIComponent(img);
         }
+
+        document.querySelector('img#target').src = imgEditor.imagepath;
+        alert("image path: " + imgEditor.imagepath);
+
         dkrm = new Darkroom(el, {
             backgroundColor: 'transparent',
             plugins: {
@@ -225,8 +229,8 @@ var imgEditor = {
 
         window.onload = function() {
             $('[data-toggle="tooltip"]').tooltip();
-            if (imgEditor.imgfile.length > 0) {
-                $(".darkroom-button-group:first-child").remove();
+            if (imgEditor.imagepath.length > 0) {
+                $('.darkroom-button-group:first-child').remove();
                 return;
             }
             imgEditor.disableTools();

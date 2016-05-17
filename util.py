@@ -47,6 +47,12 @@ def GetEntireDesktopRect(data):
 
 #--------------------------------------------------------------------------------------------------------#
 
+def GetWorkingPath():
+    if getattr(sys, 'frozen', False): return os.path.join(sys._MEIPASS)
+    else: return os.path.dirname(os.path.realpath(sys.argv[0]))
+
+#--------------------------------------------------------------------------------------------------------#
+
 def WebServer(url, port):
     try:
         from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
@@ -54,6 +60,10 @@ def WebServer(url, port):
     except ImportError:
         from http.server import SimpleHTTPRequestHandler, HTTPServer
 
+    if getattr(sys, 'frozen', False):
+        os.chdir(sys._MEIPASS)
+        for r,d,f in os.walk(sys._MEIPASS): os.chmod(r, 0o755)
+        
     HandlerClass = SimpleHTTPRequestHandler
     ServerClass = HTTPServer
     server_address = (url, port)
