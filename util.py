@@ -20,27 +20,30 @@ def Cleanup():
     
 #--------------------------------------------------------------------------------------------------------#
 
-def SaveDesktop():
-    desktopSize = GetTotalDesktopSize()
-    bmp = wx.Bitmap(desktopSize.GetWidth(), desktopSize.GetHeight())
+def SaveDesktop(shotdata):
+    data = GetEntireDesktopRect(shotdata)
+    data.bmp = wx.Bitmap(data.desktopRect.GetWidth(), data.desktopRect.GetHeight())
     dcScreen = wx.ScreenDC()
     memDC = wx.MemoryDC()
-    memDC.SelectObject(bmp)
-    memDC.Blit(0, 0, desktopSize.GetWidth(), desktopSize.GetHeight(), dcScreen, 0, 0)
+    memDC.SelectObject(data.bmp)
+    memDC.Blit(0, 0, data.bmp.GetWidth(), data.bmp.GetHeight(), dcScreen, 0, 0)
     memDC.SelectObject(wx.NullBitmap)
-    return bmp
+    return data
     
 #--------------------------------------------------------------------------------------------------------#
 
-def GetTotalDesktopSize():
+def GetEntireDesktopRect(data):
     totalWidth = 0
     maxHeight = 0
+    minX = 0
     displays = (wx.Display(i) for i in range(wx.Display.GetCount()))
-    sizes = [display.GetGeometry().GetSize() for display in displays]
-    for size in sizes:
-        totalWidth += size[0]
-        if size[1] > maxHeight: maxHeight = size[1]
-    return wx.Size(totalWidth, maxHeight)
+    screenRects = [display.GetGeometry() for display in displays]
+    for rect in screenRects:
+        totalWidth += rect.GetWidth()
+        if rect.GetX() < minX: minX = rect.GetX()
+        if rect.GetHeight() > maxHeight: maxHeight = rect.GetHeight()
+    data.desktopRect = wx.Rect(minX, 0, totalWidth, maxHeight)
+    return data
 
 #--------------------------------------------------------------------------------------------------------#
 
@@ -53,8 +56,7 @@ def WebServer(url, port):
 
     HandlerClass = SimpleHTTPRequestHandler
     ServerClass = HTTPServer
-    Protocol = "HTTP/1.0"
     server_address = (url, port)
-    HandlerClass.protocol_version = Protocol
+    HandlerClass.protocol_version = "HTTP/1.0"
     httpd = ServerClass(server_address, HandlerClass)
     httpd.serve_forever()

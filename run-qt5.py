@@ -22,8 +22,8 @@ class ScreenshotFrame(wx.Frame):
     c1 = None
     c2 = None
 
-    def __init__(self, parent=None, id=-1, title="", size=wx.DisplaySize()):
-        wx.Frame.__init__(self, parent, id, title, pos=(0, 0), size=size, style=wx.FRAME_NO_TASKBAR | wx.NO_BORDER | wx.STAY_ON_TOP)
+    def __init__(self, parent=None, id=-1, title="", pos=(0, 0), size=wx.DisplaySize()):
+        wx.Frame.__init__(self, parent, id, title, pos=pos, size=size, style=wx.FRAME_NO_TASKBAR | wx.NO_BORDER | wx.STAY_ON_TOP)
         self.parent = parent
         self.SetTransparent(185)
         self.Bind(wx.EVT_CLOSE, self.OnClose)        
@@ -59,6 +59,7 @@ class ScreenshotFrame(wx.Frame):
         elif key in [wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER] and self.RegionSelected():
             global shotdata
             shotdata.Save(self.c1.x, self.c1.y, self.c2.x - self.c1.x, self.c2.y - self.c1.y)
+            print(shotdata)
             self.TakeScreenshot()
             self.Close()
         else:
@@ -80,8 +81,8 @@ class ScreenshotFrame(wx.Frame):
         else: return True
 
     def TakeScreenshot(self):
-        global screenshoter, shotdata
-        bmp = screenshoter.bmp.GetSubBitmap(wx.Rect(shotdata.x, shotdata.y, shotdata.width, shotdata.height))
+        global shotdata
+        bmp = shotdata.bmp.GetSubBitmap(wx.Rect(shotdata.x, shotdata.y, shotdata.width, shotdata.height))
         img = bmp.ConvertToImage()
         shotdata.filename = os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "temp", time.strftime('%Y%m%d-%H%M%S')) + ".png"
         img.SaveFile(shotdata.filename, wx.BITMAP_TYPE_PNG)
@@ -92,8 +93,12 @@ class Screenshoter(wx.App):
     bmp = None
     
     def OnInit(self):
-        self.bmp = util.SaveDesktop()
-        self.frame = ScreenshotFrame(None, size=(self.bmp.GetWidth(), self.bmp.GetHeight()))
+        global shotdata
+        shotdata = util.SaveDesktop(shotdata)
+        self.frame = ScreenshotFrame(None,
+            pos=(shotdata.desktopRect.GetX(), shotdata.desktopRect.GetY()),
+            size=(shotdata.desktopRect.GetWidth(), shotdata.desktopRect.GetHeight())
+        )
         self.frame.Show(True)
         self.SetTopWindow(self.frame)
         return True
@@ -106,6 +111,8 @@ class ScreenshotData:
     width = 0
     height = 0
     filename = ""
+    bmp = None
+    desktopRect = None
     
     def Save(self, x=0, y=0, width=0, height=0, filename=""):
         self.x = x
