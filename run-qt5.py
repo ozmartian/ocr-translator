@@ -60,7 +60,6 @@ class ScreenshotFrame(wx.Frame):
         elif key in [wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER] and self.RegionSelected():
             global shotdata
             shotdata.Save(self.c1.x, self.c1.y, self.c2.x - self.c1.x, self.c2.y - self.c1.y)
-            print(shotdata)
             self.TakeScreenshot()
             self.Close()
         else:
@@ -84,9 +83,8 @@ class ScreenshotFrame(wx.Frame):
     def TakeScreenshot(self):
         global shotdata
         bmp = shotdata.bmp.GetSubBitmap(wx.Rect(shotdata.x, shotdata.y, shotdata.width, shotdata.height))
-        shotdata.filename = base64.b64encode(bmp.ConvertToImage().GetData())
         img = bmp.ConvertToImage()
-        shotdata.filename = os.path.join(util.GetWorkingPath(), "temp", time.strftime('%Y%m%d-%H%M%S')) + ".png"
+        shotdata.filename = os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "temp", time.strftime('%Y%m%d-%H%M%S')) + ".png"
         img.SaveFile(shotdata.filename, wx.BITMAP_TYPE_PNG)
         
 #--------------------------------------------------------------------------------------------------------#
@@ -101,8 +99,6 @@ class Screenshoter(wx.App):
             pos=(shotdata.desktopRect.GetX(), shotdata.desktopRect.GetY()),
             size=(shotdata.desktopRect.GetWidth(), shotdata.desktopRect.GetHeight())
         )
-        self.bmp = util.SaveDesktop();
-        self.frame = ScreenshotFrame(None, size=(self.bmp.GetWidth(), self.bmp.GetHeight()))
         self.frame.Show(True)
         self.SetTopWindow(self.frame)
         return True
