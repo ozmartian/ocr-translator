@@ -1,3 +1,9 @@
+* {
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
 html {
     background: #FFF url('../img/window-background.jpg') no-repeat;
     float: left;
@@ -26,7 +32,7 @@ body {
     position: absolute;
     display: table;
     text-align: center;
-    font-family: "Roboto", sans-serif;
+    font-family: Roboto, sans-serif;
     font-weight: 400;
     color: #555;
     margin: 0 auto;
@@ -121,15 +127,19 @@ h1 {
 }
 
 #result {
-    font-family: "Noto Sans", Arial, sans-serif;
+    font-family: "Microsoft YaHei", monospace;
     font-size: 2rem;
+    font-weight: 500;
     text-align: center;
-    outline: none;
+    outline: none !important;
     margin-top: 8px;
     width: 100%;
+    text-shadow: none;
     overflow: visible;
-    padding: 20px;
+    padding: 16px;
     white-space: nowrap;
+    box-shadow: none;
+    border: none;
 }
 
 .hide,
@@ -148,14 +158,13 @@ textarea {
     overflow: hidden;
     border: none;
     outline: none;
-    font-family: "Roboto", sans-serif;
+    font-family: Roboto, sans-serif;
     font-weight: 300;
 }
 
 .youdao,
 .yandex {
     text-align: center;
-    font-family: "Roboto Light";
     font-size: 1.6rem;
     position: relative;
 }
@@ -173,8 +182,7 @@ textarea {
     background-size: 45px;
     color: #3C1084;
     background-color: #E8F5E9;
-    margin-top: 8px;
-    box-shadow: 0 1px 10px #666;
+    margin-top: 1px;
 }
 
 #nprogress .bar {
@@ -264,6 +272,8 @@ img.ocr-placeholder {
 .translations {
     margin-bottom: 20px;
     line-height: 1.4;
+    font-weight: 600;
+    font-family: monospace;
 }
 
 .translations div {
@@ -271,11 +281,18 @@ img.ocr-placeholder {
     display: block !important;
 }
 
+.tooltip {
+    position: absolute;
+    top: 2px;
+    left: 80%;
+}
+
 .tooltip > .tooltip-inner {
-    font-weight: 500;
+    font-weight: 800;
+    font-family: Tahoma, sans-serif;
     font-size: 1.3rem;
-    color: #222;
-    background-color: #FFF;
+    color: #FFF;
+    /*background-color: #FFF;*/
     border: 1px solid #222;
     box-shadow: 0 1px 5px #888;
 }
@@ -305,13 +322,12 @@ img.ocr-placeholder {
 }
 
 .footer {
-    /*border-top: 1px solid #FAFAFA;*/
     bottom: 0;
     height: 40px;
     width: 100%;
     background: #000;
     position: fixed;
-    box-shadow: 0 -1px 10px #444;
+    box-shadow: 0 -1px 6px #444;
 }
 
 .footer > .copyright {
@@ -321,17 +337,28 @@ img.ocr-placeholder {
     font-size: 1.3rem;
     left: 10px;
     display: block;
-    line-height: 40px;
+    line-height: 36px;
     left: 20px;
-    font-family: "Roboto", sans-serif;
-    font-weight: 500;
+}
+
+.footer > .copyright img {
+    position: relative;
+    top: -2px;
+}
+
+.footer > .copyright a {
+    position: relative;
+    top: 2px;
+    left: 2px;
+    font-family: Tahoma, sans-serif;
+    font-weight: 600;
 }
 
 .footer > .logo {
-    width: 250px;
+    width: 280px;
     height: 85px;
     background: transparent url('../img/app-logo.png') no-repeat center right;
-    background-size: 250px 85px;
+    background-size: 280px 85px;
     right: 0;
     bottom: 0;
     position: absolute;
@@ -347,3 +374,14 @@ img.ocr-placeholder {
     background: rgba(0, 0, 0, 0.6);
     z-index: -1;
 }
+
+
+/*.heart {
+    font-size: 2.5rem;
+    color: red;
+    line-height: 12px;
+    position: relative;
+    top: 2px;
+    opacity: 0.7;
+    font-family: Verdana, sans-serif;
+}*/

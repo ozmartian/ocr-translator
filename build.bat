@@ -12,8 +12,7 @@ if %M%==1 ( set LAUNCHER=run-gtk.py )
 rd /s /q _build\final > NUL
 rd /s /q _build\work > NUL
 
-copy _build\ocrtranslator.spec .
+rem copy _build\ocrtranslator.spec .
+rem sed -i -e "s/|LAUNCHER|/%LAUNCHER%/" ocrtranslator.spec
 
-sed -i -e "s/|LAUNCHER|/%LAUNCHER%/" ocrtranslator.spec
-
-pyinstaller --onefile --windowed --icon=img\app-icon.ico --workpath=_build\work --distpath=_build\final ocrtranslator.spec
+pyinstaller --onedir --windowed --icon=img\app-icon.ico --workpath=_build\work --distpath=_build\final ocrtranslator.spec

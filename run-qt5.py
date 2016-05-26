@@ -6,11 +6,16 @@ import sys
 import threading
 import time
 import urllib.parse
+
 from random import randint
 
 import wx
-from PyQt5.QtCore import QSize, Qt, QUrl
+
+from PyQt5.QtCore import QSize
+from PyQt5.QtCore import QUrl
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QPainter
 from PyQt5.QtWebKitWidgets import QWebView
 from PyQt5.QtWidgets import QApplication
 
@@ -82,9 +87,10 @@ class ScreenshotFrame(wx.Frame):
 
     def TakeScreenshot(self):
         global shotdata
+        shotdata.bmp = wx.Bitmap(name=shotdata.desktopFilename, type=wx.BITMAP_TYPE_PNG)
         bmp = shotdata.bmp.GetSubBitmap(wx.Rect(shotdata.x, shotdata.y, shotdata.width, shotdata.height))
         img = bmp.ConvertToImage()
-        shotdata.filename = os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "temp", time.strftime('%Y%m%d-%H%M%S')) + ".png"
+        shotdata.filename = os.path.join(util.GetWorkingPath(), "temp", time.strftime('%Y%m%d-%H%M%S')) + ".png"
         img.SaveFile(shotdata.filename, wx.BITMAP_TYPE_PNG)
         
 #--------------------------------------------------------------------------------------------------------#
@@ -113,6 +119,7 @@ class ScreenshotData:
     filename = ""
     bmp = None
     desktopRect = None
+    desktopFilename = ""
     
     def Save(self, x=0, y=0, width=0, height=0, filename=""):
         self.x = x
@@ -131,24 +138,21 @@ class WebKitHelper:
     def __init__(self):
         self.address = "127.0.0.1"
         self.port = randint(2000, 4000)
-        t = threading.Thread(target=util.WebServer, args=(self.address, self.port))
+        t = threading.Thread(target=util.WebServer, args=(self.address, self.port)) 
         t.daemon = True
         t.start()                      
         global shotdata
-        viewWidth = shotdata.width + 85
-        if viewWidth < 600: viewWidth = 600
-        viewHeight = shotdata.height + 185
-        if viewHeight < 550: viewHeight = 550
-        size = QSize(viewWidth, viewHeight)
+        size = util.GetAppFrameSize(shotdata)
         app = QApplication(sys.argv)
         self.view = QWebView()
         self.view.setWindowTitle("OCR Translator")
-        self.view.setWindowIcon(QIcon(os.path.join(util.GetWorkingPath(), "img", "ocr-translator.png")))
+        self.view.setWindowIcon(QIcon(os.path.join(util.GetWorkingPath(), "img", "app-icon.ico")))
         self.view.setContextMenuPolicy(Qt.NoContextMenu)
         qryparam = urllib.parse.urlencode({'img':shotdata.filename.split('\\').pop().split('/').pop()})
         self.view.load(QUrl("http://" + self.address + ":" + str(self.port) + "/index.html#?" + qryparam))
         self.view.page().setViewportSize(size)
         self.view.resize(size)
+        self.view.setRenderHint(QPainter.Antialiasing, enabled=True)
         self.view.show()
         sys.exit(app.exec_())
 
@@ -158,7 +162,8 @@ atexit.register(util.Cleanup)
 
 shotdata = ScreenshotData()
 
-screenshoter = Screenshoter(False)
-screenshoter.MainLoop()
+if __name__ == "__main__":
+    screenshoter = Screenshoter(False)
+    screenshoter.MainLoop()
 
-if len(shotdata.filename) and os.path.isfile(shotdata.filename): WebKitHelper()
+    if len(shotdata.filename) and os.path.isfile(shotdata.filename): WebKitHelper()

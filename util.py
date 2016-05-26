@@ -1,4 +1,9 @@
-import glob, os, sys, wx
+import glob
+import os
+import sys
+
+import wx
+
 
 #--------------------------------------------------------------------------------------------------------#
 
@@ -20,12 +25,18 @@ def Cleanup():
 
 def SaveDesktop(shotdata):
     data = GetEntireDesktopRect(shotdata)
+    '''
     data.bmp = wx.Bitmap(data.desktopRect.GetWidth(), data.desktopRect.GetHeight())
     dcScreen = wx.ScreenDC()
     memDC = wx.MemoryDC()
     memDC.SelectObject(data.bmp)
     memDC.Blit(0, 0, data.bmp.GetWidth(), data.bmp.GetHeight(), dcScreen, 0, 0)
     memDC.SelectObject(wx.NullBitmap)
+    '''
+    import time
+    data.desktopFilename = os.path.join(GetWorkingPath(), "temp", time.strftime('desktop_%Y%m%d-%H%M%S')) + ".png"
+    from mss import mss
+    for filename in mss().save(output=data.desktopFilename, screen=-1): True
     return data
     
 #--------------------------------------------------------------------------------------------------------#
@@ -48,6 +59,16 @@ def GetEntireDesktopRect(data):
 def GetWorkingPath():
     if getattr(sys, 'frozen', False): return os.path.join(sys._MEIPASS)
     else: return os.path.dirname(os.path.realpath(sys.argv[0]))
+
+#--------------------------------------------------------------------------------------------------------#
+
+def GetAppFrameSize(data):
+    viewWidth = data.width + 85
+    if viewWidth < 600: viewWidth = 600
+    viewHeight = data.height + 185
+    if viewHeight < 550: viewHeight = 550
+    from PyQt5.QtCore import QSize
+    return QSize(viewWidth, viewHeight)
 
 #--------------------------------------------------------------------------------------------------------#
 
