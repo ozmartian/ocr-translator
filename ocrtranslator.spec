@@ -17,7 +17,7 @@ data_files = [
 ]
 
 a = Analysis(['run-qt5.py'],
-             pathex=['c:\\DEV\\ocr-translator'],
+             pathex=['/mnt/ANTERGOS/home/ozmartian/Projects/ocr-translator'],
              binaries=None,
              datas=data_files,
              hiddenimports=[],
@@ -37,6 +37,6 @@ exe = EXE(pyz,
           a.datas,
           name='ocrtranslator',
           debug=False,
-          strip=False,
-          upx=False,
-          console=False , icon='img\\app-icon.ico')
+          strip=True,
+          upx=True,
+          console=False , icon='img/app-icon.png')

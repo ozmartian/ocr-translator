@@ -17,9 +17,10 @@ case $choice in
         ;;
 esac
 
-rm -rf _build/final _build/work
+[ -d _build/final ] && rm -rf _build/final
+[ -d _build/work ] && rm -rf _build/work
 
 cp -f _build/ocrtranslator.spec .
 sed -i -e "s/|LAUNCHER|/${LAUNCHER}/" ./ocrtranslator.spec
 
-pyinstaller --clean --onefile --workpath=_build/work --distpath=_build/final ./ocrtranslator.spec
+pyinstaller --onefile --windowed --workpath=_build/work --distpath=_build/final ./ocrtranslator.spec
