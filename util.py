@@ -14,14 +14,17 @@ def DeleteFiles(path):
             os.remove(file)
     except:
         print("Error deleting file " + path + ":", sys.exc_info()[0])
-    
+
 #--------------------------------------------------------------------------------------------------------#
 
+
 def Cleanup():
-    temppath = os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "temp", "**")
+    temppath = os.path.join(os.path.dirname(
+        os.path.realpath(sys.argv[0])), "temp", "**")
     DeleteFiles(temppath)
-    
+
 #--------------------------------------------------------------------------------------------------------#
+
 
 def SaveDesktop(shotdata):
     data = GetEntireDesktopRect(shotdata)
@@ -34,12 +37,15 @@ def SaveDesktop(shotdata):
     memDC.SelectObject(wx.NullBitmap)
     '''
     import time
-    data.desktopFilename = os.path.join(GetWorkingPath(), "temp", time.strftime('desktop_%Y%m%d-%H%M%S')) + ".png"
+    data.desktopFilename = os.path.join(
+        GetWorkingPath(), "temp", time.strftime('desktop_%Y%m%d-%H%M%S')) + ".png"
     from mss import mss
-    for filename in mss().save(output=data.desktopFilename, screen=-1): True
+    for filename in mss().save(output=data.desktopFilename, screen=-1):
+        True
     return data
-    
+
 #--------------------------------------------------------------------------------------------------------#
+
 
 def GetEntireDesktopRect(data):
     totalWidth = 0
@@ -49,28 +55,40 @@ def GetEntireDesktopRect(data):
     screenRects = [display.GetGeometry() for display in displays]
     for rect in screenRects:
         totalWidth += rect.GetWidth()
-        if rect.GetX() < minX: minX = rect.GetX()
-        if rect.GetHeight() > maxHeight: maxHeight = rect.GetHeight()
+        if rect.GetX() < minX:
+            minX = rect.GetX()
+        if rect.GetHeight() > maxHeight:
+            maxHeight = rect.GetHeight()
     data.desktopRect = wx.Rect(minX, 0, totalWidth, maxHeight)
     return data
 
 #--------------------------------------------------------------------------------------------------------#
 
+
 def GetWorkingPath():
-    if getattr(sys, 'frozen', False): return os.path.join(sys._MEIPASS)
-    else: return os.path.dirname(os.path.realpath(sys.argv[0]))
+    if getattr(sys, 'frozen', False):
+        return os.path.join(sys._MEIPASS)
+    return os.path.dirname(os.path.realpath(sys.argv[0]))
 
 #--------------------------------------------------------------------------------------------------------#
+
 
 def GetAppFrameSize(data):
     viewWidth = data.width + 85
-    if viewWidth < 600: viewWidth = 600
+    if viewWidth < 600:
+        viewWidth = 600
     viewHeight = data.height + 185
-    if viewHeight < 550: viewHeight = 550
-    from PyQt5.QtCore import QSize
-    return QSize(viewWidth, viewHeight)
+    if viewHeight < 550:
+        viewHeight = 550
+    import __main__ as main
+    if "gtk" in main.__file__:
+        return wx.Size(viewWidth, viewHeight)
+    else:
+        from PyQt5.QtCore import QSize
+        return QSize(viewWidth, viewHeight)
 
 #--------------------------------------------------------------------------------------------------------#
+
 
 def WebServer(url, port):
     try:
@@ -81,8 +99,9 @@ def WebServer(url, port):
 
     if getattr(sys, 'frozen', False):
         os.chdir(sys._MEIPASS)
-        for r,d,f in os.walk(sys._MEIPASS): os.chmod(r, 0o755)
-        
+        for r, d, f in os.walk(sys._MEIPASS):
+            os.chmod(r, 0o755)
+
     HandlerClass = SimpleHTTPRequestHandler
     ServerClass = HTTPServer
     server_address = (url, port)

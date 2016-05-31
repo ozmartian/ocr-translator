@@ -199,7 +199,9 @@ textarea {
 }
 
 .darkroom-toolbar {
-    border: 1px solid #222;
+    border: none;
+    border-bottom: 2px solid #000;
+    border-radius: 0;
 }
 
 .darkroom-button:active,
@@ -265,8 +267,16 @@ img.ocr-placeholder {
 
 .reset button {
     outline: none !important;
-    border: 1px #1565C0 solid;
-    width: 285px;
+    border: 1px #0c7cd5 solid;
+    box-shadow: none;
+    position: absolute;
+    top: 5px;
+    right: 15px;
+    z-index: 9999;
+}
+
+.reset button:hover {
+    border: 1px #b2dbfb solid;
 }
 
 .translations {
@@ -277,24 +287,33 @@ img.ocr-placeholder {
 }
 
 .translations div {
-    padding: 35px 0 20px;
+    padding: 36px 0 20px;
     display: block !important;
 }
 
 .tooltip {
-    position: absolute;
-    top: 2px;
-    left: 80%;
+    top: 35px !important;
+    z-index: 0 !important;
+}
+
+.tooltip.bottom {
+    margin-top: 0;
 }
 
 .tooltip > .tooltip-inner {
-    font-weight: 800;
+    font-weight: 400;
     font-family: Tahoma, sans-serif;
     font-size: 1.3rem;
     color: #FFF;
-    /*background-color: #FFF;*/
-    border: 1px solid #222;
-    box-shadow: 0 1px 5px #888;
+    background: #000;
+    border: 1px solid black;
+    border-radius: 0;
+    padding: 0 16px 2px;
+    box-shadow: 0 1px 6px #222;
+    letter-spacing: 1px;
+    position: relative;
+    top: -4px;
+    line-height: 22px;
 }
 
 .fade {
@@ -385,3 +404,7 @@ img.ocr-placeholder {
     opacity: 0.7;
     font-family: Verdana, sans-serif;
 }*/
+
+.darkroom-toolbar .tooltip > .tooltip-arrow {
+    display: none;
+}
