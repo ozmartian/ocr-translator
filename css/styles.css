@@ -234,12 +234,12 @@ img.ocr-placeholder {
     max-height: 300px;
 }
 
-.darkroom-image-container {
+/*.darkroom-image-container {
     border: 1px solid #AAA;
     border-radius: 3px;
     -webkit-box-shadow: 0 1px 15px rgba(0, 0, 0, 0.4);
     box-shadow: 0 1px 15px rgba(0, 0, 0, 0.4);
-}
+}*/
 
 .fade {
     opacity: 0;
@@ -282,8 +282,8 @@ img.ocr-placeholder {
 .translations {
     margin-bottom: 20px;
     line-height: 1.4;
-    font-weight: 600;
-    font-family: monospace;
+    font-weight: 400;
+    font-family: Roboto, sans-serif;
 }
 
 .translations div {
@@ -301,19 +301,19 @@ img.ocr-placeholder {
 }
 
 .tooltip > .tooltip-inner {
-    font-weight: 400;
+    font-weight: 500;
     font-family: Tahoma, sans-serif;
     font-size: 1.3rem;
     color: #FFF;
     background: #000;
     border: 1px solid black;
     border-radius: 0;
-    padding: 0 16px 2px;
+    padding: 2px 16px;
     box-shadow: 0 1px 6px #222;
     letter-spacing: 1px;
     position: relative;
     top: -4px;
-    line-height: 22px;
+    line-height: 28px;
 }
 
 .fade {
@@ -359,6 +359,7 @@ img.ocr-placeholder {
     left: 20px;
     opacity: 0.7;
 }
+
 
 /*.footer > .tagline img {
     position: relative;

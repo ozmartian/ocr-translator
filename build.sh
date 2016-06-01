@@ -21,6 +21,8 @@ esac
 [ -d _build/work ] && rm -rf _build/work
 
 cp -f _build/ocrtranslator.spec .
-sed -i -e "s/|LAUNCHER|/${LAUNCHER}/" ./ocrtranslator.spec
+sed -i -e "s/|LAUNCHER|/${LAUNCHER}/g" ./ocrtranslator.spec
 
-pyinstaller --onefile --windowed --workpath=_build/work --distpath=_build/final ./ocrtranslator.spec
+pyinstaller --onefile --windowed --icon=img/app-icon.png --workpath=_build/work --distpath=_build/final ./ocrtranslator.spec
+
+pyinstaller --onedir --windowed --icon=img\app-icon.ico --workpath=_build\work --distpath=_build\final ocrtranslator.spec

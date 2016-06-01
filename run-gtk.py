@@ -8,23 +8,26 @@ import time
 import urllib.parse
 from random import randint
 
+import webview
 import wx
-import wx.html2 as webview
 
 import util
 
+os.environ["USE_GTK"] = "true"
 
 #--------------------------------------------------------------------------------------------------------#
+
 
 class ScreenshotFrame(wx.Frame):
     c1 = None
     c2 = None
 
     def __init__(self, parent=None, id=-1, title="", pos=(0, 0), size=wx.DisplaySize()):
-        wx.Frame.__init__(self, parent, id, title, pos=pos, size=size, style=wx.FRAME_NO_TASKBAR | wx.NO_BORDER | wx.STAY_ON_TOP) 
+        wx.Frame.__init__(self, parent, id, title, pos=pos, size=size,
+                          style=wx.FRAME_NO_TASKBAR | wx.NO_BORDER | wx.STAY_ON_TOP)
         self.parent = parent
         self.SetTransparent(185)
-        self.Bind(wx.EVT_CLOSE, self.OnClose)        
+        self.Bind(wx.EVT_CLOSE, self.OnClose)
         self.SetCursor(wx.Cursor(wx.CURSOR_CROSS))
         self.panel = wx.Panel(self, size=self.GetSize())
         self.panel.SetBackgroundColour(wx.Colour(0, 0, 0))
@@ -35,10 +38,10 @@ class ScreenshotFrame(wx.Frame):
         self.panel.Bind(wx.EVT_PAINT, self.OnPaint)
         self.panel.Bind(wx.EVT_KEY_DOWN, self.OnKeyDown)
         self.panel.Bind(wx.EVT_CHAR_HOOK, self.OnKeyDown)
-        
+
     def OnClose(self, event):
         self.Destroy()
-        
+
     def OnMouseMove(self, event):
         if event.Dragging() and event.LeftIsDown():
             self.c2 = event.GetPosition()
@@ -50,18 +53,20 @@ class ScreenshotFrame(wx.Frame):
 
     def OnMouseUp(self, event):
         self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
-        
+
     def OnKeyDown(self, event):
         key = event.GetKeyCode()
-        if key == wx.WXK_ESCAPE: self.Close()
+        if key == wx.WXK_ESCAPE:
+            self.Close()
         elif key in [wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER] and self.RegionSelected():
             global shotdata
-            shotdata.Save(self.c1.x, self.c1.y, self.c2.x - self.c1.x, self.c2.y - self.c1.y)
+            shotdata.Save(self.c1.x, self.c1.y, self.c2.x -
+                          self.c1.x, self.c2.y - self.c1.y)
             self.TakeScreenshot()
             self.Close()
         else:
             event.Skip()
-        
+
     def OnReset(self, event):
         self.panel.Refresh()
         self.SetCursor(wx.Cursor(wx.CURSOR_CROSS))
@@ -91,8 +96,9 @@ class ScreenshotFrame(wx.Frame):
         shotdata.filename = os.path.join(
             util.GetWorkingPath(), "temp", time.strftime('%Y%m%d-%H%M%S')) + ".png"
         img.SaveFile(shotdata.filename, wx.BITMAP_TYPE_PNG)
-        
+
 #--------------------------------------------------------------------------------------------------------#
+
 
 class Screenshoter(wx.App):
     bmp = None
@@ -112,6 +118,7 @@ class Screenshoter(wx.App):
 
 #--------------------------------------------------------------------------------------------------------#
 
+
 class ScreenshotData:
     x = 0
     y = 0
@@ -130,28 +137,20 @@ class ScreenshotData:
         self.filename = filename
 
 #--------------------------------------------------------------------------------------------------------#
-
-class BrowserFrame(wx.Frame):
-    address = None
-    port = None
+'''
+class BrowserFrame(pywebview):
     view = None
     
-    def __init__(self, parent=None, id=-1, title=""):
+    def __init__(self, parent=None, id=-1, title="", ipandport=""):
         wx.Frame.__init__(self, parent, id, title="OCR Translator", style=wx.DEFAULT_FRAME_STYLE)        
-        self.address = "127.0.0.1"
-        self.port = randint(2000, 4000)
-        t = threading.Thread(target=util.WebServer, args=(self.address, self.port))
-        t.daemon = True
-        t.start()
-        print("\nweb server started at " + self.address + ":" + str(self.port) + "\n")
         global shotdata
         size = util.GetAppFrameSize(shotdata)
         self.SetSize(size)
         self.panel = wx.Panel(self, size=size)
         self.SetIcon(wx.Icon(os.path.join(util.GetWorkingPath(), "img", "app-icon.ico"), wx.BITMAP_TYPE_PNG))
         qryparam = urllib.parse.urlencode({'img':shotdata.filename.split('\\').pop().split('/').pop()})
-        #self.current = "http://" + self.address + ":" + str(self.port) + "/index.html#?" + qryparam
-        self.current = "http://127.0.0.1:2059"
+        self.current = "http://" + ipandport + "/index.html#?" + qryparam
+        
         self.view = webview.WebView.New(self.panel, size=size, url=self.current)
         self.view.EnableContextMenu(False)              
         sizer = wx.BoxSizer(wx.VERTICAL)
@@ -159,30 +158,63 @@ class BrowserFrame(wx.Frame):
         self.panel.SetSizer(sizer)
         self.Center()
         
-#--------------------------------------------------------------------------------------------------------#
+        self.Bind(wx.EVT_CLOSE, self.OnClose)
 
-class BrowserApp(wx.App):
-    def OnInit(self):
-        self.frame = BrowserFrame(None)
-        self.frame.Show(True)
-        self.SetTopWindow(self.frame)
-        self.frame.Bind(wx.EVT_CLOSE, self.OnClose)
-        return True
-        
     def OnClose(self, event):
         util.Cleanup()
         self.Destroy()
         sys.exit(0)
+'''
+#--------------------------------------------------------------------------------------------------------#
+
+
+class BrowserApp:
+    address = None
+    port = None
+    serverThread = None
+    size = None
+    url = ""
+
+    def __init__(self):
+        global shotdata
+        self.address = "127.0.0.1"
+        self.port = randint(2000, 4000)
+        self.serverThread = self.InitServer(self.address, self.port)
+        '''
+        self.frame = BrowserFrame(None, ipandport=self.address + ":" + str(self.port))
+        self.frame.Show(True)
+        self.SetTopWindow(self.frame)
+        '''
+        self.size = util.GetAppFrameSize(shotdata)
+        self.url = "http://" + self.address + ":" + str(self.port) + "/index.html#?" + urllib.parse.urlencode({
+            'img': shotdata.filename.split('\\').pop().split('/').pop()})
+        webview.create_window("OCR Translator", self.url, width=self.size.GetWidth(), height=self.size.GetHeight(
+        ), resizable=True, min_size=(self.size.GetWidth(), self.size.GetHeight()))
+
+    def InitServer(self, address, port):
+        t = threading.Thread(target=util.WebServer, args=(address, port))
+        t.daemon = True
+        t.start()
+        return t
 
 #--------------------------------------------------------------------------------------------------------#
 
-atexit.register(util.Cleanup)
 
-shotdata = ScreenshotData()
+def main():
+    try:
+        screenshoter = Screenshoter(False)
+        screenshoter.MainLoop()
+        if len(shotdata.filename) and os.path.isfile(shotdata.filename):
+            BrowserApp()
+    except:
+        print(sys.exc_info()[0])
+        return 1
+    return 0
 
-screenshoter = Screenshoter(False)
-screenshoter.MainLoop()
+#--------------------------------------------------------------------------------------------------------#
 
-if len(shotdata.filename) and os.path.isfile(shotdata.filename):
-    app = BrowserApp()
-    app.MainLoop()
+
+if __name__ == "__main__":
+    atexit.register(util.Cleanup)
+    shotdata = ScreenshotData()
+    sys.exit(main())

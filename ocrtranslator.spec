@@ -13,11 +13,11 @@ data_files = [
     ('js', 'js'),
     ('temp', 'temp'),
     ('index.html', '.'),
-    ('run-qt5.py', '.')
+    ('run-gtk.py', '.')
 ]
 
-a = Analysis(['run-qt5.py'],
-             pathex=['/mnt/ANTERGOS/home/ozmartian/Projects/ocr-translator'],
+a = Analysis(['run-gtk.py'],
+             pathex=['/home/ozmartian/Projects/ocr-translator'],
              binaries=None,
              datas=data_files,
              hiddenimports=[],
