@@ -81,11 +81,11 @@ def GetAppFrameSize(data):
     if viewHeight < 550:
         viewHeight = 550
     import __main__ as main
-    #if "gtk" in main.__file__:
-    return wx.Size(viewWidth, viewHeight)
-    #else:
-    #    from PyQt5.QtCore import QSize
-    #    return QSize(viewWidth, viewHeight)
+    if "gtk" in main.__file__:
+        return wx.Size(viewWidth, viewHeight)
+    else:
+        from PyQt5.QtCore import QSize
+        return QSize(viewWidth, viewHeight)
 
 #--------------------------------------------------------------------------------------------------------#
 

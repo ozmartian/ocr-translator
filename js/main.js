@@ -54,7 +54,7 @@ var OCR = {
             if (res.OCRExitCode === 1 && !res.IsErroredOnProcessing && typeof res.ParsedResults[0].ParsedText != 'undefined') {
                 var ocrText = res.ParsedResults[0].ParsedText.trim();
                 $('#result').text(ocrText);
-                $('.overlay.hide, .output.hide').removeClass('hide');
+                $('.spacer.hide, .overlay.hide, .output.hide').removeClass('hide');
                 $('#result, .reset')
                     .addClass('in')
                     .css('display', 'inline-block');

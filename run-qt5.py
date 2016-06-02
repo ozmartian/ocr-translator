@@ -9,9 +9,9 @@ import urllib.parse
 from random import randint
 
 import wx
-from PyQt5.QtCore import QSize, Qt, QUrl
-from PyQt5.QtGui import QIcon, QPainter
-from PyQt5.QtWebKitWidgets import QWebView
+from PyQt5.QtCore import Qt, QUrl
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QApplication
 
 import util
@@ -24,7 +24,8 @@ class ScreenshotFrame(wx.Frame):
     c2 = None
 
     def __init__(self, parent=None, id=-1, title="", pos=(0, 0), size=wx.DisplaySize()):
-        wx.Frame.__init__(self, parent, id, title, pos=pos, size=size, style=wx.FRAME_NO_TASKBAR | wx.NO_BORDER | wx.STAY_ON_TOP) 
+        wx.Frame.__init__(self, parent, id, title, pos=pos, size=size,
+                          style=wx.FRAME_NO_TASKBAR | wx.NO_BORDER | wx.STAY_ON_TOP)
         self.parent = parent
         self.SetTransparent(185)
         self.Bind(wx.EVT_CLOSE, self.OnClose)
@@ -147,26 +148,19 @@ class WebKitHelper:
     def __init__(self):
         self.address = "127.0.0.1"
         self.port = randint(2000, 4000)
-        t = threading.Thread(target=util.WebServer,
-                             args=(self.address, self.port))
+        t = threading.Thread(target=util.WebServer, args=(self.address, self.port))
         t.daemon = True
         t.start()
-        print("\nweb server started at " + self.address + ":" + str(self.port) + "\n")
         global shotdata
         size = util.GetAppFrameSize(shotdata)
         app = QApplication(sys.argv)
-        self.view = QWebView()
+        self.view = QWebEngineView()
         self.view.setWindowTitle("OCR Translator")
-        self.view.setWindowIcon(
-            QIcon(os.path.join(util.GetWorkingPath(), "img", "app-icon.ico")))
+        self.view.setWindowIcon(QIcon(os.path.join(util.GetWorkingPath(), "img", "app-icon.ico")))
         self.view.setContextMenuPolicy(Qt.NoContextMenu)
-        qryparam = urllib.parse.urlencode(
-            {'img': shotdata.filename.split('\\').pop().split('/').pop()})
-        self.view.load(QUrl("http://" + self.address + ":" +
-                            str(self.port) + "/index.html#?" + qryparam))
-        self.view.page().setViewportSize(size)
+        qryparam = urllib.parse.urlencode({'img': shotdata.filename.split('\\').pop().split('/').pop()})
+        self.view.load(QUrl("http://" + self.address + ":" +str(self.port) + "/index.html#?" + qryparam))
         self.view.resize(size)
-        self.view.setRenderHint(QPainter.Antialiasing, enabled=True)
         self.view.show()
         app.exec_()
 
@@ -190,5 +184,4 @@ def main():
 if __name__ == "__main__":
     atexit.register(util.Cleanup)
     shotdata = ScreenshotData()
-
     sys.exit(main())

@@ -6,7 +6,6 @@
 
 html {
     background: #FFF url('../img/window-background.jpg') no-repeat;
-    float: left;
     position: absolute;
     height: 100%;
     width: 100%;
@@ -117,8 +116,6 @@ h1 {
 
 .darkroom-image-container,
 .image-container.target {
-    border: 1px solid #ACACAC;
-    box-shadow: 0 1px 20px #999;
     background: transparent;
 }
 
@@ -128,7 +125,7 @@ h1 {
 
 #result {
     font-family: "Microsoft YaHei", monospace;
-    font-size: 2rem;
+    font-size: 1.5rem;
     font-weight: 500;
     text-align: center;
     outline: none !important;
@@ -159,13 +156,12 @@ textarea {
     border: none;
     outline: none;
     font-family: Roboto, sans-serif;
-    font-weight: 300;
 }
 
 .youdao,
 .yandex {
     text-align: center;
-    font-size: 1.6rem;
+    font-size: 1.4rem;
     position: relative;
 }
 
@@ -234,6 +230,7 @@ img.ocr-placeholder {
     max-height: 300px;
 }
 
+
 /*.darkroom-image-container {
     border: 1px solid #AAA;
     border-radius: 3px;
@@ -269,7 +266,7 @@ img.ocr-placeholder {
     outline: none !important;
     border: 1px #0c7cd5 solid;
     box-shadow: none;
-    position: absolute;
+    position: fixed;
     top: 5px;
     right: 15px;
     z-index: 9999;
@@ -277,6 +274,7 @@ img.ocr-placeholder {
 
 .reset button:hover {
     border: 1px #b2dbfb solid;
+    cursor: pointer;
 }
 
 .translations {
@@ -357,7 +355,7 @@ img.ocr-placeholder {
     display: block;
     line-height: 36px;
     left: 20px;
-    opacity: 0.7;
+    opacity: 0.85;
 }
 
 
@@ -395,17 +393,14 @@ img.ocr-placeholder {
     z-index: -1;
 }
 
-
-/*.heart {
-    font-size: 2.5rem;
-    color: red;
-    line-height: 12px;
-    position: relative;
-    top: 2px;
-    opacity: 0.7;
-    font-family: Verdana, sans-serif;
-}*/
-
 .darkroom-toolbar .tooltip > .tooltip-arrow {
     display: none;
+}
+
+.spacer {
+    margin-top: 55px;
+}
+
+.output {
+    margin-bottom: 15px;
 }
