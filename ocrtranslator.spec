@@ -12,11 +12,10 @@ data_files = [
     ('img', 'img'),
     ('js', 'js'),
     ('temp', 'temp'),
-    ('index.html', '.'),
-    ('run-gtk.py', '.')
+    ('index.html', '.')
 ]
 
-a = Analysis(['run-gtk.py'],
+a = Analysis(['main.py'],
              pathex=['/home/ozmartian/Projects/ocr-translator'],
              binaries=None,
              datas=data_files,

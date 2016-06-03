@@ -3,6 +3,7 @@ import os
 import sys
 
 import wx
+from PyQt5.QtCore import QSize
 
 
 #--------------------------------------------------------------------------------------------------------#
@@ -28,20 +29,21 @@ def Cleanup():
 
 def SaveDesktop(shotdata):
     data = GetEntireDesktopRect(shotdata)
-    '''
     data.bmp = wx.Bitmap(data.desktopRect.GetWidth(), data.desktopRect.GetHeight())
     dcScreen = wx.ScreenDC()
     memDC = wx.MemoryDC()
     memDC.SelectObject(data.bmp)
     memDC.Blit(0, 0, data.bmp.GetWidth(), data.bmp.GetHeight(), dcScreen, 0, 0)
     memDC.SelectObject(wx.NullBitmap)
-    '''
+    img = data.bmp.ConvertToImage()
     import time
-    data.desktopFilename = os.path.join(
-        GetWorkingPath(), "temp", time.strftime('desktop_%Y%m%d-%H%M%S')) + ".png"
+    data.desktopFilename = os.path.join(GetWorkingPath(), "temp", time.strftime('desktop_%Y%m%d-%H%M%S')) + ".png"
+    img.SaveFile(data.desktopFilename, wx.BITMAP_TYPE_PNG)
+    '''
     from mss import mss
     for filename in mss().save(output=data.desktopFilename, screen=-1):
         True
+    '''
     return data
 
 #--------------------------------------------------------------------------------------------------------#
@@ -80,12 +82,7 @@ def GetAppFrameSize(data):
     viewHeight = data.height + 185
     if viewHeight < 550:
         viewHeight = 550
-    import __main__ as main
-    if "gtk" in main.__file__:
-        return wx.Size(viewWidth, viewHeight)
-    else:
-        from PyQt5.QtCore import QSize
-        return QSize(viewWidth, viewHeight)
+    return QSize(viewWidth, viewHeight)
 
 #--------------------------------------------------------------------------------------------------------#
 

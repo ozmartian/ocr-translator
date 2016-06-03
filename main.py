@@ -9,13 +9,14 @@ import urllib.parse
 from random import randint
 
 import wx
-from PyQt5.QtCore import Qt, QUrl
+from PyQt5.QtCore import Qt, QUrl, QSize
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QApplication
 
 import util
 
+#os.environ['QTWEBENGINE_REMOTE_DEBUGGING'] = '1234'
 
 #--------------------------------------------------------------------------------------------------------#
 
@@ -65,6 +66,7 @@ class ScreenshotFrame(wx.Frame):
                           self.c1.x, self.c2.y - self.c1.y)
             self.TakeScreenshot()
             self.Close()
+            WebKitHelper()
         else:
             event.Skip()
 
@@ -82,10 +84,7 @@ class ScreenshotFrame(wx.Frame):
                          self.c1.x, self.c2.y - self.c1.y)
 
     def RegionSelected(self):
-        if self.c1 is None or self.c2 is None:
-            return False
-        else:
-            return True
+        return (not self.c1 is None and not self.c2 is None)
 
     def TakeScreenshot(self):
         global shotdata
@@ -111,8 +110,7 @@ class Screenshoter(wx.App):
                                      pos=(shotdata.desktopRect.GetX(),
                                           shotdata.desktopRect.GetY()),
                                      size=(shotdata.desktopRect.GetWidth(),
-                                           shotdata.desktopRect.GetHeight())
-                                     )
+                                           shotdata.desktopRect.GetHeight()))
         self.frame.Show(True)
         self.SetTopWindow(self.frame)
         return True
@@ -170,9 +168,7 @@ class WebKitHelper:
 def main():
     try:
         screenshoter = Screenshoter(False)
-        screenshoter.MainLoop()
-        if len(shotdata.filename) and os.path.isfile(shotdata.filename):
-            WebKitHelper()
+        screenshoter.MainLoop()           
     except:
         print(sys.exc_info()[0])
         return 1
