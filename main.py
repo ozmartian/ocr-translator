@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python3
 
 import atexit
@@ -88,13 +89,10 @@ class ScreenshotFrame(wx.Frame):
 
     def TakeScreenshot(self):
         global shotdata
-        shotdata.bmp = wx.Bitmap(
-            name=shotdata.desktopFilename, type=wx.BITMAP_TYPE_PNG)
-        bmp = shotdata.bmp.GetSubBitmap(
-            wx.Rect(shotdata.x, shotdata.y, shotdata.width, shotdata.height))
+        #shotdata.bmp = wx.Bitmap(name=shotdata.desktopFilename, type=wx.BITMAP_TYPE_PNG)
+        bmp = shotdata.bmp.GetSubBitmap(wx.Rect(shotdata.x, shotdata.y, shotdata.width, shotdata.height))
         img = bmp.ConvertToImage()
-        shotdata.filename = os.path.join(
-            util.GetWorkingPath(), "temp", time.strftime('%Y%m%d-%H%M%S')) + ".png"
+        shotdata.filename = os.path.join(util.GetWorkingPath(), "temp", time.strftime('%Y%m%d-%H%M%S')) + ".png"
         img.SaveFile(shotdata.filename, wx.BITMAP_TYPE_PNG)
 
 #--------------------------------------------------------------------------------------------------------#
