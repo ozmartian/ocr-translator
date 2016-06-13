@@ -3,6 +3,5 @@ temp
 .vscode
 jsconfig.json
 __pycache__
-build
-dist
-_build
+_build/final
+_build/work

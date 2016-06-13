@@ -1,0 +1,6 @@
+#!/bin/bash
+
+[ -d ./final ] && rm -rf ./final
+[ -d ./work ] && rm -rf ./work
+
+ pyinstaller --onefile --windowed --icon=../img/app-icon.ico --workpath=./work --distpath=./final ./build.spec

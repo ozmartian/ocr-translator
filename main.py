@@ -6,17 +6,18 @@ import sys
 import threading
 import time
 import urllib.parse
+import warnings
 from random import randint
 
 import wx
-from PyQt5.QtCore import Qt, QUrl, QSize
+from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QApplication
 
 import util
 
 #os.environ['QTWEBENGINE_REMOTE_DEBUGGING'] = '1234'
+warnings.filterwarnings("ignore")
 
 #--------------------------------------------------------------------------------------------------------#
 
@@ -149,10 +150,17 @@ class WebKitHelper:
         t = threading.Thread(target=util.WebServer, args=(self.address, self.port))
         t.daemon = True
         t.start()
-        global shotdata
+        global shotdata, bWebEngine
         size = util.GetAppFrameSize(shotdata)
         app = QApplication(sys.argv)
-        self.view = QWebEngineView()
+        
+        try:
+            from PyQt5.QtWebEngineWidgets import QWebEngineView
+            self.view = QWebEngineView()
+        except ImportError as e:
+            from PyQt5.QtWebKitWidgets import QWebView
+            self.view = QWebView()
+
         self.view.setWindowTitle("OCR Translator")
         self.view.setWindowIcon(QIcon(os.path.join(util.GetWorkingPath(), "img", "app-icon.ico")))
         self.view.setContextMenuPolicy(Qt.NoContextMenu)

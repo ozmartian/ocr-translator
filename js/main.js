@@ -231,6 +231,10 @@ var imgEditor = {
                 return;
             }
             imgEditor.disableTools();
+            $('.darkroom-image-container').css({
+                'border': '1px solid #666',
+                'box-shadow': '0 1px 18px #666'
+            });
         };
     }
 };

@@ -1,587 +1,595 @@
 (function() {
-'use strict';
+    'use strict';
 
-// Inject SVG icons into the DOM
-var element = document.createElement('div');
-element.id = 'darkroom-icons';
-element.style.height = 0;
-element.style.width = 0;
-element.style.position = 'absolute';
-element.style.visibility = 'hidden';
-element.innerHTML = '<!-- inject:svg --><svg xmlns="http://www.w3.org/2000/svg"><symbol id="close" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/><path d="M0 0h24v24H0z" fill="none"/></symbol><symbol id="crop" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M17 15h2V7c0-1.1-.9-2-2-2H9v2h8v8zM7 17V1H5v4H1v2h4v10c0 1.1.9 2 2 2h10v4h2v-4h4v-2H7z"/></symbol><symbol id="done" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></symbol><symbol id="invert" viewBox="0 0 512 512"><path d="M260.604 432.04V103.7c-34.1 34.42-68.867 68.207-102.523 103.05-38.148 42.793-44.836 110.516-13.33 158.91 24.282 39.61 68.993 66.617 115.854 66.38zm128.573-264.583c53.295 51.613 68.963 137.26 36.5 204.152-31.007 68.573-107.67 112.59-182.582 104.216C164.982 469.57 95.912 407.136 81.975 330c-12.868-61.71 10.74-127.92 57.303-169.79 40.442-40.44 80.884-80.883 121.326-121.325l128.573 128.572z"/></symbol><symbol id="less-brightness" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 18c3.328 0 6-2.672 6-6s-2.672-6-6-6-6 2.672-6 6 2.672 6 6 6zm8.016-2.672v4.688h-4.688L12 23.296l-3.328-3.28H3.984v-4.688L.704 12l3.28-3.328V3.984h4.688L12 .704l3.328 3.28h4.688v4.688L23.296 12z"/></symbol><symbol id="more-brightness" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 8.016c2.203 0 3.984 1.78 3.984 3.984s-1.78 3.984-3.984 3.984S8.016 14.204 8.016 12 9.796 8.016 12 8.016zM12 18c3.328 0 6-2.672 6-6s-2.672-6-6-6-6 2.672-6 6 2.672 6 6 6zm8.016-9.328L23.296 12l-3.28 3.328v4.688h-4.688L12 23.296l-3.328-3.28H3.984v-4.688L.704 12l3.28-3.328V3.984h4.688L12 .704l3.328 3.28h4.688v4.688z"/></symbol><symbol id="redo" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16a8.002 8.002 0 0 1 7.6-5.5c1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/></symbol><symbol id="rotate-left" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M7.11 8.53L5.7 7.11C4.8 8.27 4.24 9.61 4.07 11h2.02c.14-.87.49-1.72 1.02-2.47zM6.09 13H4.07c.17 1.39.72 2.73 1.62 3.89l1.41-1.42c-.52-.75-.87-1.59-1.01-2.47zm1.01 5.32c1.16.9 2.51 1.44 3.9 1.61V17.9c-.87-.15-1.71-.49-2.46-1.03L7.1 18.32zM13 4.07V1L8.45 5.55 13 10V6.09c2.84.48 5 2.94 5 5.91s-2.16 5.43-5 5.91v2.02c3.95-.49 7-3.85 7-7.93s-3.05-7.44-7-7.93z"/></symbol><symbol id="rotate-right" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.55 5.55L11 1v3.07C7.06 4.56 4 7.92 4 12s3.05 7.44 7 7.93v-2.02c-2.84-.48-5-2.94-5-5.91s2.16-5.43 5-5.91V10l4.55-4.45zM19.93 11a7.906 7.906 0 0 0-1.62-3.89l-1.42 1.42c.54.75.88 1.6 1.02 2.47h2.02zM13 17.9v2.02c1.39-.17 2.74-.71 3.9-1.61l-1.44-1.44c-.75.54-1.59.89-2.46 1.03zm3.89-2.42l1.42 1.41c.9-1.16 1.45-2.5 1.62-3.89h-2.02c-.14.87-.48 1.72-1.02 2.48z"/></symbol><symbol id="save" viewBox="0 0 512 512"><path d="M496 256L256 16v144H0v192h256v144z"/></symbol><symbol id="undo" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></symbol><symbol id="upload" viewBox="0 0 1135 1024"><path d="M503.627 667.187c-2.848-52.282 4.945-106.634-6.797-157.524-7.035-32.92-78.033-10.97-69.74-29.5l144.136-147.488c49.43 52.02 99.15 103.76 148.844 155.523-30.326-.092-70.723-4.685-82.198 31.057-3.545 83.015-1.403 167.53-2.763 251.12-4.908 13.677 10.228 47.512-9.47 46.31H504.43l-.802-149.497z"/><path d="M690.506.054C591.61-1.66 489.216 36.17 425.38 113.83c-41.544 45.548-109.698 18.12-162.3 37.234-56.096 17.59-107.23 76.673-119.456 127.157-19.574 62.57-84.794 96.46-110.798 156.155C-32.72 554.67 3.144 719.362 116.602 797.72c65.93 43.86 147.392 69.823 227.038 63.283 29.72-7.902 27.627-50.618 16.245-71.616-39.752-38.63-102.25-12.655-150.69-29.5-47.512-26.44-90.134-68.09-116.728-115.49-14.868-48.47-11.872-102.184-3.25-151.623 32.972-74.546 125.84-113.89 136.918-200.05 4.76-61.635 77.75-68.03 125.65-62.073 51.344 11.228 101.923-8.706 126.917-55.515C526.114 115.45 600.9 81.01 677.088 84.638c106.69.402 222.08 72.668 231.644 186.22-1.766 81.927 69.92 132.36 118.335 187.875 33.61 40.15 23.955 97.023 24.42 145.55-.054 63.262-56.37 102.425-98.593 140.738-48.657 36.17-115.05 10.72-167.568 32.838-20.1 17.67-23.567 55.522-7.692 77.125 26.39 18.35 62.36 3.196 91.558 1.298 122.278-20.424 242.67-108.254 261.86-236.917 16.618-97.61-18.164-200.55-90.464-268.27-42.245-33.645-47.47-86.762-57.485-135.364C938.003 106.31 838.52 7.885 715.026 1.327A350.27 350.27 0 0 0 690.508.054z"/><path d="M570.732 259.014c-26.498 2.925-38.744 31.88-58.07 47.147-61.975 65.99-127.452 129.224-187.723 196.573-12.834 24.05 13.5 48.113 37.495 42.45 27.46.768 54.935 1.13 82.377 2.44 3.74 102.127-1.088 204.762 2.625 306.725 11.1 30.937 49.048 17.676 73.78 20.477 50.47-.857 101.278 1.723 151.536-1.3 30.94-11.098 17.68-49.045 20.48-73.777.486-84.035-1.34-168.127 1.642-252.114 35.928-4.602 74.102 2.848 108.994-6.67 23.14-12.832 14.892-44.054-4.23-56.347-70.975-73.332-140.892-147.815-212.52-220.435a29.1 29.1 0 0 0-16.386-5.167z"/><path d="M443.272 534.09l.997 2.3v.014l-.998-2.315zM810.524 828.817zM367.65 933.885c-27.257-.36-32.168 30.114-29.07 51.19-5.405 24.426 17.647 44.626 41.34 38.925 133.48-.39 267.06.775 400.48-.58 30.558-6.845 23.04-43.14 22.715-66.243-7.232-31.7-44.727-21.946-68.364-23.292h-367.1z"/></symbol></svg><!-- endinject -->';
-document.body.appendChild(element);
+    // Inject SVG icons into the DOM
+    var element = document.createElement('div');
+    element.id = 'darkroom-icons';
+    element.style.height = 0;
+    element.style.width = 0;
+    element.style.position = 'absolute';
+    element.style.visibility = 'hidden';
+    element.innerHTML = '<!-- inject:svg --><svg xmlns="http://www.w3.org/2000/svg"><symbol id="close" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/><path d="M0 0h24v24H0z" fill="none"/></symbol><symbol id="crop" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M17 15h2V7c0-1.1-.9-2-2-2H9v2h8v8zM7 17V1H5v4H1v2h4v10c0 1.1.9 2 2 2h10v4h2v-4h4v-2H7z"/></symbol><symbol id="done" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></symbol><symbol id="invert" viewBox="0 0 512 512"><path d="M260.604 432.04V103.7c-34.1 34.42-68.867 68.207-102.523 103.05-38.148 42.793-44.836 110.516-13.33 158.91 24.282 39.61 68.993 66.617 115.854 66.38zm128.573-264.583c53.295 51.613 68.963 137.26 36.5 204.152-31.007 68.573-107.67 112.59-182.582 104.216C164.982 469.57 95.912 407.136 81.975 330c-12.868-61.71 10.74-127.92 57.303-169.79 40.442-40.44 80.884-80.883 121.326-121.325l128.573 128.572z"/></symbol><symbol id="less-brightness" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 18c3.328 0 6-2.672 6-6s-2.672-6-6-6-6 2.672-6 6 2.672 6 6 6zm8.016-2.672v4.688h-4.688L12 23.296l-3.328-3.28H3.984v-4.688L.704 12l3.28-3.328V3.984h4.688L12 .704l3.328 3.28h4.688v4.688L23.296 12z"/></symbol><symbol id="more-brightness" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 8.016c2.203 0 3.984 1.78 3.984 3.984s-1.78 3.984-3.984 3.984S8.016 14.204 8.016 12 9.796 8.016 12 8.016zM12 18c3.328 0 6-2.672 6-6s-2.672-6-6-6-6 2.672-6 6 2.672 6 6 6zm8.016-9.328L23.296 12l-3.28 3.328v4.688h-4.688L12 23.296l-3.328-3.28H3.984v-4.688L.704 12l3.28-3.328V3.984h4.688L12 .704l3.328 3.28h4.688v4.688z"/></symbol><symbol id="redo" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16a8.002 8.002 0 0 1 7.6-5.5c1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/></symbol><symbol id="rotate-left" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M7.11 8.53L5.7 7.11C4.8 8.27 4.24 9.61 4.07 11h2.02c.14-.87.49-1.72 1.02-2.47zM6.09 13H4.07c.17 1.39.72 2.73 1.62 3.89l1.41-1.42c-.52-.75-.87-1.59-1.01-2.47zm1.01 5.32c1.16.9 2.51 1.44 3.9 1.61V17.9c-.87-.15-1.71-.49-2.46-1.03L7.1 18.32zM13 4.07V1L8.45 5.55 13 10V6.09c2.84.48 5 2.94 5 5.91s-2.16 5.43-5 5.91v2.02c3.95-.49 7-3.85 7-7.93s-3.05-7.44-7-7.93z"/></symbol><symbol id="rotate-right" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M15.55 5.55L11 1v3.07C7.06 4.56 4 7.92 4 12s3.05 7.44 7 7.93v-2.02c-2.84-.48-5-2.94-5-5.91s2.16-5.43 5-5.91V10l4.55-4.45zM19.93 11a7.906 7.906 0 0 0-1.62-3.89l-1.42 1.42c.54.75.88 1.6 1.02 2.47h2.02zM13 17.9v2.02c1.39-.17 2.74-.71 3.9-1.61l-1.44-1.44c-.75.54-1.59.89-2.46 1.03zm3.89-2.42l1.42 1.41c.9-1.16 1.45-2.5 1.62-3.89h-2.02c-.14.87-.48 1.72-1.02 2.48z"/></symbol><symbol id="save" viewBox="0 0 512 512"><path d="M496 256L256 16v144H0v192h256v144z"/></symbol><symbol id="undo" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></symbol><symbol id="upload" viewBox="0 0 1135 1024"><path d="M503.627 667.187c-2.848-52.282 4.945-106.634-6.797-157.524-7.035-32.92-78.033-10.97-69.74-29.5l144.136-147.488c49.43 52.02 99.15 103.76 148.844 155.523-30.326-.092-70.723-4.685-82.198 31.057-3.545 83.015-1.403 167.53-2.763 251.12-4.908 13.677 10.228 47.512-9.47 46.31H504.43l-.802-149.497z"/><path d="M690.506.054C591.61-1.66 489.216 36.17 425.38 113.83c-41.544 45.548-109.698 18.12-162.3 37.234-56.096 17.59-107.23 76.673-119.456 127.157-19.574 62.57-84.794 96.46-110.798 156.155C-32.72 554.67 3.144 719.362 116.602 797.72c65.93 43.86 147.392 69.823 227.038 63.283 29.72-7.902 27.627-50.618 16.245-71.616-39.752-38.63-102.25-12.655-150.69-29.5-47.512-26.44-90.134-68.09-116.728-115.49-14.868-48.47-11.872-102.184-3.25-151.623 32.972-74.546 125.84-113.89 136.918-200.05 4.76-61.635 77.75-68.03 125.65-62.073 51.344 11.228 101.923-8.706 126.917-55.515C526.114 115.45 600.9 81.01 677.088 84.638c106.69.402 222.08 72.668 231.644 186.22-1.766 81.927 69.92 132.36 118.335 187.875 33.61 40.15 23.955 97.023 24.42 145.55-.054 63.262-56.37 102.425-98.593 140.738-48.657 36.17-115.05 10.72-167.568 32.838-20.1 17.67-23.567 55.522-7.692 77.125 26.39 18.35 62.36 3.196 91.558 1.298 122.278-20.424 242.67-108.254 261.86-236.917 16.618-97.61-18.164-200.55-90.464-268.27-42.245-33.645-47.47-86.762-57.485-135.364C938.003 106.31 838.52 7.885 715.026 1.327A350.27 350.27 0 0 0 690.508.054z"/><path d="M570.732 259.014c-26.498 2.925-38.744 31.88-58.07 47.147-61.975 65.99-127.452 129.224-187.723 196.573-12.834 24.05 13.5 48.113 37.495 42.45 27.46.768 54.935 1.13 82.377 2.44 3.74 102.127-1.088 204.762 2.625 306.725 11.1 30.937 49.048 17.676 73.78 20.477 50.47-.857 101.278 1.723 151.536-1.3 30.94-11.098 17.68-49.045 20.48-73.777.486-84.035-1.34-168.127 1.642-252.114 35.928-4.602 74.102 2.848 108.994-6.67 23.14-12.832 14.892-44.054-4.23-56.347-70.975-73.332-140.892-147.815-212.52-220.435a29.1 29.1 0 0 0-16.386-5.167z"/><path d="M443.272 534.09l.997 2.3v.014l-.998-2.315zM810.524 828.817zM367.65 933.885c-27.257-.36-32.168 30.114-29.07 51.19-5.405 24.426 17.647 44.626 41.34 38.925 133.48-.39 267.06.775 400.48-.58 30.558-6.845 23.04-43.14 22.715-66.243-7.232-31.7-44.727-21.946-68.364-23.292h-367.1z"/></symbol></svg><!-- endinject -->';
+    document.body.appendChild(element);
 
-})();
-;(function() {
-'use strict';
+})();;
+(function() {
+    'use strict';
 
-window.Darkroom = Darkroom;
+    window.Darkroom = Darkroom;
 
-// Core object of DarkroomJS.
-// Basically it's a single object, instanciable via an element
-// (it could be a CSS selector or a DOM element), some custom options,
-// and a list of plugin objects (or none to use default ones).
-function Darkroom(element, options, plugins) {
-  return this.constructor(element, options, plugins);
-}
-
-// Create an empty list of plugin objects, which will be filled by
-// other plugin scripts. This is the default plugin list if none is
-// specified in Darkroom'ss constructor.
-Darkroom.plugins = [];
-
-Darkroom.prototype = {
-  // Reference to the main container element
-  containerElement: null,
-
-  // Reference to the Fabric canvas object
-  canvas: null,
-
-  // Reference to the Fabric image object
-  image: null,
-
-  // Reference to the Fabric source canvas object
-  sourceCanvas: null,
-
-  // Reference to the Fabric source image object
-  sourceImage: null,
-  
-  // Fired when a new image is uploaded / change event for canvas element
-  onchange: function() { },
-
-  // Track of the original image element
-  originalImageElement: null,
-
-  // Stack of transformations to apply to the image source
-  transformations: [],
-
-  // Default options
-  defaults: {
-    // Canvas properties (dimension, ratio, color)
-    minWidth: null,
-    minHeight: null,
-    maxWidth: null,
-    maxHeight: null,
-    ratio: null,
-    backgroundColor: '#fff',
-
-    // Plugins options
-    plugins: {},
-
-    // Post-initialisation callback
-    initialize: function() { /* noop */ }
-  },
-
-  // List of the instancied plugins
-  plugins: {},
-
-  // This options are a merge between `defaults` and the options passed
-  // through the constructor
-  options: {},
-
-  constructor: function(element, options, plugins) {
-    this.options = Darkroom.Utils.extend(options, this.defaults);
-
-    if (typeof element === 'string')
-      element = document.querySelector(element);
-    if (null === element)
-      return;
-
-    var image = new Image();
-    image.onload = function() {
-      // Initialize the DOM/Fabric elements
-      this._initializeDOM(element);
-      this._initializeImage();
-
-      // Then initialize the plugins
-      this._initializePlugins(Darkroom.plugins);
-
-      // Public method to adjust image according to the canvas
-      this.refresh(function() {
-        // Execute a custom callback after initialization
-        this.options.initialize.bind(this).call();
-      }.bind(this));
-
-    }.bind(this)
-
-    //image.crossOrigin = 'anonymous';
-    image.src = element.src;
-  },
-
-  selfDestroy: function() {
-    var container = this.containerElement;
-    var image = new Image();
-    image.onload = function() {
-      container.parentNode.replaceChild(image, container);
+    // Core object of DarkroomJS.
+    // Basically it's a single object, instanciable via an element
+    // (it could be a CSS selector or a DOM element), some custom options,
+    // and a list of plugin objects (or none to use default ones).
+    function Darkroom(element, options, plugins) {
+        return this.constructor(element, options, plugins);
     }
 
-    image.src = this.sourceImage.toDataURL();
-  },
+    // Create an empty list of plugin objects, which will be filled by
+    // other plugin scripts. This is the default plugin list if none is
+    // specified in Darkroom'ss constructor.
+    Darkroom.plugins = [];
 
-  // Add ability to attach event listener on the core object.
-  // It uses the canvas element to process events.
-  addEventListener: function(eventName, callback) {
-    var el = this.canvas.getElement();
-    if (el.addEventListener){
-      el.addEventListener(eventName, callback);
-    } else if (el.attachEvent) {
-      el.attachEvent('on' + eventName, callback);
+    Darkroom.prototype = {
+        // Reference to the main container element
+        containerElement: null,
+
+        // Reference to the Fabric canvas object
+        canvas: null,
+
+        // Reference to the Fabric image object
+        image: null,
+
+        // Reference to the Fabric source canvas object
+        sourceCanvas: null,
+
+        // Reference to the Fabric source image object
+        sourceImage: null,
+
+        // Fired when a new image is uploaded / change event for canvas element
+        onchange: function() {},
+
+        // Track of the original image element
+        originalImageElement: null,
+
+        // Stack of transformations to apply to the image source
+        transformations: [],
+
+        // Default options
+        defaults: {
+            // Canvas properties (dimension, ratio, color)
+            minWidth: null,
+            minHeight: null,
+            maxWidth: null,
+            maxHeight: null,
+            ratio: null,
+            backgroundColor: '#fff',
+
+            // Plugins options
+            plugins: {},
+
+            // Post-initialisation callback
+            initialize: function() { /* noop */ }
+        },
+
+        // List of the instancied plugins
+        plugins: {},
+
+        // This options are a merge between `defaults` and the options passed
+        // through the constructor
+        options: {},
+
+        constructor: function(element, options, plugins) {
+            this.options = Darkroom.Utils.extend(options, this.defaults);
+
+            if (typeof element === 'string')
+                element = document.querySelector(element);
+            if (null === element)
+                return;
+
+            var image = new Image();
+            image.onload = function() {
+                // Initialize the DOM/Fabric elements
+                this._initializeDOM(element);
+                this._initializeImage();
+
+                // Then initialize the plugins
+                this._initializePlugins(Darkroom.plugins);
+
+                // Public method to adjust image according to the canvas
+                this.refresh(function() {
+                    // Execute a custom callback after initialization
+                    this.options.initialize.bind(this).call();
+                }.bind(this));
+
+            }.bind(this)
+
+            //image.crossOrigin = 'anonymous';
+            image.src = element.src;
+        },
+
+        selfDestroy: function() {
+            var container = this.containerElement;
+            var image = new Image();
+            image.onload = function() {
+                container.parentNode.replaceChild(image, container);
+            }
+
+            image.src = this.sourceImage.toDataURL();
+        },
+
+        // Add ability to attach event listener on the core object.
+        // It uses the canvas element to process events.
+        addEventListener: function(eventName, callback) {
+            var el = this.canvas.getElement();
+            if (el.addEventListener) {
+                el.addEventListener(eventName, callback);
+            } else if (el.attachEvent) {
+                el.attachEvent('on' + eventName, callback);
+            }
+        },
+
+        dispatchEvent: function(eventName) {
+            // Use the old way of creating event to be IE compatible
+            // See https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Creating_and_triggering_events
+            var event = document.createEvent('Event');
+            event.initEvent(eventName, true, true);
+
+            this.canvas.getElement().dispatchEvent(event);
+        },
+
+        // Adjust image & canvas dimension according to min/max width/height
+        // and ratio specified in the options.
+        // This method should be called after each image transformation.
+        refresh: function(next) {
+            var clone = new Image();
+            clone.onload = function() {
+                this._replaceCurrentImage(new fabric.Image(clone));
+
+                if (next) next();
+            }.bind(this);
+            clone.src = this.sourceImage.toDataURL();
+        },
+
+        _replaceCurrentImage: function(newImage) {
+            if (this.image) {
+                this.image.remove();
+            }
+
+            this.image = newImage;
+            this.image.selectable = false;
+
+            // Adjust width or height according to specified ratio
+            var viewport = Darkroom.Utils.computeImageViewPort(this.image);
+            var canvasWidth = viewport.width;
+            var canvasHeight = viewport.height;
+
+            if (null !== this.options.ratio) {
+                var canvasRatio = +this.options.ratio;
+                var currentRatio = canvasWidth / canvasHeight;
+
+                if (currentRatio > canvasRatio) {
+                    canvasHeight = canvasWidth / canvasRatio;
+                } else if (currentRatio < canvasRatio) {
+                    canvasWidth = canvasHeight * canvasRatio;
+                }
+            }
+
+            // Then scale the image to fit into dimension limits
+            var scaleMin = 1;
+            var scaleMax = 1;
+            var scaleX = 1;
+            var scaleY = 1;
+
+            if (null !== this.options.maxWidth && this.options.maxWidth < canvasWidth) {
+                scaleX = this.options.maxWidth / canvasWidth;
+            }
+            if (null !== this.options.maxHeight && this.options.maxHeight < canvasHeight) {
+                scaleY = this.options.maxHeight / canvasHeight;
+            }
+            scaleMin = Math.min(scaleX, scaleY);
+
+            scaleX = 1;
+            scaleY = 1;
+            if (null !== this.options.minWidth && this.options.minWidth > canvasWidth) {
+                scaleX = this.options.minWidth / canvasWidth;
+            }
+            if (null !== this.options.minHeight && this.options.minHeight > canvasHeight) {
+                scaleY = this.options.minHeight / canvasHeight;
+            }
+            scaleMax = Math.max(scaleX, scaleY);
+
+            var scale = scaleMax * scaleMin; // one should be equals to 1
+
+            canvasWidth *= scale;
+            canvasHeight *= scale;
+
+            // Finally place the image in the center of the canvas
+            this.image.setScaleX(1 * scale);
+            this.image.setScaleY(1 * scale);
+            this.canvas.add(this.image);
+            this.canvas.setWidth(canvasWidth);
+            this.canvas.setHeight(canvasHeight);
+            this.canvas.centerObject(this.image);
+            this.image.setCoords();
+        },
+
+        // Apply the transformation on the current image and save it in the
+        // transformations stack (in order to reconstitute the previous states
+        // of the image).
+        applyTransformation: function(transformation) {
+            this.transformations.push(transformation);
+
+            transformation.applyTransformation(
+                this.sourceCanvas,
+                this.sourceImage,
+                this._postTransformation.bind(this)
+            );
+        },
+
+        _postTransformation: function(newImage) {
+            if (newImage)
+                this.sourceImage = newImage;
+
+            this.refresh(function() {
+                this.dispatchEvent('core:transformation');
+            }.bind(this));
+        },
+
+        // Initialize image from original element plus re-apply every
+        // transformations.
+        reinitializeImage: function() {
+            this.sourceImage.remove();
+            this._initializeImage();
+            this._popTransformation(this.transformations.slice())
+        },
+
+        _popTransformation: function(transformations) {
+            if (0 === transformations.length) {
+                this.dispatchEvent('core:reinitialized');
+                this.refresh();
+                return;
+            }
+
+            var transformation = transformations.shift();
+
+            var next = function(newImage) {
+                if (newImage) this.sourceImage = newImage;
+                this._popTransformation(transformations)
+            };
+
+            transformation.applyTransformation(
+                this.sourceCanvas,
+                this.sourceImage,
+                next.bind(this)
+            );
+        },
+
+        // Create the DOM elements and instanciate the Fabric canvas.
+        // The image element is replaced by a new `div` element.
+        // However the original image is re-injected in order to keep a trace of it.
+        _initializeDOM: function(imageElement) {
+            // Container
+            var mainContainerElement = document.createElement('div');
+            mainContainerElement.className = 'darkroom-container';
+
+            // Toolbar
+            var toolbarElement = document.createElement('div');
+            toolbarElement.className = 'darkroom-toolbar slideDown';
+            mainContainerElement.appendChild(toolbarElement);
+
+            // Viewport canvas
+            var canvasContainerElement = document.createElement('div');
+            canvasContainerElement.className = 'darkroom-image-container';
+            var canvasElement = document.createElement('canvas');
+            canvasContainerElement.appendChild(canvasElement);
+            mainContainerElement.appendChild(canvasContainerElement);
+
+            // Source canvas
+            var sourceCanvasContainerElement = document.createElement('div');
+            sourceCanvasContainerElement.className = 'darkroom-source-container';
+            sourceCanvasContainerElement.style.display = 'none';
+            var sourceCanvasElement = document.createElement('canvas');
+            sourceCanvasContainerElement.appendChild(sourceCanvasElement);
+            mainContainerElement.appendChild(sourceCanvasContainerElement);
+
+            // Original image
+            imageElement.parentNode.replaceChild(mainContainerElement, imageElement);
+            imageElement.style.display = 'none';
+            mainContainerElement.appendChild(imageElement);
+
+            // Instanciate object from elements
+            this.containerElement = mainContainerElement;
+            this.originalImageElement = imageElement;
+
+            this.toolbar = new Darkroom.UI.Toolbar(toolbarElement);
+
+            this.canvas = new fabric.Canvas(canvasElement, {
+                selection: false,
+                backgroundColor: this.options.backgroundColor
+            });
+
+            this.sourceCanvas = new fabric.Canvas(sourceCanvasElement, {
+                selection: false,
+                backgroundColor: this.options.backgroundColor
+            });
+        },
+
+        // Instanciate the Fabric image object.
+        // The image is created as a static element with no control,
+        // then it is add in the Fabric canvas object.
+        _initializeImage: function() {
+            this.sourceImage = new fabric.Image(this.originalImageElement, {
+                // Some options to make the image static
+                selectable: false,
+                evented: false,
+                lockMovementX: true,
+                lockMovementY: true,
+                lockRotation: true,
+                lockScalingX: true,
+                lockScalingY: true,
+                lockUniScaling: true,
+                hasControls: false,
+                hasBorders: false,
+            });
+
+            this.sourceCanvas.add(this.sourceImage);
+
+            // Adjust width or height according to specified ratio
+            var viewport = Darkroom.Utils.computeImageViewPort(this.sourceImage);
+            var canvasWidth = viewport.width;
+            var canvasHeight = viewport.height;
+
+            this.sourceCanvas.setWidth(canvasWidth);
+            this.sourceCanvas.setHeight(canvasHeight);
+            this.sourceCanvas.centerObject(this.sourceImage);
+            this.sourceImage.setCoords();
+        },
+
+        // Initialize every plugins.
+        // Note that plugins are instanciated in the same order than they
+        // are declared in the parameter object.
+        _initializePlugins: function(plugins) {
+            for (var name in plugins) {
+                var plugin = plugins[name];
+                var options = this.options.plugins[name];
+
+                // Setting false into the plugin options will disable the plugin
+                if (options === false)
+                    continue;
+
+                // Avoid any issues with _proto_
+                if (!plugins.hasOwnProperty(name))
+                    continue;
+
+                this.plugins[name] = new plugin(this, options);
+            }
+        },
     }
-  },
 
-  dispatchEvent: function(eventName) {
-    // Use the old way of creating event to be IE compatible
-    // See https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Creating_and_triggering_events
-    var event = document.createEvent('Event');
-    event.initEvent(eventName, true, true);
+})();;
+(function() {
+    'use strict';
 
-    this.canvas.getElement().dispatchEvent(event);
-  },
+    Darkroom.Plugin = Plugin;
 
-  // Adjust image & canvas dimension according to min/max width/height
-  // and ratio specified in the options.
-  // This method should be called after each image transformation.
-  refresh: function(next) {
-    var clone = new Image();
-    clone.onload = function() {
-      this._replaceCurrentImage(new fabric.Image(clone));
-
-      if (next) next();
-    }.bind(this);
-    clone.src = this.sourceImage.toDataURL();
-  },
-
-  _replaceCurrentImage: function(newImage) {
-    if (this.image) {
-      this.image.remove();
+    // Define a plugin object. This is the (abstract) parent class which
+    // has to be extended for each plugin.
+    function Plugin(darkroom, options) {
+        this.darkroom = darkroom;
+        this.options = Darkroom.Utils.extend(options, this.defaults);
+        this.initialize();
     }
 
-    this.image = newImage;
-    this.image.selectable = false;
-
-    // Adjust width or height according to specified ratio
-    var viewport = Darkroom.Utils.computeImageViewPort(this.image);
-    var canvasWidth = viewport.width;
-    var canvasHeight = viewport.height;
-
-    if (null !== this.options.ratio) {
-      var canvasRatio = +this.options.ratio;
-      var currentRatio = canvasWidth / canvasHeight;
-
-      if (currentRatio > canvasRatio) {
-        canvasHeight = canvasWidth / canvasRatio;
-      } else if (currentRatio < canvasRatio) {
-        canvasWidth = canvasHeight * canvasRatio;
-      }
+    Plugin.prototype = {
+        defaults: {},
+        initialize: function() {}
     }
 
-    // Then scale the image to fit into dimension limits
-    var scaleMin = 1;
-    var scaleMax = 1;
-    var scaleX = 1;
-    var scaleY = 1;
+    // Inspired by Backbone.js extend capability.
+    Plugin.extend = function(protoProps) {
+        var parent = this;
+        var child;
 
-    if (null !== this.options.maxWidth && this.options.maxWidth < canvasWidth) {
-      scaleX =  this.options.maxWidth / canvasWidth;
-    }
-    if (null !== this.options.maxHeight && this.options.maxHeight < canvasHeight) {
-      scaleY =  this.options.maxHeight / canvasHeight;
-    }
-    scaleMin = Math.min(scaleX, scaleY);
+        if (protoProps && protoProps.hasOwnProperty('constructor')) {
+            child = protoProps.constructor;
+        } else {
+            child = function() {
+                return parent.apply(this, arguments);
+            };
+        }
 
-    scaleX = 1;
-    scaleY = 1;
-    if (null !== this.options.minWidth && this.options.minWidth > canvasWidth) {
-      scaleX =  this.options.minWidth / canvasWidth;
-    }
-    if (null !== this.options.minHeight && this.options.minHeight > canvasHeight) {
-      scaleY =  this.options.minHeight / canvasHeight;
-    }
-    scaleMax = Math.max(scaleX, scaleY);
+        Darkroom.Utils.extend(child, parent);
 
-    var scale = scaleMax * scaleMin; // one should be equals to 1
+        var Surrogate = function() {
+            this.constructor = child;
+        };
+        Surrogate.prototype = parent.prototype;
+        child.prototype = new Surrogate;
 
-    canvasWidth *= scale;
-    canvasHeight *= scale;
+        if (protoProps) Darkroom.Utils.extend(child.prototype, protoProps);
 
-    // Finally place the image in the center of the canvas
-    this.image.setScaleX(1 * scale);
-    this.image.setScaleY(1 * scale);
-    this.canvas.add(this.image);
-    this.canvas.setWidth(canvasWidth);
-    this.canvas.setHeight(canvasHeight);
-    this.canvas.centerObject(this.image);
-    this.image.setCoords();
-  },
+        child.__super__ = parent.prototype;
 
-  // Apply the transformation on the current image and save it in the
-  // transformations stack (in order to reconstitute the previous states
-  // of the image).
-  applyTransformation: function(transformation) {
-    this.transformations.push(transformation);
-
-    transformation.applyTransformation(
-      this.sourceCanvas,
-      this.sourceImage,
-      this._postTransformation.bind(this)
-    );
-  },
-
-  _postTransformation: function(newImage) {
-    if (newImage)
-      this.sourceImage = newImage;
-
-    this.refresh(function() {
-      this.dispatchEvent('core:transformation');
-    }.bind(this));
-  },
-
-  // Initialize image from original element plus re-apply every
-  // transformations.
-  reinitializeImage: function() {
-    this.sourceImage.remove();
-    this._initializeImage();
-    this._popTransformation(this.transformations.slice())
-  },
-
-  _popTransformation: function(transformations) {
-    if (0 === transformations.length) {
-      this.dispatchEvent('core:reinitialized');
-      this.refresh();
-      return;
+        return child;
     }
 
-    var transformation = transformations.shift();
+})();;
+(function() {
+    'use strict';
 
-    var next = function(newImage) {
-      if (newImage) this.sourceImage = newImage;
-      this._popTransformation(transformations)
+    Darkroom.Transformation = Transformation;
+
+    function Transformation(options) {
+        this.options = options;
+    }
+
+    Transformation.prototype = {
+        applyTransformation: function(image) { /* no-op */ }
+    }
+
+    // Inspired by Backbone.js extend capability.
+    Transformation.extend = function(protoProps) {
+        var parent = this;
+        var child;
+
+        if (protoProps && protoProps.hasOwnProperty('constructor')) {
+            child = protoProps.constructor;
+        } else {
+            child = function() {
+                return parent.apply(this, arguments);
+            };
+        }
+
+        Darkroom.Utils.extend(child, parent);
+
+        var Surrogate = function() {
+            this.constructor = child;
+        };
+        Surrogate.prototype = parent.prototype;
+        child.prototype = new Surrogate;
+
+        if (protoProps) Darkroom.Utils.extend(child.prototype, protoProps);
+
+        child.__super__ = parent.prototype;
+
+        return child;
+    }
+
+})();;
+(function() {
+    'use strict';
+
+    Darkroom.UI = {
+        Toolbar: Toolbar,
+        ButtonGroup: ButtonGroup,
+        Button: Button,
     };
 
-    transformation.applyTransformation(
-      this.sourceCanvas,
-      this.sourceImage,
-      next.bind(this)
-    );
-  },
-
-  // Create the DOM elements and instanciate the Fabric canvas.
-  // The image element is replaced by a new `div` element.
-  // However the original image is re-injected in order to keep a trace of it.
-  _initializeDOM: function(imageElement) {
-    // Container
-    var mainContainerElement = document.createElement('div');
-    mainContainerElement.className = 'darkroom-container';
-
-    // Toolbar
-    var toolbarElement = document.createElement('div');
-    toolbarElement.className = 'darkroom-toolbar';
-    mainContainerElement.appendChild(toolbarElement);
-
-    // Viewport canvas
-    var canvasContainerElement = document.createElement('div');
-    canvasContainerElement.className = 'darkroom-image-container';
-    var canvasElement = document.createElement('canvas');
-    canvasContainerElement.appendChild(canvasElement);
-    mainContainerElement.appendChild(canvasContainerElement);
-
-    // Source canvas
-    var sourceCanvasContainerElement = document.createElement('div');
-    sourceCanvasContainerElement.className = 'darkroom-source-container';
-    sourceCanvasContainerElement.style.display = 'none';
-    var sourceCanvasElement = document.createElement('canvas');
-    sourceCanvasContainerElement.appendChild(sourceCanvasElement);
-    mainContainerElement.appendChild(sourceCanvasContainerElement);
-
-    // Original image
-    imageElement.parentNode.replaceChild(mainContainerElement, imageElement);
-    imageElement.style.display = 'none';
-    mainContainerElement.appendChild(imageElement);
-
-    // Instanciate object from elements
-    this.containerElement = mainContainerElement;
-    this.originalImageElement = imageElement;
-
-    this.toolbar = new Darkroom.UI.Toolbar(toolbarElement);
-
-    this.canvas = new fabric.Canvas(canvasElement, {
-      selection: false,
-      backgroundColor: this.options.backgroundColor
-    });
-
-    this.sourceCanvas = new fabric.Canvas(sourceCanvasElement, {
-      selection: false,
-      backgroundColor: this.options.backgroundColor
-    });
-  },
-
-  // Instanciate the Fabric image object.
-  // The image is created as a static element with no control,
-  // then it is add in the Fabric canvas object.
-  _initializeImage: function() {
-    this.sourceImage = new fabric.Image(this.originalImageElement, {
-      // Some options to make the image static
-      selectable: false,
-      evented: false,
-      lockMovementX: true,
-      lockMovementY: true,
-      lockRotation: true,
-      lockScalingX: true,
-      lockScalingY: true,
-      lockUniScaling: true,
-      hasControls: false,
-      hasBorders: false,
-    });
-
-    this.sourceCanvas.add(this.sourceImage);
-
-    // Adjust width or height according to specified ratio
-    var viewport = Darkroom.Utils.computeImageViewPort(this.sourceImage);
-    var canvasWidth = viewport.width;
-    var canvasHeight = viewport.height;
-
-    this.sourceCanvas.setWidth(canvasWidth);
-    this.sourceCanvas.setHeight(canvasHeight);
-    this.sourceCanvas.centerObject(this.sourceImage);
-    this.sourceImage.setCoords();
-  },
-
-  // Initialize every plugins.
-  // Note that plugins are instanciated in the same order than they
-  // are declared in the parameter object.
-  _initializePlugins: function(plugins) {
-    for (var name in plugins) {
-      var plugin = plugins[name];
-      var options = this.options.plugins[name];
-
-      // Setting false into the plugin options will disable the plugin
-      if (options === false)
-        continue;
-
-      // Avoid any issues with _proto_
-      if (!plugins.hasOwnProperty(name))
-        continue;
-
-      this.plugins[name] = new plugin(this, options);
+    // Toolbar object.
+    function Toolbar(element) {
+        this.element = element;
     }
-  },
-}
 
-})();
-;(function() {
-'use strict';
+    Toolbar.prototype = {
+        createButtonGroup: function(options) {
+            var buttonGroup = document.createElement('div');
+            buttonGroup.className = 'darkroom-button-group';
+            this.element.appendChild(buttonGroup);
 
-Darkroom.Plugin = Plugin;
-
-// Define a plugin object. This is the (abstract) parent class which
-// has to be extended for each plugin.
-function Plugin(darkroom, options) {
-  this.darkroom = darkroom;
-  this.options = Darkroom.Utils.extend(options, this.defaults);
-  this.initialize();
-}
-
-Plugin.prototype = {
-  defaults: {},
-  initialize: function() { }
-}
-
-// Inspired by Backbone.js extend capability.
-Plugin.extend = function(protoProps) {
-  var parent = this;
-  var child;
-
-  if (protoProps && protoProps.hasOwnProperty('constructor')) {
-    child = protoProps.constructor;
-  } else {
-    child = function(){ return parent.apply(this, arguments); };
-  }
-
-  Darkroom.Utils.extend(child, parent);
-
-  var Surrogate = function(){ this.constructor = child; };
-  Surrogate.prototype = parent.prototype;
-  child.prototype = new Surrogate;
-
-  if (protoProps) Darkroom.Utils.extend(child.prototype, protoProps);
-
-  child.__super__ = parent.prototype;
-
-  return child;
-}
-
-})();
-;(function() {
-'use strict';
-
-Darkroom.Transformation = Transformation;
-
-function Transformation(options) {
-  this.options = options;
-}
-
-Transformation.prototype = {
-  applyTransformation: function(image) { /* no-op */  }
-}
-
-// Inspired by Backbone.js extend capability.
-Transformation.extend = function(protoProps) {
-  var parent = this;
-  var child;
-
-  if (protoProps && protoProps.hasOwnProperty('constructor')) {
-    child = protoProps.constructor;
-  } else {
-    child = function(){ return parent.apply(this, arguments); };
-  }
-
-  Darkroom.Utils.extend(child, parent);
-
-  var Surrogate = function(){ this.constructor = child; };
-  Surrogate.prototype = parent.prototype;
-  child.prototype = new Surrogate;
-
-  if (protoProps) Darkroom.Utils.extend(child.prototype, protoProps);
-
-  child.__super__ = parent.prototype;
-
-  return child;
-}
-
-})();
-;(function() {
-'use strict';
-
-Darkroom.UI = {
-  Toolbar: Toolbar,
-  ButtonGroup: ButtonGroup,
-  Button: Button,
-};
-
-// Toolbar object.
-function Toolbar(element) {
-  this.element = element;
-}
-
-Toolbar.prototype = {
-  createButtonGroup: function(options) {
-    var buttonGroup = document.createElement('div');
-    buttonGroup.className = 'darkroom-button-group';
-    this.element.appendChild(buttonGroup);
-
-    return new ButtonGroup(buttonGroup);
-  }
-};
-
-// ButtonGroup object.
-function ButtonGroup(element) {
-  this.element = element;
-}
-
-ButtonGroup.prototype = {
-  createButton: function(options) {
-    var defaults = {
-      image: 'help',
-      tooltip: '',
-      type: 'default',
-      group: 'default',
-      hide: false,
-      disabled: false
+            return new ButtonGroup(buttonGroup);
+        }
     };
 
-    options = Darkroom.Utils.extend(options, defaults);
-
-    var buttonElement = document.createElement('button');
-    buttonElement.type = 'button';
-    if (options.tooltip.length > 0) {
-      buttonElement.title = options.tooltip;
-      buttonElement.dataset['toggle'] = 'tooltip';
-      buttonElement.dataset['placement'] = 'bottom';
+    // ButtonGroup object.
+    function ButtonGroup(element) {
+        this.element = element;
     }
-    buttonElement.className = 'darkroom-button darkroom-button-' + options.type;
-    buttonElement.innerHTML = '<svg class="darkroom-icon"><use xlink:href="#' + options.image + '" /></svg>';
-    this.element.appendChild(buttonElement);
 
-    var button = new Button(buttonElement);
-    button.hide(options.hide);
-    button.disable(options.disabled);
+    ButtonGroup.prototype = {
+        createButton: function(options) {
+            var defaults = {
+                image: 'help',
+                tooltip: '',
+                type: 'default',
+                group: 'default',
+                hide: false,
+                disabled: false
+            };
 
-    return button;
-  }
-}
+            options = Darkroom.Utils.extend(options, defaults);
 
-// Button object.
-function Button(element) {
-  this.element = element;
-}
+            var buttonElement = document.createElement('button');
+            buttonElement.type = 'button';
+            if (options.tooltip.length > 0) {
+                buttonElement.title = options.tooltip;
+                buttonElement.dataset['toggle'] = 'tooltip';
+                buttonElement.dataset['placement'] = 'bottom';
+            }
+            buttonElement.className = 'darkroom-button darkroom-button-' + options.type;
+            buttonElement.innerHTML = '<svg class="darkroom-icon"><use xlink:href="#' + options.image + '" /></svg>';
+            this.element.appendChild(buttonElement);
 
-Button.prototype = {
-  addEventListener: function(eventName, listener) {
-    if (this.element.addEventListener){
-      this.element.addEventListener(eventName, listener);
-    } else if (this.element.attachEvent) {
-      this.element.attachEvent('on' + eventName, listener);
+            var button = new Button(buttonElement);
+            button.hide(options.hide);
+            button.disable(options.disabled);
+
+            return button;
+        }
     }
-  },
-  removeEventListener: function(eventName, listener) {
-    if (this.element.removeEventListener){
-      this.element.removeEventListener(eventName, listener);
+
+    // Button object.
+    function Button(element) {
+        this.element = element;
     }
-  },
-  active: function(value) {
-    if (value)
-      this.element.classList.add('darkroom-button-active');
-    else
-      this.element.classList.remove('darkroom-button-active');
-  },
-  hide: function(value) {
-    if (value)
-      this.element.classList.add('darkroom-button-hidden');
-    else
-      this.element.classList.remove('darkroom-button-hidden');
-  },
-  disable: function(value) {
-    this.element.disabled = (value) ? true : false;
-  }
-};
 
-})();
-;(function() {
-'use strict';
+    Button.prototype = {
+        addEventListener: function(eventName, listener) {
+            if (this.element.addEventListener) {
+                this.element.addEventListener(eventName, listener);
+            } else if (this.element.attachEvent) {
+                this.element.attachEvent('on' + eventName, listener);
+            }
+        },
+        removeEventListener: function(eventName, listener) {
+            if (this.element.removeEventListener) {
+                this.element.removeEventListener(eventName, listener);
+            }
+        },
+        active: function(value) {
+            if (value)
+                this.element.classList.add('darkroom-button-active');
+            else
+                this.element.classList.remove('darkroom-button-active');
+        },
+        hide: function(value) {
+            if (value)
+                this.element.classList.add('darkroom-button-hidden');
+            else
+                this.element.classList.remove('darkroom-button-hidden');
+        },
+        disable: function(value) {
+            this.element.disabled = (value) ? true : false;
+        }
+    };
 
-Darkroom.Utils = {
-  extend: extend,
-  computeImageViewPort: computeImageViewPort,
-};
+})();;
+(function() {
+    'use strict';
+
+    Darkroom.Utils = {
+        extend: extend,
+        computeImageViewPort: computeImageViewPort,
+    };
 
 
-// Utility method to easily extend objects.
-function extend(b, a) {
-  var prop;
-  if (b === undefined) {
-    return a;
-  }
-  for (prop in a) {
-    if (a.hasOwnProperty(prop) && b.hasOwnProperty(prop) === false) {
-      b[prop] = a[prop];
+    // Utility method to easily extend objects.
+    function extend(b, a) {
+        var prop;
+        if (b === undefined) {
+            return a;
+        }
+        for (prop in a) {
+            if (a.hasOwnProperty(prop) && b.hasOwnProperty(prop) === false) {
+                b[prop] = a[prop];
+            }
+        }
+        return b;
     }
-  }
-  return b;
-}
 
-function computeImageViewPort(image) {
-  return {
-    height: Math.abs(image.getWidth() * (Math.sin(image.getAngle() * Math.PI/180))) + Math.abs(image.getHeight() * (Math.cos(image.getAngle() * Math.PI/180))),
-    width: Math.abs(image.getHeight() * (Math.sin(image.getAngle() * Math.PI/180))) + Math.abs(image.getWidth() * (Math.cos(image.getAngle() * Math.PI/180))),
-  }
-}
+    function computeImageViewPort(image) {
+        return {
+            height: Math.abs(image.getWidth() * (Math.sin(image.getAngle() * Math.PI / 180))) + Math.abs(image.getHeight() * (Math.cos(image.getAngle() * Math.PI / 180))),
+            width: Math.abs(image.getHeight() * (Math.sin(image.getAngle() * Math.PI / 180))) + Math.abs(image.getWidth() * (Math.cos(image.getAngle() * Math.PI / 180))),
+        }
+    }
 
-})();
-;(function() {
+})();;
+(function() {
     'use strict';
 
     Darkroom.plugins['upload'] = Darkroom.Plugin.extend({
-        
+
         initialize: function InitDarkroomUploadPlugin() {
             var buttonGroup = this.darkroom.toolbar.createButtonGroup();
 
@@ -605,7 +613,7 @@ function computeImageViewPort(image) {
                 document.body.appendChild(field);
             }
         },
-        
+
         loadImage: function(e) {
             var reader = new FileReader();
             reader.onload = function(event) {
@@ -630,137 +638,141 @@ function computeImageViewPort(image) {
                     evt = document.createEvent('MouseEvents');
                     evt.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
                 }
-                (evt) ? el.dispatchEvent(evt) : (el.click && el.click());
+                (evt) ? el.dispatchEvent(evt): (el.click && el.click());
             }
         }
 
     });
 
-})();
-;;(function(window, document, Darkroom, fabric) {
-  'use strict';
+})();;;
+(function(window, document, Darkroom, fabric) {
+    'use strict';
 
-  Darkroom.plugins['history'] = Darkroom.Plugin.extend({
-    undoTransformations: [],
+    Darkroom.plugins['history'] = Darkroom.Plugin.extend({
+        undoTransformations: [],
 
-    initialize: function InitDarkroomHistoryPlugin() {
-      this._initButtons();
+        initialize: function InitDarkroomHistoryPlugin() {
+            this._initButtons();
 
-      this.darkroom.addEventListener('core:transformation', this._onTranformationApplied.bind(this));
-    },
+            this.darkroom.addEventListener('core:transformation', this._onTranformationApplied.bind(this));
+        },
 
-    undo: function() {
-      if (this.darkroom.transformations.length === 0) {
-        return;
-      }
+        undo: function() {
+            if (this.darkroom.transformations.length === 0) {
+                return;
+            }
 
-      var lastTransformation = this.darkroom.transformations.pop();
-      this.undoTransformations.unshift(lastTransformation);
+            var lastTransformation = this.darkroom.transformations.pop();
+            this.undoTransformations.unshift(lastTransformation);
 
-      this.darkroom.reinitializeImage();
-      this._updateButtons();
-    },
+            this.darkroom.reinitializeImage();
+            this._updateButtons();
+        },
 
-    redo: function() {
-      if (this.undoTransformations.length === 0) {
-        return;
-      }
+        redo: function() {
+            if (this.undoTransformations.length === 0) {
+                return;
+            }
 
-      var cancelTransformation = this.undoTransformations.shift();
-      this.darkroom.transformations.push(cancelTransformation);
+            var cancelTransformation = this.undoTransformations.shift();
+            this.darkroom.transformations.push(cancelTransformation);
 
-      this.darkroom.reinitializeImage();
-      this._updateButtons();
-    },
+            this.darkroom.reinitializeImage();
+            this._updateButtons();
+        },
 
-    _initButtons: function() {
-      var buttonGroup = this.darkroom.toolbar.createButtonGroup();
+        _initButtons: function() {
+            var buttonGroup = this.darkroom.toolbar.createButtonGroup();
 
-      this.backButton = buttonGroup.createButton({
-        image: 'undo',
-        tooltip: 'Undo',
-        disabled: true
-      });
+            this.backButton = buttonGroup.createButton({
+                image: 'undo',
+                tooltip: 'Undo',
+                disabled: true
+            });
 
-      this.forwardButton = buttonGroup.createButton({
-        image: 'redo',
-        tooltip: 'Redo',
-        disabled: true
-      });
+            this.forwardButton = buttonGroup.createButton({
+                image: 'redo',
+                tooltip: 'Redo',
+                disabled: true
+            });
 
-      this.backButton.addEventListener('click', this.undo.bind(this));
-      this.forwardButton.addEventListener('click', this.redo.bind(this));
+            this.backButton.addEventListener('click', this.undo.bind(this));
+            this.forwardButton.addEventListener('click', this.redo.bind(this));
 
-      return this;
-    },
+            return this;
+        },
 
-    _updateButtons: function() {
-      this.backButton.disable((this.darkroom.transformations.length === 0))
-      this.forwardButton.disable((this.undoTransformations.length === 0))
-    },
+        _updateButtons: function() {
+            this.backButton.disable((this.darkroom.transformations.length === 0))
+            this.forwardButton.disable((this.undoTransformations.length === 0))
+        },
 
-    _onTranformationApplied: function() {
-      this.undoTransformations = [];
-      this._updateButtons();
-    }
-  });
-})(window, document, Darkroom, fabric);
-;(function () {
-  'use strict';
+        _onTranformationApplied: function() {
+            this.undoTransformations = [];
+            this._updateButtons();
+        }
+    });
+})(window, document, Darkroom, fabric);;
+(function() {
+    'use strict';
 
     var Brightness = Darkroom.Transformation.extend({
-    brightness: 0,
-    applyTransformation: function (canvas, image, next) {
-      console.log(this.options.diff);
-      this.brightness += this.options.diff;
-      var filter = new fabric.Image.filters.Brightness({ brightness: this.brightness });
-      image.filters.push(filter);
-      image.applyFilters(canvas.renderAll.bind(canvas));
-      next();
-    }
-  });
+        brightness: 0,
+        applyTransformation: function(canvas, image, next) {
+            console.log(this.options.diff);
+            this.brightness += this.options.diff;
+            var filter = new fabric.Image.filters.Brightness({
+                brightness: this.brightness
+            });
+            image.filters.push(filter);
+            image.applyFilters(canvas.renderAll.bind(canvas));
+            next();
+        }
+    });
 
-  Darkroom.plugins['brightness'] = Darkroom.Plugin.extend({
+    Darkroom.plugins['brightness'] = Darkroom.Plugin.extend({
 
-    initialize: function InitDarkroomBrightnessPlugin() {
-      var buttonGroup = this.darkroom.toolbar.createButtonGroup();
+        initialize: function InitDarkroomBrightnessPlugin() {
+            var buttonGroup = this.darkroom.toolbar.createButtonGroup();
 
-      var lessButton = buttonGroup.createButton({
-        image: 'less-brightness',
-        tooltip: 'Darken'
-      });
+            var lessButton = buttonGroup.createButton({
+                image: 'less-brightness',
+                tooltip: 'Darken'
+            });
 
-      var moreButton = buttonGroup.createButton({
-        image: 'more-brightness',
-        tooltip: 'Brighten'
-      });
+            var moreButton = buttonGroup.createButton({
+                image: 'more-brightness',
+                tooltip: 'Brighten'
+            });
 
-      lessButton.addEventListener('click', this.lessBrightness.bind(this));
-      moreButton.addEventListener('click', this.moreBrightness.bind(this));
-    },
+            lessButton.addEventListener('click', this.lessBrightness.bind(this));
+            moreButton.addEventListener('click', this.moreBrightness.bind(this));
+        },
 
-    lessBrightness: function lessBrightness() {
-      this.brightness(-10);
-    },
+        lessBrightness: function lessBrightness() {
+            this.brightness(-10);
+        },
 
-    moreBrightness: function moreBrightness() {
-      this.brightness(10);
-    },
+        moreBrightness: function moreBrightness() {
+            this.brightness(10);
+        },
 
-    brightness: function brightness(value) {
-      this.darkroom.applyTransformation(
-        new Brightness({diff: value})
-      );
-    }
+        brightness: function brightness(value) {
+            this.darkroom.applyTransformation(
+                new Brightness({
+                    diff: value
+                })
+            );
+        }
 
-  });
+    });
 
-})();
-;(function() {
+})();;
+(function() {
     'use strict';
 
     Darkroom.plugins['invert'] = Darkroom.Plugin.extend({
-        
+
         initialize: function InitDarkroomInvertPlugin() {
             var buttonGroup = this.darkroom.toolbar.createButtonGroup();
 
@@ -776,751 +788,760 @@ function computeImageViewPort(image) {
         },
     });
 
-})();;(function() {
-'use strict';
-
-var Rotation = Darkroom.Transformation.extend({
-  applyTransformation: function(canvas, image, next) {
-    var angle = (image.getAngle() + this.options.angle) % 360;
-    image.rotate(angle);
-
-    var width, height;
-    height = Math.abs(image.getWidth()*(Math.sin(angle*Math.PI/180)))+Math.abs(image.getHeight()*(Math.cos(angle*Math.PI/180)));
-    width = Math.abs(image.getHeight()*(Math.sin(angle*Math.PI/180)))+Math.abs(image.getWidth()*(Math.cos(angle*Math.PI/180)));
-
-    canvas.setWidth(width);
-    canvas.setHeight(height);
-
-    canvas.centerObject(image);
-    image.setCoords();
-    canvas.renderAll();
-
-    next();
-  }
-});
-
-Darkroom.plugins['rotate'] = Darkroom.Plugin.extend({
-
-  initialize: function InitDarkroomRotatePlugin() {
-    var buttonGroup = this.darkroom.toolbar.createButtonGroup();
-
-    var leftButton = buttonGroup.createButton({
-      image: 'rotate-left',
-      tooltip: 'Rotate Left'
-    });
-
-    var rightButton = buttonGroup.createButton({
-      image: 'rotate-right',
-      tooltip: 'Rotate Right'
-    });
-
-    leftButton.addEventListener('click', this.rotateLeft.bind(this));
-    rightButton.addEventListener('click', this.rotateRight.bind(this));
-  },
-
-  rotateLeft: function rotateLeft() {
-    this.rotate(-90);
-  },
-
-  rotateRight: function rotateRight() {
-    this.rotate(90);
-  },
-
-  rotate: function rotate(angle) {
-    this.darkroom.applyTransformation(
-      new Rotation({angle: angle})
-    );
-  }
-
-});
-
-})();
-;(function() {
-'use strict';
-
-var Crop = Darkroom.Transformation.extend({
-  applyTransformation: function(canvas, image, next) {
-    // Snapshot the image delimited by the crop zone
-    var snapshot = new Image();
-    snapshot.onload = function() {
-      // Validate image
-      if (height < 1 || width < 1)
-        return;
-
-      var imgInstance = new fabric.Image(this, {
-        // options to make the image static
-        selectable: false,
-        evented: false,
-        lockMovementX: true,
-        lockMovementY: true,
-        lockRotation: true,
-        lockScalingX: true,
-        lockScalingY: true,
-        lockUniScaling: true,
-        hasControls: false,
-        hasBorders: false
-      });
-
-      var width = this.width;
-      var height = this.height;
-
-      // Update canvas size
-      canvas.setWidth(width);
-      canvas.setHeight(height);
-
-      // Add image
-      image.remove();
-      canvas.add(imgInstance);
-
-      next(imgInstance);
-    };
-
-    var viewport = Darkroom.Utils.computeImageViewPort(image);
-    var imageWidth = viewport.width;
-    var imageHeight = viewport.height;
-
-    var left = this.options.left * imageWidth;
-    var top = this.options.top * imageHeight;
-    var width = Math.min(this.options.width * imageWidth, imageWidth - left);
-    var height = Math.min(this.options.height * imageHeight, imageHeight - top);
-
-    snapshot.src = canvas.toDataURL({
-      left: left,
-      top: top,
-      width: width,
-      height: height,
-    });
-  }
-});
-
-var CropZone = fabric.util.createClass(fabric.Rect, {
-  _render: function(ctx) {
-    this.callSuper('_render', ctx);
-
-    var canvas = ctx.canvas;
-    var dashWidth = 7;
-
-    // Set original scale
-    var flipX = this.flipX ? -1 : 1;
-    var flipY = this.flipY ? -1 : 1;
-    var scaleX = flipX / this.scaleX;
-    var scaleY = flipY / this.scaleY;
-
-    ctx.scale(scaleX, scaleY);
-
-    // Overlay rendering
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-    this._renderOverlay(ctx);
-
-    // Set dashed borders
-    if (ctx.setLineDash !== undefined)
-      ctx.setLineDash([dashWidth, dashWidth]);
-    else if (ctx.mozDash !== undefined)
-      ctx.mozDash = [dashWidth, dashWidth];
-
-    // First lines rendering with black
-    ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
-    this._renderBorders(ctx);
-    this._renderGrid(ctx);
-
-    // Re render lines in white
-    ctx.lineDashOffset = dashWidth;
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
-    this._renderBorders(ctx);
-    this._renderGrid(ctx);
-
-    // Reset scale
-    ctx.scale(1/scaleX, 1/scaleY);
-  },
-
-  _renderOverlay: function(ctx) {
-    var canvas = ctx.canvas;
-
-    //
-    //    x0    x1        x2      x3
-    // y0 +------------------------+
-    //    |\\\\\\\\\\\\\\\\\\\\\\\\|
-    //    |\\\\\\\\\\\\\\\\\\\\\\\\|
-    // y1 +------+---------+-------+
-    //    |\\\\\\|         |\\\\\\\|
-    //    |\\\\\\|    0    |\\\\\\\|
-    //    |\\\\\\|         |\\\\\\\|
-    // y2 +------+---------+-------+
-    //    |\\\\\\\\\\\\\\\\\\\\\\\\|
-    //    |\\\\\\\\\\\\\\\\\\\\\\\\|
-    // y3 +------------------------+
-    //
-
-    var x0 = Math.ceil(-this.getWidth() / 2 - this.getLeft());
-    var x1 = Math.ceil(-this.getWidth() / 2);
-    var x2 = Math.ceil(this.getWidth() / 2);
-    var x3 = Math.ceil(this.getWidth() / 2 + (canvas.width - this.getWidth() - this.getLeft()));
-
-    var y0 = Math.ceil(-this.getHeight() / 2 - this.getTop());
-    var y1 = Math.ceil(-this.getHeight() / 2);
-    var y2 = Math.ceil(this.getHeight() / 2);
-    var y3 = Math.ceil(this.getHeight() / 2 + (canvas.height - this.getHeight() - this.getTop()));
-
-    ctx.beginPath();
-    
-    // Draw outer rectangle.
-    // Numbers are +/-1 so that overlay edges don't get blurry.
-    ctx.moveTo(x0 - 1, y0 - 1);
-    ctx.lineTo(x3 + 1, y0 - 1);
-    ctx.lineTo(x3 + 1, y3 + 1);
-    ctx.lineTo(x0 - 1, y3 - 1);
-    ctx.lineTo(x0 - 1, y0 - 1);
-    ctx.closePath();
-
-    // Draw inner rectangle.
-    ctx.moveTo(x1, y1);
-    ctx.lineTo(x1, y2);
-    ctx.lineTo(x2, y2);
-    ctx.lineTo(x2, y1);
-    ctx.lineTo(x1, y1);
-
-    ctx.closePath();
-    ctx.fill();
-  },
-
-  _renderBorders: function(ctx) {
-    ctx.beginPath();
-    ctx.moveTo(-this.getWidth()/2, -this.getHeight()/2); // upper left
-    ctx.lineTo(this.getWidth()/2, -this.getHeight()/2); // upper right
-    ctx.lineTo(this.getWidth()/2, this.getHeight()/2); // down right
-    ctx.lineTo(-this.getWidth()/2, this.getHeight()/2); // down left
-    ctx.lineTo(-this.getWidth()/2, -this.getHeight()/2); // upper left
-    ctx.stroke();
-  },
-
-  _renderGrid: function(ctx) {
-    // Vertical lines
-    ctx.beginPath();
-    ctx.moveTo(-this.getWidth()/2 + 1/3 * this.getWidth(), -this.getHeight()/2);
-    ctx.lineTo(-this.getWidth()/2 + 1/3 * this.getWidth(), this.getHeight()/2);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(-this.getWidth()/2 + 2/3 * this.getWidth(), -this.getHeight()/2);
-    ctx.lineTo(-this.getWidth()/2 + 2/3 * this.getWidth(), this.getHeight()/2);
-    ctx.stroke();
-    // Horizontal lines
-    ctx.beginPath();
-    ctx.moveTo(-this.getWidth()/2, -this.getHeight()/2 + 1/3 * this.getHeight());
-    ctx.lineTo(this.getWidth()/2, -this.getHeight()/2 + 1/3 * this.getHeight());
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(-this.getWidth()/2, -this.getHeight()/2 + 2/3 * this.getHeight());
-    ctx.lineTo(this.getWidth()/2, -this.getHeight()/2 + 2/3 * this.getHeight());
-    ctx.stroke();
-  }
-});
-
-Darkroom.plugins['crop'] = Darkroom.Plugin.extend({
-  // Init point
-  startX: null,
-  startY: null,
-
-  // Keycrop
-  isKeyCroping: false,
-  isKeyLeft: false,
-  isKeyUp: false,
-
-  defaults: {
-    // min crop dimension
-    minHeight: 1,
-    minWidth: 1,
-    // ensure crop ratio
-    ratio: null,
-    // quick crop feature (set a key code to enable it)
-    quickCropKey: false
-  },
-
-  initialize: function InitDarkroomCropPlugin() {
-    var buttonGroup = this.darkroom.toolbar.createButtonGroup();
-
-    this.cropButton = buttonGroup.createButton({
-      image: 'crop',
-      tooltip: 'Crop'
-    });
-    this.okButton = buttonGroup.createButton({
-      image: 'done',
-      tooltip: 'Confirm',
-      type: 'success',
-      hide: true
-    });
-    this.cancelButton = buttonGroup.createButton({
-      image: 'close',
-      tooltip: 'Abort',
-      type: 'danger',
-      hide: true
-    });
-
-    // Buttons click
-    this.cropButton.addEventListener('click', this.toggleCrop.bind(this));
-    this.okButton.addEventListener('click', this.cropCurrentZone.bind(this));
-    this.cancelButton.addEventListener('click', this.releaseFocus.bind(this));
-
-    // Canvas events
-    this.darkroom.canvas.on('mouse:down', this.onMouseDown.bind(this));
-    this.darkroom.canvas.on('mouse:move', this.onMouseMove.bind(this));
-    this.darkroom.canvas.on('mouse:up', this.onMouseUp.bind(this));
-    this.darkroom.canvas.on('object:moving', this.onObjectMoving.bind(this));
-    this.darkroom.canvas.on('object:scaling', this.onObjectScaling.bind(this));
-
-    fabric.util.addListener(fabric.document, 'keydown', this.onKeyDown.bind(this));
-    fabric.util.addListener(fabric.document, 'keyup', this.onKeyUp.bind(this));
-
-    this.darkroom.addEventListener('core:transformation', this.releaseFocus.bind(this));
-  },
-
-  // Avoid crop zone to go beyond the canvas edges
-  onObjectMoving: function(event) {
-    if (!this.hasFocus()) {
-      return;
-    }
-
-    var currentObject = event.target;
-    if (currentObject !== this.cropZone)
-      return;
-
-    var canvas = this.darkroom.canvas;
-    var x = currentObject.getLeft(), y = currentObject.getTop();
-    var w = currentObject.getWidth(), h = currentObject.getHeight();
-    var maxX = canvas.getWidth() - w;
-    var maxY = canvas.getHeight() - h;
-
-    if (x < 0)
-      currentObject.set('left', 0);
-    if (y < 0)
-      currentObject.set('top', 0);
-    if (x > maxX)
-      currentObject.set('left', maxX);
-    if (y > maxY)
-      currentObject.set('top', maxY);
-
-    this.darkroom.dispatchEvent('crop:update');
-  },
-
-  // Prevent crop zone from going beyond the canvas edges (like mouseMove)
-  onObjectScaling: function(event) {
-    if (!this.hasFocus()) {
-      return;
-    }
-
-    var preventScaling = false;
-    var currentObject = event.target;
-    if (currentObject !== this.cropZone)
-      return;
-
-    var canvas = this.darkroom.canvas;
-    var pointer = canvas.getPointer(event.e);
-    var x = pointer.x;
-    var y = pointer.y;
-
-    var minX = currentObject.getLeft();
-    var minY = currentObject.getTop();
-    var maxX = currentObject.getLeft() + currentObject.getWidth();
-    var maxY = currentObject.getTop() + currentObject.getHeight();
-
-    if (null !== this.options.ratio) {
-      if (minX < 0 || maxX > canvas.getWidth() || minY < 0 || maxY > canvas.getHeight()) {
-        preventScaling = true;
-      }
-    }
-
-    if (minX < 0 || maxX > canvas.getWidth() || preventScaling) {
-      var lastScaleX = this.lastScaleX || 1;
-      currentObject.setScaleX(lastScaleX);
-    }
-    if (minX < 0) {
-      currentObject.setLeft(0);
-    }
-
-    if (minY < 0 || maxY > canvas.getHeight() || preventScaling) {
-      var lastScaleY = this.lastScaleY || 1;
-      currentObject.setScaleY(lastScaleY);
-    }
-    if (minY < 0) {
-      currentObject.setTop(0);
-    }
-
-    if (currentObject.getWidth() < this.options.minWidth) {
-      currentObject.scaleToWidth(this.options.minWidth);
-    }
-    if (currentObject.getHeight() < this.options.minHeight) {
-      currentObject.scaleToHeight(this.options.minHeight);
-    }
-
-    this.lastScaleX = currentObject.getScaleX();
-    this.lastScaleY = currentObject.getScaleY();
-
-    this.darkroom.dispatchEvent('crop:update');
-  },
-
-  // Init crop zone
-  onMouseDown: function(event) {
-    if (!this.hasFocus()) {
-      return;
-    }
-
-    var canvas = this.darkroom.canvas;
-
-    // recalculate offset, in case canvas was manipulated since last `calcOffset`
-    canvas.calcOffset();
-    var pointer = canvas.getPointer(event.e);
-    var x = pointer.x;
-    var y = pointer.y;
-    var point = new fabric.Point(x, y);
-
-    // Check if user want to scale or drag the crop zone.
-    var activeObject = canvas.getActiveObject();
-    if (activeObject === this.cropZone || this.cropZone.containsPoint(point)) {
-      return;
-    }
-
-    canvas.discardActiveObject();
-    this.cropZone.setWidth(0);
-    this.cropZone.setHeight(0);
-    this.cropZone.setScaleX(1);
-    this.cropZone.setScaleY(1);
-
-    this.startX = x;
-    this.startY = y;
-  },
-
-  // Extend crop zone
-  onMouseMove: function(event) {
-    // Quick crop feature
-    if (this.isKeyCroping)
-      return this.onMouseMoveKeyCrop(event);
-
-    if (null === this.startX || null === this.startY) {
-      return;
-    }
-
-    var canvas = this.darkroom.canvas;
-    var pointer = canvas.getPointer(event.e);
-    var x = pointer.x;
-    var y = pointer.y;
-
-    this._renderCropZone(this.startX, this.startY, x, y);
-  },
-
-  onMouseMoveKeyCrop: function(event) {
-    var canvas = this.darkroom.canvas;
-    var zone = this.cropZone;
-
-    var pointer = canvas.getPointer(event.e);
-    var x = pointer.x;
-    var y = pointer.y;
-
-    if (!zone.left || !zone.top) {
-      zone.setTop(y);
-      zone.setLeft(x);
-    }
-
-    this.isKeyLeft =  x < zone.left + zone.width / 2 ;
-    this.isKeyUp = y < zone.top + zone.height / 2 ;
-
-    this._renderCropZone(
-      Math.min(zone.left, x),
-      Math.min(zone.top, y),
-      Math.max(zone.left+zone.width, x),
-      Math.max(zone.top+zone.height, y)
-    );
-  },
-
-  // Finish crop zone
-  onMouseUp: function(event) {
-    if (null === this.startX || null === this.startY) {
-      return;
-    }
-
-    var canvas = this.darkroom.canvas;
-    this.cropZone.setCoords();
-    canvas.setActiveObject(this.cropZone);
-    canvas.calcOffset();
-
-    this.startX = null;
-    this.startY = null;
-  },
-
-  onKeyDown: function(event) {
-    if (false === this.options.quickCropKey || event.keyCode !== this.options.quickCropKey || this.isKeyCroping)
-      return;
-
-    // Active quick crop flow
-    this.isKeyCroping = true ;
-    this.darkroom.canvas.discardActiveObject();
-    this.cropZone.setWidth(0);
-    this.cropZone.setHeight(0);
-    this.cropZone.setScaleX(1);
-    this.cropZone.setScaleY(1);
-    this.cropZone.setTop(0);
-    this.cropZone.setLeft(0);
-  },
-
-  onKeyUp: function(event) {
-    if (false === this.options.quickCropKey || event.keyCode !== this.options.quickCropKey || !this.isKeyCroping)
-      return;
-
-    // Unactive quick crop flow
-    this.isKeyCroping = false;
-    this.startX = 1;
-    this.startY = 1;
-    this.onMouseUp();
-  },
-
-  selectZone: function(x, y, width, height, forceDimension) {
-    if (!this.hasFocus())
-      this.requireFocus();
-
-    if (!forceDimension) {
-      this._renderCropZone(x, y, x+width, y+height);
-    } else {
-      this.cropZone.set({
-        'left': x,
-        'top': y,
-        'width': width,
-        'height': height
-      });
-    }
-
-    var canvas = this.darkroom.canvas;
-    canvas.bringToFront(this.cropZone);
-    this.cropZone.setCoords();
-    canvas.setActiveObject(this.cropZone);
-    canvas.calcOffset();
-
-    this.darkroom.dispatchEvent('crop:update');
-  },
-
-  toggleCrop: function() {
-    if (!this.hasFocus())
-      this.requireFocus();
-    else
-      this.releaseFocus();
-  },
-
-  cropCurrentZone: function() {
-    if (!this.hasFocus())
-      return;
-
-    // Avoid croping empty zone
-    if (this.cropZone.width < 1 && this.cropZone.height < 1)
-      return;
-
-    var image = this.darkroom.image;
-
-    // Compute crop zone dimensions
-    var top = this.cropZone.getTop() - image.getTop();
-    var left = this.cropZone.getLeft() - image.getLeft();
-    var width = this.cropZone.getWidth();
-    var height = this.cropZone.getHeight();
-
-    // Adjust dimensions to image only
-    if (top < 0) {
-      height += top;
-      top = 0;
-    }
-
-    if (left < 0) {
-      width += left;
-      left = 0;
-    }
-
-    // Apply crop transformation.
-    // Make sure to use relative dimension since the crop will be applied
-    // on the source image.
-    this.darkroom.applyTransformation(new Crop({
-      top: top / image.getHeight(),
-      left: left / image.getWidth(),
-      width: width / image.getWidth(),
-      height: height / image.getHeight(),
-    }));
-  },
-
-  // Test wether crop zone is set
-  hasFocus: function() {
-    return this.cropZone !== undefined;
-  },
-
-  // Create the crop zone
-  requireFocus: function() {
-    this.cropZone = new CropZone({
-      fill: 'transparent',
-      hasBorders: false,
-      originX: 'left',
-      originY: 'top',
-      //stroke: '#444',
-      //strokeDashArray: [5, 5],
-      //borderColor: '#444',
-      cornerColor: '#444',
-      cornerSize: 8,
-      transparentCorners: false,
-      lockRotation: true,
-      hasRotatingPoint: false,
-    });
-
-    if (null !== this.options.ratio) {
-      this.cropZone.set('lockUniScaling', true);
-    }
-
-    this.darkroom.canvas.add(this.cropZone);
-    this.darkroom.canvas.defaultCursor = 'crosshair';
-
-    this.cropButton.active(true);
-    this.okButton.hide(false);
-    this.cancelButton.hide(false);
-  },
-
-  // Remove the crop zone
-  releaseFocus: function() {
-    if (undefined === this.cropZone)
-      return;
-
-    this.cropZone.remove();
-    this.cropZone = undefined;
-
-    this.cropButton.active(false);
-    this.okButton.hide(true);
-    this.cancelButton.hide(true);
-
-    this.darkroom.canvas.defaultCursor = 'default';
-
-    this.darkroom.dispatchEvent('crop:update');
-  },
-
-  _renderCropZone: function(fromX, fromY, toX, toY) {
-    var canvas = this.darkroom.canvas;
-
-    var isRight = (toX > fromX);
-    var isLeft = !isRight;
-    var isDown = (toY > fromY);
-    var isUp = !isDown;
-
-    var minWidth = Math.min(+this.options.minWidth, canvas.getWidth());
-    var minHeight = Math.min(+this.options.minHeight, canvas.getHeight());
-
-    // Define corner coordinates
-    var leftX = Math.min(fromX, toX);
-    var rightX = Math.max(fromX, toX);
-    var topY = Math.min(fromY, toY);
-    var bottomY = Math.max(fromY, toY);
-
-    // Replace current point into the canvas
-    leftX = Math.max(0, leftX);
-    rightX = Math.min(canvas.getWidth(), rightX);
-    topY = Math.max(0, topY)
-    bottomY = Math.min(canvas.getHeight(), bottomY);
-
-    // Recalibrate coordinates according to given options
-    if (rightX - leftX < minWidth) {
-      if (isRight)
-        rightX = leftX + minWidth;
-      else
-        leftX = rightX - minWidth;
-    }
-    if (bottomY - topY < minHeight) {
-      if (isDown)
-        bottomY = topY + minHeight;
-      else
-        topY = bottomY - minHeight;
-    }
-
-    // Truncate truncate according to canvas dimensions
-    if (leftX < 0) {
-      // Translate to the left
-      rightX += Math.abs(leftX);
-      leftX = 0
-    }
-    if (rightX > canvas.getWidth()) {
-      // Translate to the right
-      leftX -= (rightX - canvas.getWidth());
-      rightX = canvas.getWidth();
-    }
-    if (topY < 0) {
-      // Translate to the bottom
-      bottomY += Math.abs(topY);
-      topY = 0
-    }
-    if (bottomY > canvas.getHeight()) {
-      // Translate to the right
-      topY -= (bottomY - canvas.getHeight());
-      bottomY = canvas.getHeight();
-    }
-
-    var width = rightX - leftX;
-    var height = bottomY - topY;
-    var currentRatio = width / height;
-
-    if (this.options.ratio && +this.options.ratio !== currentRatio) {
-      var ratio = +this.options.ratio;
-
-      if(this.isKeyCroping) {
-        isLeft = this.isKeyLeft;
-        isUp = this.isKeyUp;
-      }
-
-      if (currentRatio < ratio) {
-        var newWidth = height * ratio;
-        if (isLeft) {
-          leftX -= (newWidth - width);
+})();;
+(function() {
+    'use strict';
+
+    var Rotation = Darkroom.Transformation.extend({
+        applyTransformation: function(canvas, image, next) {
+            var angle = (image.getAngle() + this.options.angle) % 360;
+            image.rotate(angle);
+
+            var width, height;
+            height = Math.abs(image.getWidth() * (Math.sin(angle * Math.PI / 180))) + Math.abs(image.getHeight() * (Math.cos(angle * Math.PI / 180)));
+            width = Math.abs(image.getHeight() * (Math.sin(angle * Math.PI / 180))) + Math.abs(image.getWidth() * (Math.cos(angle * Math.PI / 180)));
+
+            canvas.setWidth(width);
+            canvas.setHeight(height);
+
+            canvas.centerObject(image);
+            image.setCoords();
+            canvas.renderAll();
+
+            next();
         }
-        width = newWidth;
-      } else if (currentRatio > ratio) {
-        var newHeight = height / (ratio * height/width);
-        if (isUp) {
-          topY -= (newHeight - height);
+    });
+
+    Darkroom.plugins['rotate'] = Darkroom.Plugin.extend({
+
+        initialize: function InitDarkroomRotatePlugin() {
+            var buttonGroup = this.darkroom.toolbar.createButtonGroup();
+
+            var leftButton = buttonGroup.createButton({
+                image: 'rotate-left',
+                tooltip: 'Rotate Left'
+            });
+
+            var rightButton = buttonGroup.createButton({
+                image: 'rotate-right',
+                tooltip: 'Rotate Right'
+            });
+
+            leftButton.addEventListener('click', this.rotateLeft.bind(this));
+            rightButton.addEventListener('click', this.rotateRight.bind(this));
+        },
+
+        rotateLeft: function rotateLeft() {
+            this.rotate(-90);
+        },
+
+        rotateRight: function rotateRight() {
+            this.rotate(90);
+        },
+
+        rotate: function rotate(angle) {
+            this.darkroom.applyTransformation(
+                new Rotation({
+                    angle: angle
+                })
+            );
         }
-        height = newHeight;
-      }
 
-      if (leftX < 0) {
-        leftX = 0;
-        //TODO
-      }
-      if (topY < 0) {
-        topY = 0;
-        //TODO
-      }
-      if (leftX + width > canvas.getWidth()) {
-        var newWidth = canvas.getWidth() - leftX;
-        height = newWidth * height / width;
-        width = newWidth;
-        if (isUp) {
-          topY = fromY - height;
+    });
+
+})();;
+(function() {
+    'use strict';
+
+    var Crop = Darkroom.Transformation.extend({
+        applyTransformation: function(canvas, image, next) {
+            // Snapshot the image delimited by the crop zone
+            var snapshot = new Image();
+            snapshot.onload = function() {
+                // Validate image
+                if (height < 1 || width < 1)
+                    return;
+
+                var imgInstance = new fabric.Image(this, {
+                    // options to make the image static
+                    selectable: false,
+                    evented: false,
+                    lockMovementX: true,
+                    lockMovementY: true,
+                    lockRotation: true,
+                    lockScalingX: true,
+                    lockScalingY: true,
+                    lockUniScaling: true,
+                    hasControls: false,
+                    hasBorders: false
+                });
+
+                var width = this.width;
+                var height = this.height;
+
+                // Update canvas size
+                canvas.setWidth(width);
+                canvas.setHeight(height);
+
+                // Add image
+                image.remove();
+                canvas.add(imgInstance);
+
+                next(imgInstance);
+            };
+
+            var viewport = Darkroom.Utils.computeImageViewPort(image);
+            var imageWidth = viewport.width;
+            var imageHeight = viewport.height;
+
+            var left = this.options.left * imageWidth;
+            var top = this.options.top * imageHeight;
+            var width = Math.min(this.options.width * imageWidth, imageWidth - left);
+            var height = Math.min(this.options.height * imageHeight, imageHeight - top);
+
+            snapshot.src = canvas.toDataURL({
+                left: left,
+                top: top,
+                width: width,
+                height: height,
+            });
         }
-      }
-      if (topY + height > canvas.getHeight()) {
-        var newHeight = canvas.getHeight() - topY;
-        width = width * newHeight / height;
-        height = newHeight;
-        if (isLeft) {
-          leftX = fromX - width;
+    });
+
+    var CropZone = fabric.util.createClass(fabric.Rect, {
+        _render: function(ctx) {
+            this.callSuper('_render', ctx);
+
+            var canvas = ctx.canvas;
+            var dashWidth = 7;
+
+            // Set original scale
+            var flipX = this.flipX ? -1 : 1;
+            var flipY = this.flipY ? -1 : 1;
+            var scaleX = flipX / this.scaleX;
+            var scaleY = flipY / this.scaleY;
+
+            ctx.scale(scaleX, scaleY);
+
+            // Overlay rendering
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+            this._renderOverlay(ctx);
+
+            // Set dashed borders
+            if (ctx.setLineDash !== undefined)
+                ctx.setLineDash([dashWidth, dashWidth]);
+            else if (ctx.mozDash !== undefined)
+                ctx.mozDash = [dashWidth, dashWidth];
+
+            // First lines rendering with black
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
+            this._renderBorders(ctx);
+            this._renderGrid(ctx);
+
+            // Re render lines in white
+            ctx.lineDashOffset = dashWidth;
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+            this._renderBorders(ctx);
+            this._renderGrid(ctx);
+
+            // Reset scale
+            ctx.scale(1 / scaleX, 1 / scaleY);
+        },
+
+        _renderOverlay: function(ctx) {
+            var canvas = ctx.canvas;
+
+            //
+            //    x0    x1        x2      x3
+            // y0 +------------------------+
+            //    |\\\\\\\\\\\\\\\\\\\\\\\\|
+            //    |\\\\\\\\\\\\\\\\\\\\\\\\|
+            // y1 +------+---------+-------+
+            //    |\\\\\\|         |\\\\\\\|
+            //    |\\\\\\|    0    |\\\\\\\|
+            //    |\\\\\\|         |\\\\\\\|
+            // y2 +------+---------+-------+
+            //    |\\\\\\\\\\\\\\\\\\\\\\\\|
+            //    |\\\\\\\\\\\\\\\\\\\\\\\\|
+            // y3 +------------------------+
+            //
+
+            var x0 = Math.ceil(-this.getWidth() / 2 - this.getLeft());
+            var x1 = Math.ceil(-this.getWidth() / 2);
+            var x2 = Math.ceil(this.getWidth() / 2);
+            var x3 = Math.ceil(this.getWidth() / 2 + (canvas.width - this.getWidth() - this.getLeft()));
+
+            var y0 = Math.ceil(-this.getHeight() / 2 - this.getTop());
+            var y1 = Math.ceil(-this.getHeight() / 2);
+            var y2 = Math.ceil(this.getHeight() / 2);
+            var y3 = Math.ceil(this.getHeight() / 2 + (canvas.height - this.getHeight() - this.getTop()));
+
+            ctx.beginPath();
+
+            // Draw outer rectangle.
+            // Numbers are +/-1 so that overlay edges don't get blurry.
+            ctx.moveTo(x0 - 1, y0 - 1);
+            ctx.lineTo(x3 + 1, y0 - 1);
+            ctx.lineTo(x3 + 1, y3 + 1);
+            ctx.lineTo(x0 - 1, y3 - 1);
+            ctx.lineTo(x0 - 1, y0 - 1);
+            ctx.closePath();
+
+            // Draw inner rectangle.
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x1, y2);
+            ctx.lineTo(x2, y2);
+            ctx.lineTo(x2, y1);
+            ctx.lineTo(x1, y1);
+
+            ctx.closePath();
+            ctx.fill();
+        },
+
+        _renderBorders: function(ctx) {
+            ctx.beginPath();
+            ctx.moveTo(-this.getWidth() / 2, -this.getHeight() / 2); // upper left
+            ctx.lineTo(this.getWidth() / 2, -this.getHeight() / 2); // upper right
+            ctx.lineTo(this.getWidth() / 2, this.getHeight() / 2); // down right
+            ctx.lineTo(-this.getWidth() / 2, this.getHeight() / 2); // down left
+            ctx.lineTo(-this.getWidth() / 2, -this.getHeight() / 2); // upper left
+            ctx.stroke();
+        },
+
+        _renderGrid: function(ctx) {
+            // Vertical lines
+            ctx.beginPath();
+            ctx.moveTo(-this.getWidth() / 2 + 1 / 3 * this.getWidth(), -this.getHeight() / 2);
+            ctx.lineTo(-this.getWidth() / 2 + 1 / 3 * this.getWidth(), this.getHeight() / 2);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(-this.getWidth() / 2 + 2 / 3 * this.getWidth(), -this.getHeight() / 2);
+            ctx.lineTo(-this.getWidth() / 2 + 2 / 3 * this.getWidth(), this.getHeight() / 2);
+            ctx.stroke();
+            // Horizontal lines
+            ctx.beginPath();
+            ctx.moveTo(-this.getWidth() / 2, -this.getHeight() / 2 + 1 / 3 * this.getHeight());
+            ctx.lineTo(this.getWidth() / 2, -this.getHeight() / 2 + 1 / 3 * this.getHeight());
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(-this.getWidth() / 2, -this.getHeight() / 2 + 2 / 3 * this.getHeight());
+            ctx.lineTo(this.getWidth() / 2, -this.getHeight() / 2 + 2 / 3 * this.getHeight());
+            ctx.stroke();
         }
-      }
-    }
+    });
 
-    // Apply coordinates
-    this.cropZone.left = leftX;
-    this.cropZone.top = topY;
-    this.cropZone.width = width;
-    this.cropZone.height = height;
+    Darkroom.plugins['crop'] = Darkroom.Plugin.extend({
+        // Init point
+        startX: null,
+        startY: null,
 
-    this.darkroom.canvas.bringToFront(this.cropZone);
+        // Keycrop
+        isKeyCroping: false,
+        isKeyLeft: false,
+        isKeyUp: false,
 
-    this.darkroom.dispatchEvent('crop:update');
-  }
-});
+        defaults: {
+            // min crop dimension
+            minHeight: 1,
+            minWidth: 1,
+            // ensure crop ratio
+            ratio: null,
+            // quick crop feature (set a key code to enable it)
+            quickCropKey: false
+        },
 
-})();
-;(function() {
+        initialize: function InitDarkroomCropPlugin() {
+            var buttonGroup = this.darkroom.toolbar.createButtonGroup();
+
+            this.cropButton = buttonGroup.createButton({
+                image: 'crop',
+                tooltip: 'Crop'
+            });
+            this.okButton = buttonGroup.createButton({
+                image: 'done',
+                tooltip: 'Confirm',
+                type: 'success',
+                hide: true
+            });
+            this.cancelButton = buttonGroup.createButton({
+                image: 'close',
+                tooltip: 'Abort',
+                type: 'danger',
+                hide: true
+            });
+
+            // Buttons click
+            this.cropButton.addEventListener('click', this.toggleCrop.bind(this));
+            this.okButton.addEventListener('click', this.cropCurrentZone.bind(this));
+            this.cancelButton.addEventListener('click', this.releaseFocus.bind(this));
+
+            // Canvas events
+            this.darkroom.canvas.on('mouse:down', this.onMouseDown.bind(this));
+            this.darkroom.canvas.on('mouse:move', this.onMouseMove.bind(this));
+            this.darkroom.canvas.on('mouse:up', this.onMouseUp.bind(this));
+            this.darkroom.canvas.on('object:moving', this.onObjectMoving.bind(this));
+            this.darkroom.canvas.on('object:scaling', this.onObjectScaling.bind(this));
+
+            fabric.util.addListener(fabric.document, 'keydown', this.onKeyDown.bind(this));
+            fabric.util.addListener(fabric.document, 'keyup', this.onKeyUp.bind(this));
+
+            this.darkroom.addEventListener('core:transformation', this.releaseFocus.bind(this));
+        },
+
+        // Avoid crop zone to go beyond the canvas edges
+        onObjectMoving: function(event) {
+            if (!this.hasFocus()) {
+                return;
+            }
+
+            var currentObject = event.target;
+            if (currentObject !== this.cropZone)
+                return;
+
+            var canvas = this.darkroom.canvas;
+            var x = currentObject.getLeft(),
+                y = currentObject.getTop();
+            var w = currentObject.getWidth(),
+                h = currentObject.getHeight();
+            var maxX = canvas.getWidth() - w;
+            var maxY = canvas.getHeight() - h;
+
+            if (x < 0)
+                currentObject.set('left', 0);
+            if (y < 0)
+                currentObject.set('top', 0);
+            if (x > maxX)
+                currentObject.set('left', maxX);
+            if (y > maxY)
+                currentObject.set('top', maxY);
+
+            this.darkroom.dispatchEvent('crop:update');
+        },
+
+        // Prevent crop zone from going beyond the canvas edges (like mouseMove)
+        onObjectScaling: function(event) {
+            if (!this.hasFocus()) {
+                return;
+            }
+
+            var preventScaling = false;
+            var currentObject = event.target;
+            if (currentObject !== this.cropZone)
+                return;
+
+            var canvas = this.darkroom.canvas;
+            var pointer = canvas.getPointer(event.e);
+            var x = pointer.x;
+            var y = pointer.y;
+
+            var minX = currentObject.getLeft();
+            var minY = currentObject.getTop();
+            var maxX = currentObject.getLeft() + currentObject.getWidth();
+            var maxY = currentObject.getTop() + currentObject.getHeight();
+
+            if (null !== this.options.ratio) {
+                if (minX < 0 || maxX > canvas.getWidth() || minY < 0 || maxY > canvas.getHeight()) {
+                    preventScaling = true;
+                }
+            }
+
+            if (minX < 0 || maxX > canvas.getWidth() || preventScaling) {
+                var lastScaleX = this.lastScaleX || 1;
+                currentObject.setScaleX(lastScaleX);
+            }
+            if (minX < 0) {
+                currentObject.setLeft(0);
+            }
+
+            if (minY < 0 || maxY > canvas.getHeight() || preventScaling) {
+                var lastScaleY = this.lastScaleY || 1;
+                currentObject.setScaleY(lastScaleY);
+            }
+            if (minY < 0) {
+                currentObject.setTop(0);
+            }
+
+            if (currentObject.getWidth() < this.options.minWidth) {
+                currentObject.scaleToWidth(this.options.minWidth);
+            }
+            if (currentObject.getHeight() < this.options.minHeight) {
+                currentObject.scaleToHeight(this.options.minHeight);
+            }
+
+            this.lastScaleX = currentObject.getScaleX();
+            this.lastScaleY = currentObject.getScaleY();
+
+            this.darkroom.dispatchEvent('crop:update');
+        },
+
+        // Init crop zone
+        onMouseDown: function(event) {
+            if (!this.hasFocus()) {
+                return;
+            }
+
+            var canvas = this.darkroom.canvas;
+
+            // recalculate offset, in case canvas was manipulated since last `calcOffset`
+            canvas.calcOffset();
+            var pointer = canvas.getPointer(event.e);
+            var x = pointer.x;
+            var y = pointer.y;
+            var point = new fabric.Point(x, y);
+
+            // Check if user want to scale or drag the crop zone.
+            var activeObject = canvas.getActiveObject();
+            if (activeObject === this.cropZone || this.cropZone.containsPoint(point)) {
+                return;
+            }
+
+            canvas.discardActiveObject();
+            this.cropZone.setWidth(0);
+            this.cropZone.setHeight(0);
+            this.cropZone.setScaleX(1);
+            this.cropZone.setScaleY(1);
+
+            this.startX = x;
+            this.startY = y;
+        },
+
+        // Extend crop zone
+        onMouseMove: function(event) {
+            // Quick crop feature
+            if (this.isKeyCroping)
+                return this.onMouseMoveKeyCrop(event);
+
+            if (null === this.startX || null === this.startY) {
+                return;
+            }
+
+            var canvas = this.darkroom.canvas;
+            var pointer = canvas.getPointer(event.e);
+            var x = pointer.x;
+            var y = pointer.y;
+
+            this._renderCropZone(this.startX, this.startY, x, y);
+        },
+
+        onMouseMoveKeyCrop: function(event) {
+            var canvas = this.darkroom.canvas;
+            var zone = this.cropZone;
+
+            var pointer = canvas.getPointer(event.e);
+            var x = pointer.x;
+            var y = pointer.y;
+
+            if (!zone.left || !zone.top) {
+                zone.setTop(y);
+                zone.setLeft(x);
+            }
+
+            this.isKeyLeft = x < zone.left + zone.width / 2;
+            this.isKeyUp = y < zone.top + zone.height / 2;
+
+            this._renderCropZone(
+                Math.min(zone.left, x),
+                Math.min(zone.top, y),
+                Math.max(zone.left + zone.width, x),
+                Math.max(zone.top + zone.height, y)
+            );
+        },
+
+        // Finish crop zone
+        onMouseUp: function(event) {
+            if (null === this.startX || null === this.startY) {
+                return;
+            }
+
+            var canvas = this.darkroom.canvas;
+            this.cropZone.setCoords();
+            canvas.setActiveObject(this.cropZone);
+            canvas.calcOffset();
+
+            this.startX = null;
+            this.startY = null;
+        },
+
+        onKeyDown: function(event) {
+            if (false === this.options.quickCropKey || event.keyCode !== this.options.quickCropKey || this.isKeyCroping)
+                return;
+
+            // Active quick crop flow
+            this.isKeyCroping = true;
+            this.darkroom.canvas.discardActiveObject();
+            this.cropZone.setWidth(0);
+            this.cropZone.setHeight(0);
+            this.cropZone.setScaleX(1);
+            this.cropZone.setScaleY(1);
+            this.cropZone.setTop(0);
+            this.cropZone.setLeft(0);
+        },
+
+        onKeyUp: function(event) {
+            if (false === this.options.quickCropKey || event.keyCode !== this.options.quickCropKey || !this.isKeyCroping)
+                return;
+
+            // Unactive quick crop flow
+            this.isKeyCroping = false;
+            this.startX = 1;
+            this.startY = 1;
+            this.onMouseUp();
+        },
+
+        selectZone: function(x, y, width, height, forceDimension) {
+            if (!this.hasFocus())
+                this.requireFocus();
+
+            if (!forceDimension) {
+                this._renderCropZone(x, y, x + width, y + height);
+            } else {
+                this.cropZone.set({
+                    'left': x,
+                    'top': y,
+                    'width': width,
+                    'height': height
+                });
+            }
+
+            var canvas = this.darkroom.canvas;
+            canvas.bringToFront(this.cropZone);
+            this.cropZone.setCoords();
+            canvas.setActiveObject(this.cropZone);
+            canvas.calcOffset();
+
+            this.darkroom.dispatchEvent('crop:update');
+        },
+
+        toggleCrop: function() {
+            if (!this.hasFocus())
+                this.requireFocus();
+            else
+                this.releaseFocus();
+        },
+
+        cropCurrentZone: function() {
+            if (!this.hasFocus())
+                return;
+
+            // Avoid croping empty zone
+            if (this.cropZone.width < 1 && this.cropZone.height < 1)
+                return;
+
+            var image = this.darkroom.image;
+
+            // Compute crop zone dimensions
+            var top = this.cropZone.getTop() - image.getTop();
+            var left = this.cropZone.getLeft() - image.getLeft();
+            var width = this.cropZone.getWidth();
+            var height = this.cropZone.getHeight();
+
+            // Adjust dimensions to image only
+            if (top < 0) {
+                height += top;
+                top = 0;
+            }
+
+            if (left < 0) {
+                width += left;
+                left = 0;
+            }
+
+            // Apply crop transformation.
+            // Make sure to use relative dimension since the crop will be applied
+            // on the source image.
+            this.darkroom.applyTransformation(new Crop({
+                top: top / image.getHeight(),
+                left: left / image.getWidth(),
+                width: width / image.getWidth(),
+                height: height / image.getHeight(),
+            }));
+        },
+
+        // Test wether crop zone is set
+        hasFocus: function() {
+            return this.cropZone !== undefined;
+        },
+
+        // Create the crop zone
+        requireFocus: function() {
+            this.cropZone = new CropZone({
+                fill: 'transparent',
+                hasBorders: false,
+                originX: 'left',
+                originY: 'top',
+                //stroke: '#444',
+                //strokeDashArray: [5, 5],
+                //borderColor: '#444',
+                cornerColor: '#444',
+                cornerSize: 8,
+                transparentCorners: false,
+                lockRotation: true,
+                hasRotatingPoint: false,
+            });
+
+            if (null !== this.options.ratio) {
+                this.cropZone.set('lockUniScaling', true);
+            }
+
+            this.darkroom.canvas.add(this.cropZone);
+            this.darkroom.canvas.defaultCursor = 'crosshair';
+
+            this.cropButton.active(true);
+            this.okButton.hide(false);
+            this.cancelButton.hide(false);
+        },
+
+        // Remove the crop zone
+        releaseFocus: function() {
+            if (undefined === this.cropZone)
+                return;
+
+            this.cropZone.remove();
+            this.cropZone = undefined;
+
+            this.cropButton.active(false);
+            this.okButton.hide(true);
+            this.cancelButton.hide(true);
+
+            this.darkroom.canvas.defaultCursor = 'default';
+
+            this.darkroom.dispatchEvent('crop:update');
+        },
+
+        _renderCropZone: function(fromX, fromY, toX, toY) {
+            var canvas = this.darkroom.canvas;
+
+            var isRight = (toX > fromX);
+            var isLeft = !isRight;
+            var isDown = (toY > fromY);
+            var isUp = !isDown;
+
+            var minWidth = Math.min(+this.options.minWidth, canvas.getWidth());
+            var minHeight = Math.min(+this.options.minHeight, canvas.getHeight());
+
+            // Define corner coordinates
+            var leftX = Math.min(fromX, toX);
+            var rightX = Math.max(fromX, toX);
+            var topY = Math.min(fromY, toY);
+            var bottomY = Math.max(fromY, toY);
+
+            // Replace current point into the canvas
+            leftX = Math.max(0, leftX);
+            rightX = Math.min(canvas.getWidth(), rightX);
+            topY = Math.max(0, topY)
+            bottomY = Math.min(canvas.getHeight(), bottomY);
+
+            // Recalibrate coordinates according to given options
+            if (rightX - leftX < minWidth) {
+                if (isRight)
+                    rightX = leftX + minWidth;
+                else
+                    leftX = rightX - minWidth;
+            }
+            if (bottomY - topY < minHeight) {
+                if (isDown)
+                    bottomY = topY + minHeight;
+                else
+                    topY = bottomY - minHeight;
+            }
+
+            // Truncate truncate according to canvas dimensions
+            if (leftX < 0) {
+                // Translate to the left
+                rightX += Math.abs(leftX);
+                leftX = 0
+            }
+            if (rightX > canvas.getWidth()) {
+                // Translate to the right
+                leftX -= (rightX - canvas.getWidth());
+                rightX = canvas.getWidth();
+            }
+            if (topY < 0) {
+                // Translate to the bottom
+                bottomY += Math.abs(topY);
+                topY = 0
+            }
+            if (bottomY > canvas.getHeight()) {
+                // Translate to the right
+                topY -= (bottomY - canvas.getHeight());
+                bottomY = canvas.getHeight();
+            }
+
+            var width = rightX - leftX;
+            var height = bottomY - topY;
+            var currentRatio = width / height;
+
+            if (this.options.ratio && +this.options.ratio !== currentRatio) {
+                var ratio = +this.options.ratio;
+
+                if (this.isKeyCroping) {
+                    isLeft = this.isKeyLeft;
+                    isUp = this.isKeyUp;
+                }
+
+                if (currentRatio < ratio) {
+                    var newWidth = height * ratio;
+                    if (isLeft) {
+                        leftX -= (newWidth - width);
+                    }
+                    width = newWidth;
+                } else if (currentRatio > ratio) {
+                    var newHeight = height / (ratio * height / width);
+                    if (isUp) {
+                        topY -= (newHeight - height);
+                    }
+                    height = newHeight;
+                }
+
+                if (leftX < 0) {
+                    leftX = 0;
+                    //TODO
+                }
+                if (topY < 0) {
+                    topY = 0;
+                    //TODO
+                }
+                if (leftX + width > canvas.getWidth()) {
+                    var newWidth = canvas.getWidth() - leftX;
+                    height = newWidth * height / width;
+                    width = newWidth;
+                    if (isUp) {
+                        topY = fromY - height;
+                    }
+                }
+                if (topY + height > canvas.getHeight()) {
+                    var newHeight = canvas.getHeight() - topY;
+                    width = width * newHeight / height;
+                    height = newHeight;
+                    if (isLeft) {
+                        leftX = fromX - width;
+                    }
+                }
+            }
+
+            // Apply coordinates
+            this.cropZone.left = leftX;
+            this.cropZone.top = topY;
+            this.cropZone.width = width;
+            this.cropZone.height = height;
+
+            this.darkroom.canvas.bringToFront(this.cropZone);
+
+            this.darkroom.dispatchEvent('crop:update');
+        }
+    });
+
+})();;
+(function() {
     'use strict';
 
     Darkroom.plugins['save'] = Darkroom.Plugin.extend({
 
-        defaults: { callback: function() { this.darkroom.selfDestroy(); } },
+        defaults: {
+            callback: function() {
+                this.darkroom.selfDestroy();
+            }
+        },
 
         initialize: function InitializeDarkroomSavePlugin() {
             var buttonGroup = this.darkroom.toolbar.createButtonGroup();
