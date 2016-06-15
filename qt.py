@@ -1,11 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import atexit
+import os
 import sys
+import time
 
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
+
+import util
 
 
 class Selector(QRubberBand):
@@ -41,47 +46,56 @@ class Snapshot(QDialog):
         self.show()
 
         self.rubberBand = Selector(QRubberBand.Rectangle, self)
-        self.origin = QPoint()
-        self.target = QPoint()
+        self.start = QPoint()
+        self.end = QPoint()
         self.screenshot = QPixmap()
         self.hasSelected = False
+        self.shotfilename = None
 
     def mousePressEvent(self, ev):
         if ev.button() == Qt.LeftButton:
             self.setCursor(Qt.CrossCursor)
-            self.origin = QPoint(ev.pos())
-            self.rubberBand.setGeometry(QRect(self.origin, QSize()))
+            self.start = QPoint(ev.globalPos())
+            self.rubberBand.setGeometry(QRect(self.start, QSize()))
             self.rubberBand.show()
 
     def mouseMoveEvent(self, ev):
-        if not self.origin.isNull():
-            self.rubberBand.setGeometry(QRect(self.origin, ev.pos()).normalized())
+        if not self.start.isNull():
+            self.rubberBand.setGeometry(QRect(self.start, ev.globalPos()).normalized())
             self.hasSelected = True
 
     def mouseReleaseEvent(self, ev):
         if ev.button() == Qt.LeftButton and self.hasSelected:
+            self.end = QPoint(ev.globalPos())
             self.setCursor(Qt.ArrowCursor)
-            self.target = QPoint(ev.pos())
-            print("selection = " + str(self.origin.x()) + "," + str(self.origin.y()) +
-                  " - " + str(self.target.x()) + "," + str(self.target.y()))
-
             self.hasSelected = False
 
     def keyPressEvent(self, ev):
         if ev.key() == Qt.Key_Escape:
             self.close()
-        elif ev.key() in [Qt.Key_Enter, Qt.Key_Return] and not self.origin.isNull() and not self.target.isNull():
-            self.screenshot = app.screens()[0].grabWindow(app.desktop().winId(),
-                                                          self.origin.x(), self.origin.y(),
-                                                          self.target.x() - self.origin.x(),
-                                                          self.target.y() - self.origin.y())
-            self.screenshot.save("/home/ozmartian/Projects/ocr-translator/temp/screenshot.png", "PNG", 100)
+        elif ev.key() == Qt.Key_H:
+            self.rubberBand.hide()
+            self.hide()
+        elif ev.key() in [Qt.Key_Enter, Qt.Key_Return] and not self.start.isNull() and not self.end.isNull():
+            self.hide()
+            QTimer().singleShot(500, self.takescreenshot)
+
+    def takescreenshot(self):
+        x = min(self.start.x(), self.end.x())
+        y = min(self.start.y(), self.end.y())
+        w = abs(self.start.x() - self.end.x())
+        h = abs(self.start.y() - self.end.y())
+        self.screenshot = app.screens()[0].grabWindow(app.desktop().winId(), x, y, w, h)
+        self.shotfilename = os.path.join(util.GetWorkingPath(), "temp", time.strftime('%Y%m%d-%H%M%S')) + ".png"
+        self.screenshot.save(self.shotfilename, "PNG", 100)
+        self.close()
 
     def closeEvent(self, ev):
         app.quit()
 
 
 if __name__ == '__main__':
+    atexit.register(util.Cleanup)
     app = QApplication(sys.argv)
     snapshot = Snapshot()
     sys.exit(app.exec_())
