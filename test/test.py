@@ -1,63 +1,134 @@
-from PyQt4 import QtGui, QtCore
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
-class RubberbandEnhancedLabel(QtGui.QLabel):
+import sys
 
+# unicode = str with python3
+if sys.version_info > (3,):
+    unicode = str
+    
+from PyQt5.QtGui import (QPixmap)
+from PyQt5.QtWidgets import (QDialog, QDesktopWidget, QApplication, QRubberBand, 
+                            QVBoxLayout, QLabel)
+from PyQt5.QtCore import (Qt, QRect)
+    
+from Libs import QtHelper, Logger
+
+
+class DSnapshot(QDialog):
+    """
+    Snapshot
+    """
     def __init__(self, parent=None):
-        QtGui.QLabel.__init__(self, parent)
-        self.selection = QtGui.QRubberBand(QtGui.QRubberBand.Rectangle, self)
+        """
+        """
+        QDialog.__init__(self, parent)
 
-    def mousePressEvent(self, event):
-        '''
-            Mouse is pressed. If selection is visible either set dragging mode (if close to border) or hide selection.
-            If selection is not visible make it visible and start at this point.
-        '''
+        self.state = 0
+      
+        #self.setAttribute(Qt.WA_TranslucentBackground) 
+        #self.setWindowFlags(self.windowFlags() | Qt.FramelessWindowHint)
+        self.setWindowFlags(Qt.Tool | Qt.FramelessWindowHint)
+        self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
 
-        if event.button() == QtCore.Qt.LeftButton:
 
-            position = QtCore.QPoint(event.pos())
-            if self.selection.isVisible():
-                # visible selection
-                if (self.upper_left - position).manhattanLength() < 20:
-                    # close to upper left corner, drag it
-                    self.mode = "drag_upper_left"
-                elif (self.lower_right - position).manhattanLength() < 20:
-                    # close to lower right corner, drag it
-                    self.mode = "drag_lower_right"
-                else:
-                    # clicked somewhere else, hide selection
-                    self.selection.hide()
-            else:
-                # no visible selection, start new selection
-                self.upper_left = position
-                self.lower_right = position
-                self.mode = "drag_lower_right"
-                self.selection.show()
 
-    def mouseMoveEvent(self, event):
-        '''
-            Mouse moved. If selection is visible, drag it according to drag mode.
-        '''
-        if self.selection.isVisible():
-            # visible selection
-            if self.mode is "drag_lower_right":
-                self.lower_right = QtCore.QPoint(event.pos())
-            elif self.mode is "drag_upper_left":
-                self.upper_left = QtCore.QPoint(event.pos())
-            # update geometry
-            self.selection.setGeometry(QtCore.QRect(self.upper_left, self.lower_right).normalized())
+        # set window attributes
+        #self.setWindowOpacity(0.5)
+        
+        #self.setWindowFlags(Qt.Tool | Qt.FramelessWindowHint)
+        #self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
 
-            print("Selection = " + self.upper_left.)
+        # maximize window
+        screen = QDesktopWidget().screenGeometry()        
+        self.setGeometry(screen)
 
-app = QtGui.QApplication([])
 
-screen_pixmap = QtGui.QPixmap.grabWindow(app.desktop().winId())
+        # set cross cursor
+        self.setCursor(Qt.CursorShape(Qt.CrossCursor))
+        # BEGIN ISSUE #2
+        #QApplication.setOverrideCursor(QCursor(Qt.CrossCursor))
+        # END ISSUE #2
+        
+        # display        
+        self.show()
 
-window = QtGui.QWidget()
-layout = QtGui.QVBoxLayout(window)
-label = RubberbandEnhancedLabel()
-label.setPixmap(screen_pixmap)
-layout.addWidget(label)
-geometry = app.desktop().availableGeometry()
-window.setFixedSize(geometry.width(), geometry.height())
-window.show()
-app.exec_()
+        # create rubberband
+        self.rb = QRubberBand(QRubberBand.Rectangle)
+
+        self.snapshotResult = None
+        
+        layout = QVBoxLayout()
+        
+        self.backgroundLabel = QLabel()
+        layout.addWidget(self.backgroundLabel) 
+        layout.setContentsMargins(0,0,0,0)
+
+        self.setLayout(layout) 
+
+    def setBackground(self, pixmap):
+        """
+        Set background
+        """
+        self.backgroundLabel.setPixmap(pixmap)
+
+    def mousePressEvent(self,ev):
+        """
+        """
+        if ev.button() != Qt.LeftButton:
+            self.abort()
+            
+        if self.state == 0:        
+            self.state = 1                        
+            self.origin = ev.globalPos()
+         
+            self.rb.setGeometry(QRect(self.origin,ev.globalPos()).normalized())
+            self.rb.show()
+    
+    def mouseMoveEvent(self,ev):
+        """
+        """
+        if self.state == 1:
+            self.rb.setGeometry(QRect(self.origin,ev.globalPos()).normalized())
+    
+    def mouseReleaseEvent(self,ev):
+        """
+        """
+        if self.state == 1:
+            self.state = 2
+            self.end = ev.globalPos()        
+            self.rb.hide()
+            self.doSnip()
+   
+    def keyPressEvent(self, ev):
+        """
+        """
+        if ev.key() == Qt.Key_Escape: 
+            self.abort()
+    
+    def doSnip(self):   
+        """
+        """
+        x = min(self.origin.x(),self.end.x())
+        y = min(self.origin.y(),self.end.y())
+        w = abs(self.origin.x() - self.end.x())
+        h = abs(self.origin.y() - self.end.y())
+
+        self.hide()
+        pixmap = QPixmap. grabWidget(self.backgroundLabel,x,y,w,h)
+
+        self.snapshotResult = pixmap
+        self.accept()
+    
+    def getSnapshot(self):
+        """
+        Return snapshot as pixmap
+        """
+        return self.snapshotResult
+
+    def abort(self):
+        """
+        close both windows and exit program
+        """
+        pass
+        
