@@ -1,7 +1,9 @@
-temp
+temp/*
+test/*
 .directory
 .vscode
 jsconfig.json
 __pycache__
 _build/final
 _build/work
+.idea
