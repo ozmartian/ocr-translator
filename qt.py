@@ -73,9 +73,6 @@ class Snapshot(QDialog):
     def keyPressEvent(self, ev):
         if ev.key() == Qt.Key_Escape:
             self.close()
-        elif ev.key() == Qt.Key_H:
-            self.rubberBand.hide()
-            self.hide()
         elif ev.key() in [Qt.Key_Enter, Qt.Key_Return] and not self.start.isNull() and not self.end.isNull():
             self.hide()
             QTimer().singleShot(500, self.takescreenshot)
