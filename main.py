@@ -1,191 +1,123 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 import atexit
 import os
-import sys
 import threading
 import time
-import urllib.parse
-import warnings
 from random import randint
+from urllib.parse import urlencode
 
-import wx
-from PyQt5.QtCore import Qt, QUrl
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QApplication
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 
 import util
 
-#os.environ['QTWEBENGINE_REMOTE_DEBUGGING'] = '1234'
-warnings.filterwarnings("ignore")
-
-#--------------------------------------------------------------------------------------------------------#
-
-class ScreenshotFrame(wx.Frame):
-    c1 = None
-    c2 = None
-
-    def __init__(self, parent=None, id=-1, title="", pos=(0, 0), size=wx.DisplaySize()):
-        wx.Frame.__init__(self, parent, id, title, pos=pos, size=size,
-                          style=wx.FRAME_NO_TASKBAR | wx.NO_BORDER | wx.STAY_ON_TOP)
-        self.parent = parent
-        self.SetTransparent(185)
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
-        self.SetCursor(wx.Cursor(wx.CURSOR_CROSS))
-        self.panel = wx.Panel(self, size=self.GetSize())
-        self.panel.SetBackgroundColour(wx.Colour(0, 0, 0))
-        self.panel.Bind(wx.EVT_MOTION, self.OnMouseMove)
-        self.panel.Bind(wx.EVT_LEFT_DOWN, self.OnMouseSelect)
-        self.panel.Bind(wx.EVT_RIGHT_DOWN, self.OnReset)
-        self.panel.Bind(wx.EVT_LEFT_UP, self.OnMouseUp)
-        self.panel.Bind(wx.EVT_PAINT, self.OnPaint)
-        self.panel.Bind(wx.EVT_KEY_DOWN, self.OnKeyDown)
-        self.panel.Bind(wx.EVT_CHAR_HOOK, self.OnKeyDown)
-
-    def OnClose(self, event):
-        self.Destroy()
-
-    def OnMouseMove(self, event):
-        if event.Dragging() and event.LeftIsDown():
-            self.c2 = event.GetPosition()
-            self.Refresh()
-
-    def OnMouseSelect(self, event):
-        self.SetCursor(wx.Cursor(wx.CURSOR_CROSS))
-        self.c1 = event.GetPosition()
-
-    def OnMouseUp(self, event):
-        self.SetCursor(wx.Cursor(wx.CURSOR_ARROW))
-
-    def OnKeyDown(self, event):
-        key = event.GetKeyCode()
-        if key == wx.WXK_ESCAPE:
-            self.Close()
-        elif key in [wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER] and self.RegionSelected():
-            global shotdata
-            shotdata.Save(self.c1.x, self.c1.y, self.c2.x -
-                          self.c1.x, self.c2.y - self.c1.y)
-            self.TakeScreenshot()
-            self.Close()
-            WebKitHelper()
-        else:
-            event.Skip()
-
-    def OnReset(self, event):
-        self.panel.Refresh()
-        self.SetCursor(wx.Cursor(wx.CURSOR_CROSS))
-
-    def OnPaint(self, event):
-        if not self.RegionSelected():
-            return
-        dc = wx.PaintDC(self.panel)
-        dc.SetPen(wx.Pen(wx.WHITE, 1, wx.LONG_DASH))
-        dc.SetBrush(wx.Brush(wx.Colour(100, 100, 100), wx.SOLID))
-        dc.DrawRectangle(self.c1.x, self.c1.y, self.c2.x -
-                         self.c1.x, self.c2.y - self.c1.y)
-
-    def RegionSelected(self):
-        return (not self.c1 is None and not self.c2 is None)
-
-    def TakeScreenshot(self):
-        global shotdata
-        shotdata.bmp = wx.Bitmap(
-            name=shotdata.desktopFilename, type=wx.BITMAP_TYPE_PNG)
-        bmp = shotdata.bmp.GetSubBitmap(
-            wx.Rect(shotdata.x, shotdata.y, shotdata.width, shotdata.height))
-        img = bmp.ConvertToImage()
-        shotdata.filename = os.path.join(
-            util.GetWorkingPath(), "temp", time.strftime('%Y%m%d-%H%M%S')) + ".png"
-        img.SaveFile(shotdata.filename, wx.BITMAP_TYPE_PNG)
-
-#--------------------------------------------------------------------------------------------------------#
+try:
+    from PyQt5.QtWebEngineWidgets import QWebEngineView
+    _isWebEngine = True
+except ImportError as e:
+    from PyQt5.QtWebKitWidgets import QWebView
+    _isWebEngine = False
 
 
-class Screenshoter(wx.App):
-    bmp = None
+class Selector(QRubberBand):
+    def __init__(self, *arg, **kwargs):
+        super(Selector, self).__init__(*arg, **kwargs)
 
-    def OnInit(self):
-        global shotdata
-        shotdata = util.SaveDesktop(shotdata)
-        self.frame = ScreenshotFrame(None,
-                                     pos=(shotdata.desktopRect.GetX(),
-                                          shotdata.desktopRect.GetY()),
-                                     size=(shotdata.desktopRect.GetWidth(),
-                                           shotdata.desktopRect.GetHeight()))
-        self.frame.Show(True)
-        self.SetTopWindow(self.frame)
-        return True
-
-#--------------------------------------------------------------------------------------------------------#
+    def paintEvent(self, event):
+        pen = QPen()
+        pen.setStyle(Qt.DotLine)
+        pen.setWidth(2)
+        pen.setColor(QColor(Qt.white))
+        painter = QPainter(self)
+        painter.setPen(pen)
+        painter.setBrush(QBrush(QColor(100, 100, 100)))
+        painter.setOpacity(0.7)
+        painter.drawRect(event.rect())
 
 
-class ScreenshotData:
-    x = 0
-    y = 0
-    width = 0
-    height = 0
-    filename = ""
-    bmp = None
-    desktopRect = None
-    desktopFilename = ""
+class Snapshot(QDialog):
+    def __init__(self, parent=None, f=Qt.Tool | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.X11BypassWindowManagerHint):
+        super(Snapshot, self).__init__(parent, f)
+        self.isFullScreen()
+        self.desktopGeometry = util.GetDesktopGeometry(app)
+        self.setGeometry(self.desktopGeometry)
+        self.setStyleSheet("background-color: #000;")
+        self.setModal(True)
+        self.setWindowOpacity(0.7)
+        self.setCursor(Qt.CrossCursor)
+        self.rubberBand = Selector(QRubberBand.Rectangle, self)
+        self.start = QPoint()
+        self.end = QPoint()
+        self.hasSelected = False
+        self.screenshot = QPixmap()
+        self.shotfilename = None
 
-    def Save(self, x=0, y=0, width=0, height=0, filename=""):
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
-        self.filename = filename
+    def mousePressEvent(self, ev):
+        if ev.button() == Qt.LeftButton:
+            self.setCursor(Qt.CrossCursor)
+            self.start = QPoint(ev.pos())
+            self.rubberBand.setGeometry(QRect(self.start, QSize()))
+            self.rubberBand.show()
 
-#--------------------------------------------------------------------------------------------------------#
+    def mouseMoveEvent(self, ev):
+        if not self.start.isNull():
+            self.rubberBand.setGeometry(QRect(self.start, ev.pos()).normalized())
+            self.hasSelected = True
 
+    def mouseReleaseEvent(self, ev):
+        if ev.button() == Qt.LeftButton and self.hasSelected:
+            self.end = QPoint(ev.pos())
+            self.setCursor(Qt.ArrowCursor)
+            self.hasSelected = False
 
-class WebKitHelper:
-    address = None
-    port = None
-    view = None
+    def keyPressEvent(self, ev):
+        if ev.key() == Qt.Key_Escape:
+            self.close()
+        elif ev.key() in [Qt.Key_Enter, Qt.Key_Return] and not self.start.isNull() and not self.end.isNull():
+            self.hide()
+            QTimer().singleShot(500, self.takeScreenshot)
 
-    def __init__(self):
+    def takeScreenshot(self):
+        x = self.desktopGeometry.x() + self.start.x()
+        y = self.desktopGeometry.y() + self.start.y()
+        w = self.end.x() - self.start.x()
+        h = self.end.y() - self.start.y()
+        self.screenshot = app.screens()[0].grabWindow(app.desktop().winId(), x, y, w, h)
+        self.shotfilename = os.path.join(util.GetWorkingPath(), "temp", time.strftime('%Y%m%d-%H%M%S')) + ".png"
+        self.screenshot.save(self.shotfilename, "PNG", 100)
+        if not self.shotfilename is None and type(self.screenshot) is QPixmap:
+            self.openTranslator()
+
+    def openTranslator(self):
         self.address = "127.0.0.1"
-        self.port = randint(2000, 4000)
-        t = threading.Thread(target=util.WebServer, args=(self.address, self.port))
-        t.daemon = True
-        t.start()
-        global shotdata, bWebEngine
-        size = util.GetAppFrameSize(shotdata)
-        app = QApplication(sys.argv)
-        
-        try:
-            from PyQt5.QtWebEngineWidgets import QWebEngineView
-            self.view = QWebEngineView()
-        except ImportError as e:
-            from PyQt5.QtWebKitWidgets import QWebView
-            self.view = QWebView()
-
+        self.port = randint(2000, 5000)
+        self.t = threading.Thread(target=util.WebServer, args=(self.address, self.port))
+        self.t.daemon = True
+        self.t.start()
+        # print("app framesize: " + str(util.GetAppFrameSize(self.screenshot).width()) +
+        #       "x" + str(util.GetAppFrameSize(self.screenshot).height()))
+        self.view = QWebEngineView() if _isWebEngine else QWebView() 
         self.view.setWindowTitle("OCR Translator")
         self.view.setWindowIcon(QIcon(os.path.join(util.GetWorkingPath(), "img", "app-icon.ico")))
         self.view.setContextMenuPolicy(Qt.NoContextMenu)
-        qryparam = urllib.parse.urlencode({'img': shotdata.filename.split('\\').pop().split('/').pop()})
-        self.view.load(QUrl("http://" + self.address + ":" +str(self.port) + "/index.html#?" + qryparam))
-        self.view.resize(size)
+        qryparam = urlencode({'img': self.shotfilename.split('\\').pop().split('/').pop()})
+        self.url = QUrl("http://" + self.address + ":" + str(self.port) + "/index.html#?" + qryparam)
+        # print("app server loaded at: " + self.url.toString())
+        self.view.load(self.url)
+        self.view.setMinimumSize(util.GetAppFrameSize(self.screenshot))
+        self.view.closeEvent = self.closeEvent
         self.view.show()
-        app.exec_()
 
-#--------------------------------------------------------------------------------------------------------#
+    def closeEvent(self, ev):
+        app.quit()
 
-
-def main():
-    try:
-        screenshoter = Screenshoter(False)
-        screenshoter.MainLoop()           
-    except:
-        print(sys.exc_info()[0])
-        return 1
-    return 0
-
-#--------------------------------------------------------------------------------------------------------#
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
+    import sys
     atexit.register(util.Cleanup)
-    shotdata = ScreenshotData()
-    sys.exit(main())
+    app = QApplication(sys.argv)
+    snapshot = Snapshot()
+    snapshot.show()
+    sys.exit(app.exec_())
