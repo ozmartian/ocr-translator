@@ -2,6 +2,7 @@ temp/*
 test/*
 .directory
 .vscode
+.vs
 jsconfig.json
 __pycache__
 _build/final
