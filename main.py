@@ -10,17 +10,20 @@ from urllib.parse import urlencode
 
 from PyQt5.QtCore import QPoint, QRect, QSize, Qt, QTimer, QUrl
 from PyQt5.QtGui import QBrush, QColor, QIcon, QPainter, QPen, QPixmap
+from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QApplication, QDialog, QRubberBand
 
 import util
 
+
+'''
 try:
     from PyQt5.QtWebEngineWidgets import QWebEngineView
     _isWebEngine = True
 except ImportError as e:
     from PyQt5.QtWebKitWidgets import QWebView
     _isWebEngine = False
-
+'''
 
 class Selector(QRubberBand):
     def __init__(self, *arg, **kwargs):
@@ -99,7 +102,8 @@ class Snapshot(QDialog):
         self.t.start()
         # print("app framesize: " + str(util.GetAppFrameSize(self.screenshot).width()) +
         #       "x" + str(util.GetAppFrameSize(self.screenshot).height()))
-        self.view = QWebEngineView() if _isWebEngine else QWebView() 
+        # self.view = QWebEngineView() if _isWebEngine else QWebView() 
+        self.view = QWebEngineView()
         self.view.setWindowTitle("OCR Translator")
         self.view.setWindowIcon(QIcon(path.join(util.GetWorkingPath(), "img", "app-icon.ico")))
         self.view.setContextMenuPolicy(Qt.NoContextMenu)
