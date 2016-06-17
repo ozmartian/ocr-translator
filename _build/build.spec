@@ -3,19 +3,19 @@
 import os
 import platform
 import sys
-sys.path.append("")
+sys.path.append("../")
 
 block_cipher = None
 
 data_files = [
-    ('css', 'css'),
-    ('img', 'img'),
-    ('js', 'js'),
-    ('temp', 'temp'),
-    ('index.html', '.')
+    ('../css', 'css'),
+    ('../img', 'img'),
+    ('../js', 'js'),
+    ('../temp', 'temp'),
+    ('../index.html', '.')
 ]
 
-a = Analysis(['main.py'],
+a = Analysis(['../main.py'],
              pathex=['/home/ozmartian/Projects/ocr-translator'],
              binaries=None,
              datas=data_files,
@@ -38,4 +38,4 @@ exe = EXE(pyz,
           debug=False,
           strip=True,
           upx=True,
-          console=False , icon='img/app-icon.png')
+          console=False , icon='../img/app-icon.png')

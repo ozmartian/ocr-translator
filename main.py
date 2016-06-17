@@ -8,9 +8,9 @@ import time
 from random import randint
 from urllib.parse import urlencode
 
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
+from PyQt5.QtCore import QPoint, QRect, QSize, Qt, QTimer, QUrl
+from PyQt5.QtGui import QBrush, QColor, QIcon, QPainter, QPen, QPixmap
+from PyQt5.QtWidgets import QApplication, QDialog, QRubberBand
 
 import util
 
