@@ -36,6 +36,6 @@ exe = EXE(pyz,
           a.datas,
           name='ocrtranslator',
           debug=False,
-          strip=True,
-          upx=True,
+          strip=False,
+          upx=False,
           console=False , icon='../img/app-icon.png')
