@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import atexit
-import os
-import threading
-import time
+from atexit import register
+from os import path
 from random import randint
+from threading import Thread
+from time import strftime
 from urllib.parse import urlencode
 
 from PyQt5.QtCore import QPoint, QRect, QSize, Qt, QTimer, QUrl
@@ -86,7 +86,7 @@ class Snapshot(QDialog):
         w = self.end.x() - self.start.x()
         h = self.end.y() - self.start.y()
         self.screenshot = app.screens()[0].grabWindow(app.desktop().winId(), x, y, w, h)
-        self.shotfilename = os.path.join(util.GetWorkingPath(), "temp", time.strftime('%Y%m%d-%H%M%S')) + ".png"
+        self.shotfilename = path.join(util.GetWorkingPath(), "temp", strftime('%Y%m%d-%H%M%S')) + ".png"
         self.screenshot.save(self.shotfilename, "PNG", 100)
         if not self.shotfilename is None and type(self.screenshot) is QPixmap:
             self.openTranslator()
@@ -94,14 +94,14 @@ class Snapshot(QDialog):
     def openTranslator(self):
         self.address = "127.0.0.1"
         self.port = randint(2000, 5000)
-        self.t = threading.Thread(target=util.WebServer, args=(self.address, self.port))
+        self.t = Thread(target=util.WebServer, args=(self.address, self.port))
         self.t.daemon = True
         self.t.start()
         # print("app framesize: " + str(util.GetAppFrameSize(self.screenshot).width()) +
         #       "x" + str(util.GetAppFrameSize(self.screenshot).height()))
         self.view = QWebEngineView() if _isWebEngine else QWebView() 
         self.view.setWindowTitle("OCR Translator")
-        self.view.setWindowIcon(QIcon(os.path.join(util.GetWorkingPath(), "img", "app-icon.ico")))
+        self.view.setWindowIcon(QIcon(path.join(util.GetWorkingPath(), "img", "app-icon.ico")))
         self.view.setContextMenuPolicy(Qt.NoContextMenu)
         qryparam = urlencode({'img': self.shotfilename.split('\\').pop().split('/').pop()})
         self.url = QUrl("http://" + self.address + ":" + str(self.port) + "/index.html#?" + qryparam)
@@ -116,7 +116,7 @@ class Snapshot(QDialog):
 
 if __name__ == '__main__':
     import sys
-    atexit.register(util.Cleanup)
+    register(util.Cleanup)
     app = QApplication(sys.argv)
     snapshot = Snapshot()
     snapshot.show()
