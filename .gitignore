@@ -7,4 +7,7 @@ jsconfig.json
 __pycache__
 _build/final
 _build/work
+_build/nsis
 .idea
+build
+installer.cfg
