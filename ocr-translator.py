@@ -11,19 +11,20 @@ from urllib.parse import urlencode
 
 from PyQt5.QtCore import QPoint, QRect, QSize, Qt, QTimer, QUrl
 from PyQt5.QtGui import QBrush, QColor, QIcon, QPainter, QPen, QPixmap
+from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QApplication, QDialog, QRubberBand
 
 from util import (Cleanup, GetAppFrameSize, GetDesktopGeometry, GetDocRoot,
                   WebServer)
+
 
 # if sys.platform.startswith("linux"):
 #     import PyQt5.QtWebEngineCore
 #     from PyQt5.QtWebEngineWidgets import QWebEngineView
 #     _isWebEngine = True
 # else:
-from PyQt5.QtWebKitWidgets import QWebView
-_isWebEngine = False
-
+#   from PyQt5.QtWebKitWidgets import QWebView
+#   _isWebEngine = False
 
 class Selector(QRubberBand):
     def __init__(self, *arg, **kwargs):
@@ -103,7 +104,8 @@ class Snapshot(QDialog):
         self.t.start()
         # print("app framesize: " + str(GetAppFrameSize(self.screenshot).width()) +
         #       "x" + str(GetAppFrameSize(self.screenshot).height()))
-        self.view = QWebEngineView() if _isWebEngine else QWebView()
+        # self.view = QWebEngineView() if _isWebEngine else QWebView()
+        self.view = QWebEngineView()
         self.view.setWindowTitle("OCR Translator")
         self.view.setWindowIcon(QIcon(os.path.join(GetDocRoot(), "img", "app-icon.ico")))
         self.view.setContextMenuPolicy(Qt.NoContextMenu)
