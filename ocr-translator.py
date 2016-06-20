@@ -42,11 +42,11 @@ class Selector(QRubberBand):
         painter.drawRect(event.rect())
 
 
-class Snapshot(QDialog):
+class OCRTranslator(QDialog):
     def __init__(self, parent=None, f=Qt.Tool | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.X11BypassWindowManagerHint):
-        super(Snapshot, self).__init__(parent, f)
+        super(OCRTranslator, self).__init__(parent, f)
         self.isFullScreen()
-        self.desktopGeometry = GetDesktopGeometry(app)
+        self.desktopGeometry = GetDesktopGeometry()
         self.setGeometry(self.desktopGeometry)
         self.setStyleSheet("background-color: #000;")
         self.setModal(True)
@@ -89,7 +89,7 @@ class Snapshot(QDialog):
         y = self.desktopGeometry.y() + self.start.y()
         w = self.end.x() - self.start.x()
         h = self.end.y() - self.start.y()
-        self.screenshot = app.screens()[0].grabWindow(app.desktop().winId(), x, y, w, h)
+        self.screenshot = QApplication.instance().screens()[0].grabWindow(QApplication.instance().desktop().winId(), x, y, w, h)
         self.shotfilename = os.path.join(GetDocRoot(), "temp", strftime('%Y%m%d-%H%M%S')) + ".png"
         self.screenshot.save(self.shotfilename, "PNG", 100)
         if not self.shotfilename is None and type(self.screenshot) is QPixmap:
@@ -118,12 +118,20 @@ class Snapshot(QDialog):
         self.view.show()
 
     def closeEvent(self, ev):
-        app.quit()
+        QApplication.instance().quit()
+
+
+def main():
+    register(Cleanup)
+    app = QApplication(sys.argv)
+    app.setOrganizationName("OCR Translator")
+    app.setOrganizationDomain("com.ozmartians.OCRTranslator")
+    app.setApplicationName("OCR Translator")
+    app.setQuitOnLastWindowClosed(True)
+    translator = OCRTranslator()
+    translator.show()
+    sys.exit(app.exec_())
 
 
 if __name__ == '__main__':
-    register(Cleanup)
-    app = QApplication(sys.argv)
-    snapshot = Snapshot()
-    snapshot.show()
-    sys.exit(app.exec_())
+    main()

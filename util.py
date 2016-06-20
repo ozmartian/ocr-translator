@@ -7,9 +7,8 @@ from glob import glob
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 
 from PyQt5.QtCore import QRect, QSize
+from PyQt5.QtWidgets import QApplication
 
-
-#--------------------------------------------------------------------------------------------------------#
 
 def DeleteFiles(path):
     try:
@@ -20,21 +19,15 @@ def DeleteFiles(path):
         print("Error deleting file " + path + ":", sys.exc_info()[0])
         pass
 
-#--------------------------------------------------------------------------------------------------------#
-
-
 def Cleanup():
     temppath = os.path.join(GetDocRoot(), "temp", "**")
     DeleteFiles(temppath)
 
-#--------------------------------------------------------------------------------------------------------#
-
-
-def GetDesktopGeometry(app):
+def GetDesktopGeometry():
     totalWidth = 0
     maxHeight = 0
     minX = 0
-    screens = (app.screens()[i] for i in range(app.desktop().screenCount()))
+    screens = (QApplication.instance().screens()[i] for i in range(QApplication.instance().desktop().screenCount()))
     rects = [screen.geometry() for screen in screens]
     for rect in rects:
         totalWidth += rect.width()
@@ -44,16 +37,10 @@ def GetDesktopGeometry(app):
             maxHeight = rect.height()
     return QRect(minX, 0, totalWidth, maxHeight)
 
-#--------------------------------------------------------------------------------------------------------#
-
-
 def GetDocRoot():
     if getattr(sys, 'frozen', False):
         return os.path.join(sys._MEIPASS, "www")
     return os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "www")
-
-#--------------------------------------------------------------------------------------------------------#
-
 
 def GetAppFrameSize(imageSize):
     viewWidth = imageSize.width() + 85
@@ -63,9 +50,6 @@ def GetAppFrameSize(imageSize):
     if viewHeight < 550:
         viewHeight = 550
     return QSize(viewWidth, viewHeight)
-
-#--------------------------------------------------------------------------------------------------------#
-
 
 def WebServer(url, port):
     if getattr(sys, 'frozen', False):
