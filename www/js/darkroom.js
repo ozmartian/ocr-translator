@@ -275,7 +275,7 @@
 
             // Toolbar
             var toolbarElement = document.createElement('div');
-            toolbarElement.className = 'darkroom-toolbar slideDown';
+            toolbarElement.className = 'darkroom-toolbar';
             mainContainerElement.appendChild(toolbarElement);
 
             // Viewport canvas

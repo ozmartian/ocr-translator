@@ -1,21 +1,14 @@
 # -*- mode: python -*-
 
-import os
-import platform
-import sys
-sys.path.append("../")
-
-block_cipher = None
-
 data_files = [
-    ('../css', 'css'),
-    ('../img', 'img'),
-    ('../js', 'js'),
-    ('../temp', 'temp'),
-    ('../index.html', '.')
+    ('../www/css', 'www/css'),
+    ('../www/img', 'www/img'),
+    ('../www/js', 'www/js'),
+    ('../www/temp', 'www/temp'),
+    ('../www/index.html', 'www/')
 ]
 
-a = Analysis(['../main.py'],
+a = Analysis(['../ocr-translator.py'],
              pathex=['/home/ozmartian/Projects/ocr-translator'],
              binaries=None,
              datas=data_files,
@@ -25,7 +18,7 @@ a = Analysis(['../main.py'],
              excludes=[],
              win_no_prefer_redirects=False,
              win_private_assemblies=False,
-             cipher=block_cipher)
+             cipher=None)
 
 pyz = PYZ(a.pure)
 
@@ -34,8 +27,9 @@ exe = EXE(pyz,
           a.binaries,
           a.zipfiles,
           a.datas,
-          name='ocrtranslator',
+          name='ocr-translator',
           debug=False,
-          strip=False,
-          upx=False,
-          console=False , icon='../img/app-icon.png')
+          strip=True,
+          upx=True,
+          console=False,
+          icon='../www/img/app-icon.png')

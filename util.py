@@ -24,7 +24,7 @@ def DeleteFiles(path):
 
 
 def Cleanup():
-    temppath = os.path.join(GetDocRoot()), "temp", "**")
+    temppath = os.path.join(GetDocRoot(), "temp", "**")
     DeleteFiles(temppath)
 
 #--------------------------------------------------------------------------------------------------------#

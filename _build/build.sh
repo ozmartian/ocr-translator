@@ -3,4 +3,4 @@
 [ -d ./final ] && rm -rf ./final
 [ -d ./work ] && rm -rf ./work
 
- pyinstaller --onedir --windowed --icon=../img/app-icon.ico --workpath=./work --distpath=./final ./build.spec
+ pyinstaller --onefile --windowed --icon=../www/img/app-icon.png --workpath=./work --distpath=./final ./build.spec

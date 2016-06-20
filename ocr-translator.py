@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import os
 import sys
 from atexit import register
-from os import path
 from random import randint
 from threading import Thread
 from time import strftime
@@ -16,12 +16,13 @@ from PyQt5.QtWidgets import QApplication, QDialog, QRubberBand
 from util import (Cleanup, GetAppFrameSize, GetDesktopGeometry, GetDocRoot,
                   WebServer)
 
-try:
-    from PyQt5.QtWebKitWidgets import QWebView
-    _isWebKit = True
-except ImportError as e:
-    from PyQt5.QtWebEngineWidgets import QWebEngineView
-    _isWebKit = False
+# if sys.platform.startswith("linux"):
+#     import PyQt5.QtWebEngineCore
+#     from PyQt5.QtWebEngineWidgets import QWebEngineView
+#     _isWebEngine = True
+# else:
+from PyQt5.QtWebKitWidgets import QWebView
+_isWebEngine = False
 
 
 class Selector(QRubberBand):
@@ -88,13 +89,13 @@ class Snapshot(QDialog):
         w = self.end.x() - self.start.x()
         h = self.end.y() - self.start.y()
         self.screenshot = app.screens()[0].grabWindow(app.desktop().winId(), x, y, w, h)
-        self.shotfilename = path.join(GetDocRoot(), "temp", strftime('%Y%m%d-%H%M%S')) + ".png"
+        self.shotfilename = os.path.join(GetDocRoot(), "temp", strftime('%Y%m%d-%H%M%S')) + ".png"
         self.screenshot.save(self.shotfilename, "PNG", 100)
         if not self.shotfilename is None and type(self.screenshot) is QPixmap:
             self.openTranslator()
 
     def openTranslator(self):
-        os.chdir()
+        # os.chdir(GetDocRoot())
         self.address = "127.0.0.1"
         self.port = randint(2000, 5000)
         self.t = Thread(target=WebServer, args=(self.address, self.port))
@@ -102,12 +103,12 @@ class Snapshot(QDialog):
         self.t.start()
         # print("app framesize: " + str(GetAppFrameSize(self.screenshot).width()) +
         #       "x" + str(GetAppFrameSize(self.screenshot).height()))
-        self.view = QWebView() if _isWebKit else QWebEngineView() 
+        self.view = QWebEngineView() if _isWebEngine else QWebView()
         self.view.setWindowTitle("OCR Translator")
-        self.view.setWindowIcon(QIcon(path.join(GetDocRoot(), "img", "app-icon.ico")))
+        self.view.setWindowIcon(QIcon(os.path.join(GetDocRoot(), "img", "app-icon.ico")))
         self.view.setContextMenuPolicy(Qt.NoContextMenu)
         qryparam = urlencode({'img': self.shotfilename.split('\\').pop().split('/').pop()})
-        self.url = QUrl("http://" + self.address + ":" + str(self.port) + "/index.html#?" + qryparam)
+        self.url = QUrl("http://" + self.address + ":" + str(self.port) + "/www/index.html#?" + qryparam)
         # print("app server loaded at: " + self.url.toString())
         self.view.load(self.url)
         self.view.setMinimumSize(GetAppFrameSize(self.screenshot))
@@ -116,6 +117,7 @@ class Snapshot(QDialog):
 
     def closeEvent(self, ev):
         app.quit()
+
 
 if __name__ == '__main__':
     register(Cleanup)

@@ -34,11 +34,12 @@ var OCR = {
         if (!index) {
             index = 0;
         }
+        var lang = ($('select#language') !== null) ? $('select#language').val() : "chs";
         $('#result').text('');
         $('.hidden').removeClass('in');
         var data = new FormData();
         data.append("apikey", this.apiKey);
-        data.append("language", "chs");
+        data.append("language", lang);
         data.append("isOverlayRequired", true);
         data.append("file", this.dataURI2Blob(image), "image.png");
         $.ajax({
@@ -171,6 +172,9 @@ var imgEditor = {
         $('.darkroom-button-group button').slice(3).removeAttr('disabled');
         window.setTimeout(function() {
             $('[data-toggle="tooltip"]').tooltip();
+            $('body').on('click', function(e) {
+                $('[data-toggle="tooltip"]').tooltip('hide');
+            });
         }, 1000);
     },
     disableTools: function() {
