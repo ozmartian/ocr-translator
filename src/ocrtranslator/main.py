@@ -4,6 +4,8 @@
 import os
 import sys
 from atexit import register
+from glob import glob
+from http.server import HTTPServer, SimpleHTTPRequestHandler
 from random import randint
 from threading import Thread
 from time import strftime
@@ -14,9 +16,6 @@ from PyQt5.QtGui import QBrush, QColor, QIcon, QPainter, QPen, QPixmap
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QApplication, QDialog, QRubberBand
 
-from util import (Cleanup, GetAppFrameSize, GetDesktopGeometry, GetDocRoot,
-                  WebServer)
-
 
 # if sys.platform.startswith("linux"):
 #     import PyQt5.QtWebEngineCore
@@ -25,6 +24,57 @@ from util import (Cleanup, GetAppFrameSize, GetDesktopGeometry, GetDocRoot,
 # else:
 #   from PyQt5.QtWebKitWidgets import QWebView
 #   _isWebEngine = False
+
+def Cleanup():
+    temppath = os.path.join(GetDocRoot(), "temp", "**")
+    try:
+        filelist = glob(temppath)
+        for file in filelist:
+            os.remove(file)
+    except:
+        print("Error deleting file " + temppath + ":", sys.exc_info()[0])
+        pass
+
+def GetDesktopGeometry():
+    totalWidth = 0
+    maxHeight = 0
+    minX = 0
+    screens = (QApplication.instance().screens()[i] for i in range(QApplication.instance().desktop().screenCount()))
+    rects = [screen.geometry() for screen in screens]
+    for rect in rects:
+        totalWidth += rect.width()
+        if rect.x() < minX:
+            minX = rect.x()
+        if rect.height() > maxHeight:
+            maxHeight = rect.height()
+    return QRect(minX, 0, totalWidth, maxHeight)
+
+def GetDocRoot():
+    if getattr(sys, 'frozen', False):
+        return os.path.join(sys._MEIPASS, "www")
+    return os.path.join(os.path.dirname(os.path.realpath(__file__)), "www")
+
+def GetAppFrameSize(imageSize):
+    viewWidth = imageSize.width() + 85
+    if viewWidth < 600:
+        viewWidth = 600
+    viewHeight = imageSize.height() + 185
+    if viewHeight < 550:
+        viewHeight = 550
+    return QSize(viewWidth, viewHeight)
+
+def WebServer(url, port):
+    if getattr(sys, 'frozen', False):
+        os.chdir(sys._MEIPASS)
+        for r, d, f in os.walk(sys._MEIPASS):
+            os.chmod(r, 0o755)
+    HandlerClass = SimpleHTTPRequestHandler
+    ServerClass = HTTPServer
+    server_address = (url, port)
+    HandlerClass.protocol_version = "HTTP/1.0"
+    httpd = ServerClass(server_address, HandlerClass)
+    httpd.serve_forever()
+
 
 class Selector(QRubberBand):
     def __init__(self, *arg, **kwargs):
@@ -96,22 +146,18 @@ class OCRTranslator(QDialog):
             self.openTranslator()
 
     def openTranslator(self):
-        # os.chdir(GetDocRoot())
         self.address = "127.0.0.1"
         self.port = randint(2000, 5000)
         self.t = Thread(target=WebServer, args=(self.address, self.port))
         self.t.daemon = True
         self.t.start()
-        # print("app framesize: " + str(GetAppFrameSize(self.screenshot).width()) +
-        #       "x" + str(GetAppFrameSize(self.screenshot).height()))
-        # self.view = QWebEngineView() if _isWebEngine else QWebView()
+        # print("server started at: " + self.address + ":" + str(self.port))
         self.view = QWebEngineView()
         self.view.setWindowTitle("OCR Translator")
-        self.view.setWindowIcon(QIcon(os.path.join(GetDocRoot(), "img", "app-icon.ico")))
+        self.view.setWindowIcon(QIcon(os.path.join(GetDocRoot(), "img", "app-icon.png")))
         self.view.setContextMenuPolicy(Qt.NoContextMenu)
         qryparam = urlencode({'img': self.shotfilename.split('\\').pop().split('/').pop()})
-        self.url = QUrl("http://" + self.address + ":" + str(self.port) + "/www/index.html#?" + qryparam)
-        # print("app server loaded at: " + self.url.toString())
+        self.url = QUrl("http://" + self.address + ":" + str(self.port) + "/ocrtranslator/www/index.html#?" + qryparam)
         self.view.load(self.url)
         self.view.setMinimumSize(GetAppFrameSize(self.screenshot))
         self.view.closeEvent = self.closeEvent
@@ -119,19 +165,3 @@ class OCRTranslator(QDialog):
 
     def closeEvent(self, ev):
         QApplication.instance().quit()
-
-
-def main():
-    register(Cleanup)
-    app = QApplication(sys.argv)
-    app.setOrganizationName("OCR Translator")
-    app.setOrganizationDomain("com.ozmartians.OCRTranslator")
-    app.setApplicationName("OCR Translator")
-    app.setQuitOnLastWindowClosed(True)
-    translator = OCRTranslator()
-    translator.show()
-    sys.exit(app.exec_())
-
-
-if __name__ == '__main__':
-    main()

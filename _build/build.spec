@@ -1,18 +1,18 @@
 # -*- mode: python -*-
 
 data_files = [
-    ('../www/css', 'www/css'),
-    ('../www/img', 'www/img'),
-    ('../www/js', 'www/js'),
-    ('../www/temp', 'www/temp'),
-    ('../www/index.html', 'www/')
+    ('../src/www/css', 'www/css'),
+    ('../src/www/img', 'www/img'),
+    ('../src/www/js', 'www/js'),
+    ('../src/www/temp', 'www/temp'),
+    ('../src/www/index.html', 'www/')
 ]
 
-a = Analysis(['../ocr-translator.py'],
-             pathex=['/home/ozmartian/Projects/ocr-translator'],
+a = Analysis(['../src/ocrtranslator/__init__.py'],
+             pathex=['/home/ozmartian/Projects/src/ocr-translator'],
              binaries=None,
              datas=data_files,
-             hiddenimports=[],
+             hiddenimports=['PyQt5.QtWebEngineCore'],
              hookspath=[],
              runtime_hooks=[],
              excludes=[],
@@ -27,9 +27,9 @@ exe = EXE(pyz,
           a.binaries,
           a.zipfiles,
           a.datas,
-          name='ocr-translator',
+          name='ocrtranslator',
           debug=False,
           strip=True,
           upx=True,
           console=False,
-          icon='../www/img/app-icon.png')
+          icon='../src/ocrtranslator/www/img/app-icon.png')
