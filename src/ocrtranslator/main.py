@@ -3,6 +3,7 @@
 
 import os
 import sys
+import warnings
 from atexit import register
 from glob import glob
 from http.server import HTTPServer, SimpleHTTPRequestHandler
@@ -16,6 +17,7 @@ from PyQt5.QtGui import QBrush, QColor, QIcon, QPainter, QPen, QPixmap
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QApplication, QDialog, QRubberBand
 
+warnings.filterwarnings("ignore")
 
 # if sys.platform.startswith("linux"):
 #     import PyQt5.QtWebEngineCore
@@ -65,15 +67,20 @@ def GetAppFrameSize(imageSize):
 
 def WebServer(url, port):
     if getattr(sys, 'frozen', False):
-        os.chdir(sys._MEIPASS)
+        os.chdir(sys._MEIPASS)  
         for r, d, f in os.walk(sys._MEIPASS):
             os.chmod(r, 0o755)
-    HandlerClass = SimpleHTTPRequestHandler
-    ServerClass = HTTPServer
-    server_address = (url, port)
-    HandlerClass.protocol_version = "HTTP/1.0"
-    httpd = ServerClass(server_address, HandlerClass)
+    httpd = HTTPServer((url, port), MyHTTPHandler)
     httpd.serve_forever()
+
+
+class MyHTTPHandler(SimpleHTTPRequestHandler):
+    def __init__(self, *arg, **kwargs):
+        super(SimpleHTTPRequestHandler, self).__init__(*arg, **kwargs)
+        self.protocol_version = "HTTP/1.0"
+
+    def log_message(self, format, *args):
+        return
 
 
 class Selector(QRubberBand):
