@@ -1,5 +1,3 @@
-temp/*
-test/*
 .directory
 .vscode
 .vs
@@ -9,5 +7,3 @@ _build/final
 _build/work
 _build/nsis
 .idea
-build
-installer.cfg
