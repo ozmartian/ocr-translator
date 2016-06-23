@@ -1,15 +1,15 @@
 # -*- mode: python -*-
 
 data_files = [
-    ('../src/www/css', 'www/css'),
-    ('../src/www/img', 'www/img'),
-    ('../src/www/js', 'www/js'),
-    ('../src/www/temp', 'www/temp'),
-    ('../src/www/index.html', 'www/')
+    ('../src/ocrtranslator/www/css', 'www/css'),
+    ('../src/ocrtranslator/www/img', 'www/img'),
+    ('../src/ocrtranslator/www/js', 'www/js'),
+    ('../src/ocrtranslator/www/temp', 'www/temp'),
+    ('../src/ocrtranslator/www/index.html', 'www/')
 ]
 
-a = Analysis(['../src/ocrtranslator/__init__.py'],
-             pathex=['/home/ozmartian/Projects/src/ocr-translator'],
+a = Analysis(['../src/ocrtranslator.py'],
+             pathex=['/home/ozmartian/Projects/src/ocr-translator/src'],
              binaries=None,
              datas=data_files,
              hiddenimports=['PyQt5.QtWebEngineCore'],
