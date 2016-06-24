@@ -13,19 +13,12 @@ from time import strftime
 from urllib.parse import urlencode
 
 from PyQt5.QtCore import QPoint, QRect, QSize, Qt, QTimer, QUrl
-from PyQt5.QtGui import QBrush, QColor, QIcon, QPainter, QPen, QPixmap
+from PyQt5.QtGui import (QBrush, QColor, QFont, QIcon, QPainter, QPen, QPixmap,
+                         QStaticText)
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWidgets import QApplication, QDialog, QRubberBand
 
 warnings.filterwarnings("ignore")
-
-# if sys.platform.startswith("linux"):
-#     import PyQt5.QtWebEngineCore
-#     from PyQt5.QtWebEngineWidgets import QWebEngineView
-#     _isWebEngine = True
-# else:
-#   from PyQt5.QtWebKitWidgets import QWebView
-#   _isWebEngine = False
 
 def Cleanup():
     temppath = os.path.join(GetDocRoot(), "temp", "**")
@@ -76,7 +69,7 @@ def WebServer(url, port):
 
 class MyHTTPHandler(SimpleHTTPRequestHandler):
     def __init__(self, *arg, **kwargs):
-        super(SimpleHTTPRequestHandler, self).__init__(*arg, **kwargs)
+        super(MyHTTPHandler, self).__init__(*arg, **kwargs)
         self.protocol_version = "HTTP/1.0"
 
     def log_message(self, format, *args):
@@ -99,6 +92,27 @@ class Selector(QRubberBand):
         painter.drawRect(event.rect())
 
 
+class InfoPanel(QDialog):
+    def __init__(self, parent, f=Qt.WA_TranslucentBackground | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.X11BypassWindowManagerHint):
+        super(InfoPanel, self).__init__(parent, f)
+        self.setStyleSheet("color: #FFF;")
+        self.body = QStaticText()
+        self.body.setTextFormat(Qt.RichText)
+        self.body.setTextWidth(500)
+        file = open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "resources", "info.html"), "r")
+        self.body.setText(file.read())
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.setOpacity(1)
+        painter.setFont(QFont("Sans Serif", 14, QFont.Medium))
+        painter.drawStaticText(0, 0, self.body)
+
+    def keyPressEvent(self, ev):
+        if ev.key() == Qt.Key_Escape:
+            self.parent.close()
+
+
 class OCRTranslator(QDialog):
     def __init__(self, parent=None, f=Qt.Tool | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.X11BypassWindowManagerHint):
         super(OCRTranslator, self).__init__(parent, f)
@@ -116,8 +130,14 @@ class OCRTranslator(QDialog):
         self.screenshot = QPixmap()
         self.shotfilename = None
 
+        self.info = InfoPanel(parent=self)
+        self.info.setFixedSize(QSize(500, 250))
+        self.info.setGeometry(self.desktopGeometry.x() + self.desktopGeometry.width() - 510, self.desktopGeometry.height() - 260, 500, 250)
+        self.info.show()
+
     def mousePressEvent(self, ev):
         if ev.button() == Qt.LeftButton:
+            self.info.close()
             self.setCursor(Qt.CrossCursor)
             self.start = QPoint(ev.pos())
             self.rubberBand.setGeometry(QRect(self.start, QSize()))
