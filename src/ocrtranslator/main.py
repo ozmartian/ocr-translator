@@ -114,9 +114,6 @@ class InfoPanel(QDialog):
         if ev.key() == Qt.Key_Escape:
             self.close()
 
-    def closeEvent(self, ev):
-        self.parent.close()
-
 
 class OCRTranslator(QDialog):
     def __init__(self, parent=None, f=Qt.Tool | Qt.FramelessWindowHint | Qt.X11BypassWindowManagerHint):
