@@ -96,7 +96,8 @@ class InfoPanel(QDialog):
     def __init__(self, parent, f=Qt.WA_TranslucentBackground | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.X11BypassWindowManagerHint):
         super(InfoPanel, self).__init__(parent, f)
         self.setStyleSheet("color: #FFF;")
-        self.logo = QPixmap(os.path.join(GetDocRoot(), "img", "app-logo.png"), "PNG")
+        self.setModal(True)
+        self.logo = QPixmap(os.path.join(GetDocRoot(), "img", "infopanel-logo.png"), "PNG")
         self.body = QStaticText()
         self.body.setTextFormat(Qt.RichText)
         self.body.setTextWidth(500)
@@ -107,8 +108,8 @@ class InfoPanel(QDialog):
         painter = QPainter(self)
         painter.setOpacity(1)
         painter.setFont(QFont("Sans Serif", 14, QFont.Medium))
-        painter.drawStaticText(0, 200, self.body)
         painter.drawPixmap(0, 0, self.logo)
+        painter.drawStaticText(0, 55, self.body)
  
     def keyPressEvent(self, ev):
         if ev.key() == Qt.Key_Escape:
@@ -133,8 +134,8 @@ class OCRTranslator(QDialog):
         self.shotfilename = None
 
         self.info = InfoPanel(parent=self)
-        self.info.setFixedSize(QSize(500, 450))
-        self.info.setGeometry(self.desktopGeometry.x() + self.desktopGeometry.width() - 510, self.desktopGeometry.height() - 460, 500, 450)
+        self.info.setFixedSize(QSize(500, 200))
+        self.info.setGeometry(self.desktopGeometry.x() + self.desktopGeometry.width() - 510, self.desktopGeometry.height() - 210, 500, 200)
         self.info.show()
 
     def mousePressEvent(self, ev):
