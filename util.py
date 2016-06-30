@@ -3,7 +3,6 @@ import os
 import sys
 
 import wx
-from PyQt5.QtCore import QSize
 
 
 #--------------------------------------------------------------------------------------------------------#
@@ -28,18 +27,18 @@ def Cleanup():
 
 
 def SaveDesktop(shotdata):
-    data = GetEntireDesktopRect(shotdata)
-    data.bmp = wx.Bitmap(data.desktopRect.GetWidth(), data.desktopRect.GetHeight())
+    #data = GetEntireDesktopRect(shotdata)
     dcScreen = wx.ScreenDC()
+    data.bmp = wx.Bitmap(dcScreen.Size.Width, dcScreen.Size.Height)
     memDC = wx.MemoryDC()
     memDC.SelectObject(data.bmp)
-    memDC.Blit(0, 0, data.bmp.GetWidth(), data.bmp.GetHeight(), dcScreen, 0, 0)
+    memDC.Blit(0, 0, dcScreen.Size.Width, dcScree.Size.Height, dcScreen, 0, 0)
     memDC.SelectObject(wx.NullBitmap)
+    '''
     img = data.bmp.ConvertToImage()
     import time
     data.desktopFilename = os.path.join(GetWorkingPath(), "temp", time.strftime('desktop_%Y%m%d-%H%M%S')) + ".png"
     img.SaveFile(data.desktopFilename, wx.BITMAP_TYPE_PNG)
-    '''
     from mss import mss
     for filename in mss().save(output=data.desktopFilename, screen=-1):
         True
@@ -48,7 +47,7 @@ def SaveDesktop(shotdata):
 
 #--------------------------------------------------------------------------------------------------------#
 
-
+'''
 def GetEntireDesktopRect(data):
     totalWidth = 0
     maxHeight = 0
@@ -63,6 +62,7 @@ def GetEntireDesktopRect(data):
             maxHeight = rect.GetHeight()
     data.desktopRect = wx.Rect(minX, 0, totalWidth, maxHeight)
     return data
+'''
 
 #--------------------------------------------------------------------------------------------------------#
 
@@ -82,6 +82,7 @@ def GetAppFrameSize(data):
     viewHeight = data.height + 185
     if viewHeight < 550:
         viewHeight = 550
+    from PyQt5.QtCore import QSize
     return QSize(viewWidth, viewHeight)
 
 #--------------------------------------------------------------------------------------------------------#
