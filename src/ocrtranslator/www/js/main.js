@@ -34,11 +34,12 @@ var OCR = {
         if (!index) {
             index = 0;
         }
+        var lang = ($('select#language') !== null) ? $('select#language').val() : "chs";
         $('#result').text('');
         $('.hidden').removeClass('in');
         var data = new FormData();
         data.append("apikey", this.apiKey);
-        data.append("language", "chs");
+        data.append("language", lang);
         data.append("isOverlayRequired", true);
         data.append("file", this.dataURI2Blob(image), "image.png");
         $.ajax({
@@ -59,11 +60,10 @@ var OCR = {
                     .addClass('in')
                     .css('display', 'inline-block');
                 OCR.adjustTextarea(document.getElementById('result'));
-                NProgress.set(0.6);
                 translate.init(ocrText);
                 return true;
             } else {
-                NProgress.done();
+                imgEditor.scanner(0);
                 document.body.style.cursor = "default";
                 alert("An error occurred. Check the console log for more details.");
                 console.log(res);
@@ -92,7 +92,7 @@ var translate = {
     youdao_callback: function(response) {
         translate.youdao.done = true;
         if (translate.youdao.done && translate.yandex.done) {
-            NProgress.done();
+            imgEditor.scanner(0);
             document.body.style.cursor = "default";
         }
         if (typeof(response.translation) != "undefined" && response.translation.length > 0) {
@@ -111,7 +111,7 @@ var translate = {
         }
         console.error("unexpected Youdao response:");
         console.error(response);
-        NProgress.done();
+        imgEditor.scanner(0);
         document.body.style.cursor = "default";
 
         return false;
@@ -128,7 +128,7 @@ var translate = {
     yandex_callback: function(response) {
         translate.yandex.done = true;
         if (translate.youdao.done && translate.yandex.done) {
-            NProgress.done();
+            imgEditor.scanner(0);
             document.body.style.cursor = "default";
         }
         if (response.code == 200 && response.text.length > 0) {
@@ -141,7 +141,7 @@ var translate = {
         }
         console.error("unexpected Yandex response:");
         console.error(response);
-        NProgress.done();
+        imgEditor.scanner(0);
         document.body.style.cursor = "default";
         return false;
     },
@@ -171,6 +171,9 @@ var imgEditor = {
         $('.darkroom-button-group button').slice(3).removeAttr('disabled');
         window.setTimeout(function() {
             $('[data-toggle="tooltip"]').tooltip();
+            $('body').on('click', function(e) {
+                $('[data-toggle="tooltip"]').tooltip('hide');
+            });
         }, 1000);
     },
     disableTools: function() {
@@ -188,11 +191,21 @@ var imgEditor = {
         if (!results[2]) return '';
         return decodeURIComponent(results[2].replace(/\+/g, " "));
     },
+    scanner: function(startstop) {
+        if (typeof(startstop) === 'undefined') {
+            startstop = 0;
+        }
+        if (startstop) {
+            $('.darkroom-container').addClass('scanner');
+        } else {
+            $('.darkroom-container').removeClass('scanner');
+        }
+    },
     errorHandler: function(msg, title, obj) {
         if (!title) {
             title = "Error Alert";
         }
-        NProgress.done();
+        imgEditor.scanner(0);
         document.body.style.cursor = "default";
         $('#error #title').text(title);
         $('#error #message').text(msg);
@@ -215,9 +228,8 @@ var imgEditor = {
             plugins: {
                 save: {
                     callback: function() {
-                        NProgress.start(0.2);
+                        imgEditor.scanner(1);
                         document.body.style.cursor = "wait";
-                        //this.darkroom.selfDestroy();
                         var newImage = dkrm.canvas.toDataURL();
                         OCR.recognize(newImage, 0);
                     }

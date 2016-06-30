@@ -8,7 +8,6 @@
     <link rel="icon" href="img/app-icon.ico" />
     <link rel="stylesheet" href="css/fonts.min.css" />
     <link rel="stylesheet" href="css/bootstrap.min.css" />
-    <link rel="stylesheet" href="css/nprogress.min.css" />
     <link rel="stylesheet" href="css/darkroom.css" />
     <link rel="stylesheet" href="css/styles.css" />
 </head>
@@ -25,6 +24,32 @@
             </div>
         </div>
 
+        <div>
+            <select id="language">
+                <option value="chs" selected="selected">Chinese Simplified</option>
+                <option value="cht">Chinese Traditional</option>
+                <option value="ce">Czech</option>
+                <option value="dan">Danish</option>
+                <option value="dut">Dutch</option>
+                <option value="eng">English</option>
+                <option value="fin">Finnish</option>
+                <option value="fre">French</option>
+                <option value="ger">German</option>
+                <option value="gre">Greek</option>
+                <option value="hun">Hungarian</option>
+                <option value="ita">Italian</option>
+                <option value="jpn">Japanese</option>
+                <option value="kor">Korean</option>
+                <option value="nor">Norwegian</option>
+                <option value="pol">Polish</option>
+                <option value="por">Portuguese</option>
+                <option value="rus">Russian</option>
+                <option value="spa">Spanish</option>
+                <option value="swe">Swedish</option>
+                <option value="tur">Turkish</option>
+            </select>
+        </div>
+
         <div class="output hide">
 
             <form class="text-center">
@@ -37,15 +62,15 @@
             </div>
 
             <div class="reset fade text-center">
-                <button type="button" class="btn btn-primary btn-sm" aria-label="Reset" title="Reset">
+                <button type="button" class="btn btn-primary btn-sm" aria-label="Restart" title="Restart">
                     <span class="glyphicon glyphicon-repeat" aria-hidden="true"></span>
-                    &nbsp;Reset
+                    &nbsp;Restart
                 </button>
             </div>
 
         </div>
 
-        <div class="footer slideUp">
+        <div class="footer">
             <div class="tagline">
                 <img src="img/footer-tagline.png" align="absmiddle" />
                 <a href="mailto:pete@ozmartians.com">ozmartian</a>
@@ -76,7 +101,6 @@
     <script src="js/libs/jquery.dump.min.js"></script>
     <script src="js/libs/bootstrap.min.js"></script>
     <script src="js/libs/fabric.min.js"></script>
-    <script src="js/libs/nprogress.min.js"></script>
     <script src="js/darkroom.js"></script>
     <script src="js/main.js"></script>
 
