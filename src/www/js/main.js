@@ -60,6 +60,7 @@ var OCR = {
                     .addClass('in')
                     .css('display', 'inline-block');
                 OCR.adjustTextarea(document.getElementById('result'));
+                imgEditor.scanner(0)
                 translate.init(ocrText);
                 return true;
             } else {
@@ -92,7 +93,7 @@ var translate = {
     youdao_callback: function(response) {
         translate.youdao.done = true;
         if (translate.youdao.done && translate.yandex.done) {
-            imgEditor.scanner(0);
+            //imgEditor.scanner(0);
             document.body.style.cursor = "default";
         }
         if (typeof(response.translation) != "undefined" && response.translation.length > 0) {
@@ -111,7 +112,7 @@ var translate = {
         }
         console.error("unexpected Youdao response:");
         console.error(response);
-        imgEditor.scanner(0);
+        //imgEditor.scanner(0);
         document.body.style.cursor = "default";
 
         return false;
@@ -128,7 +129,7 @@ var translate = {
     yandex_callback: function(response) {
         translate.yandex.done = true;
         if (translate.youdao.done && translate.yandex.done) {
-            imgEditor.scanner(0);
+            //imgEditor.scanner(0);
             document.body.style.cursor = "default";
         }
         if (response.code == 200 && response.text.length > 0) {
@@ -141,7 +142,7 @@ var translate = {
         }
         console.error("unexpected Yandex response:");
         console.error(response);
-        imgEditor.scanner(0);
+        //imgEditor.scanner(0);
         document.body.style.cursor = "default";
         return false;
     },

@@ -1,16 +1,19 @@
 # -*- mode: python -*-
 
+block_cipher = None
+
 data_files = [
-    ('../src/ocrtranslator/www/css', 'www/css'),
-    ('../src/ocrtranslator/www/img', 'www/img'),
-    ('../src/ocrtranslator/www/js', 'www/js'),
-    ('../src/ocrtranslator/www/temp', 'www/temp'),
-    ('../src/ocrtranslator/www/index.html', 'www/')
+    ('../src/resources', 'resources'),
+    ('../src/www/css', 'www/css'),
+    ('../src/www/img', 'www/img'),
+    ('../src/www/js', 'www/js'),
+    ('../src/www/temp', 'www/temp'),
+    ('../src/www/index.html', 'www/')
 ]
 
 a = Analysis(['../src/ocrtranslator.py'],
-             pathex=['/home/ozmartian/Projects/src/ocr-translator/src'],
-             binaries=None,
+             pathex=['/home/ozmartian/Projects/ocr-translator/src'],
+             binaries=[],
              datas=data_files,
              hiddenimports=['PyQt5.QtWebEngineCore'],
              hookspath=[],
@@ -18,10 +21,9 @@ a = Analysis(['../src/ocrtranslator.py'],
              excludes=[],
              win_no_prefer_redirects=False,
              win_private_assemblies=False,
-             cipher=None)
-
-pyz = PYZ(a.pure)
-
+             cipher=block_cipher)
+pyz = PYZ(a.pure, a.zipped_data,
+             cipher=block_cipher)
 exe = EXE(pyz,
           a.scripts,
           a.binaries,
@@ -31,5 +33,4 @@ exe = EXE(pyz,
           debug=False,
           strip=True,
           upx=True,
-          console=False,
-          icon='../src/ocrtranslator/www/img/app-icon.png')
+          console=False )

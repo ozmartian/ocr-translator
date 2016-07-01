@@ -409,7 +409,7 @@ img.ocr-placeholder {
 }
 
 select#language {
-    position: absolute;
+    position: fixed;
     width: auto;
     top: 8px;
     z-index: 9999;
@@ -426,6 +426,7 @@ select#language {
 select#language,
 select#language option {
     cursor: pointer;
+    font-family: Roboto;
 }
 
 .scanner:after {
@@ -437,7 +438,7 @@ select#language option {
     top: 0;
     left: 0;
     z-index: 1;
-    background: linear-gradient(90deg, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75) 55%, rgba(176, 224, 230, 1) 56%, rgba(0, 191, 255, 1) 57%, rgba(0, 0, 0, 0.75) 56%, rgba(0, 0, 0, 0.75));
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85) 55%, rgba(176, 224, 230, 1) 56%, rgba(0, 191, 255, 1) 57%, rgba(0, 0, 0, 0.85) 56%, rgba(0, 0, 0, 0.85));
     background-size: 300% 100%;
     background-repeat: no-repeat;
     background-position: 84% center;
