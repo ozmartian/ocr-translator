@@ -7,3 +7,5 @@ _build/final
 _build/work
 _build/nsis
 .idea
+virtualenv
+
