@@ -17,7 +17,7 @@ from PyQt5.QtCore import QPoint, QRect, QSize, Qt, QTimer, QUrl
 from PyQt5.QtGui import (QBrush, QColor, QFont, QIcon, QPainter, QPen, QPixmap,
                          QStaticText)
 from PyQt5.QtWebEngineWidgets import QWebEngineView
-from PyQt5.QtWidgets import QApplication, QDialog, QRubberBand
+from PyQt5.QtWidgets import QApplication, QDialog, QRubberBand, qApp
 
 warnings.filterwarnings("ignore")
 
@@ -38,7 +38,7 @@ def GetDesktopGeometry():
     totalWidth = 0
     maxHeight = 0
     minX = 0
-    screens = (QApplication.instance().screens()[i] for i in range(QApplication.instance().desktop().screenCount()))
+    screens = (qApp.screens()[i] for i in range(qApp.desktop().screenCount()))
     rects = [screen.geometry() for screen in screens]
     for rect in rects:
         totalWidth += rect.width()
@@ -51,7 +51,7 @@ def GetDesktopGeometry():
 def GetFilePath():
     if getattr(sys, 'frozen', False):
         return sys._MEIPASS
-    return os.path.dirname(os.path.realpath(__file__))
+    return os.path.dirname(os.path.realpath(sys.argv[0]))
 
 def GetAppFrameSize(imageSize):
     viewWidth = imageSize.width() + 85
@@ -136,7 +136,6 @@ class OCRTranslator(QDialog):
         self.hasSelected = False
         self.screenshot = QPixmap()
         self.shotfilename = None
-
         self.info = InfoPanel(parent=self)
         self.info.setFixedSize(QSize(500, 200))
         self.info.setGeometry(self.desktopGeometry.x() + self.desktopGeometry.width() - 510, self.desktopGeometry.height() - 210, 500, 200)
@@ -173,7 +172,7 @@ class OCRTranslator(QDialog):
         y = self.desktopGeometry.y() + self.start.y()
         w = self.end.x() - self.start.x()
         h = self.end.y() - self.start.y()
-        self.screenshot = QApplication.instance().screens()[0].grabWindow(QApplication.instance().desktop().winId(), x, y, w, h)
+        self.screenshot = qApp.screens()[0].grabWindow(qApp.desktop().winId(), x, y, w, h)
         self.shotfilename = os.path.join(GetFilePath(), "www", "temp", strftime('%Y%m%d-%H%M%S')) + ".png"
         self.screenshot.save(self.shotfilename, "PNG", 100)
         if not self.shotfilename is None and type(self.screenshot) is QPixmap:
@@ -197,7 +196,7 @@ class OCRTranslator(QDialog):
         self.view.show()
 
     def closeEvent(self, ev):
-        QApplication.instance().quit()
+        qApp.quit()
 
 
 def main():

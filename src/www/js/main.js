@@ -193,6 +193,7 @@ var imgEditor = {
         return decodeURIComponent(results[2].replace(/\+/g, " "));
     },
     scanner: function(startstop) {
+        $('[data-toggle="tooltip"]').tooltip('hide');
         if (typeof(startstop) === 'undefined') {
             startstop = 0;
         }

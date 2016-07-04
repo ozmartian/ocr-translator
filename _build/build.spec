@@ -1,5 +1,12 @@
 # -*- mode: python -*-
 
+import os
+import platform
+import sys
+
+
+sys.path.append("")
+
 block_cipher = None
 
 data_files = [
@@ -11,7 +18,7 @@ data_files = [
     ('../src/www/index.html', 'www/')
 ]
 
-a = Analysis(['../src/ocrtranslator.py'],
+a = Analysis(['/home/ozmartian/Projects/ocr-translator/src/ocrtranslator.py'],
              pathex=['/home/ozmartian/Projects/ocr-translator/src'],
              binaries=[],
              datas=data_files,
@@ -22,8 +29,9 @@ a = Analysis(['../src/ocrtranslator.py'],
              win_no_prefer_redirects=False,
              win_private_assemblies=False,
              cipher=block_cipher)
-pyz = PYZ(a.pure, a.zipped_data,
-             cipher=block_cipher)
+
+pyz = PYZ(a.pure)
+
 exe = EXE(pyz,
           a.scripts,
           a.binaries,
