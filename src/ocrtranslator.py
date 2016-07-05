@@ -67,13 +67,13 @@ def WebServer(url, port):
         os.chdir(sys._MEIPASS)  
         for r, d, f in os.walk(sys._MEIPASS):
             os.chmod(r, 0o755)
-    httpd = HTTPServer((url, port), MyHTTPHandler)
+    httpd = HTTPServer((url, port), OCRHTTPHandler)
     httpd.serve_forever()
 
 
-class MyHTTPHandler(SimpleHTTPRequestHandler):
+class OCRHTTPHandler(SimpleHTTPRequestHandler):
     def __init__(self, *arg, **kwargs):
-        super(MyHTTPHandler, self).__init__(*arg, **kwargs)
+        super(OCRHTTPHandler, self).__init__(*arg, **kwargs)
         self.protocol_version = "HTTP/1.0"
 
     def log_message(self, format, *args):
@@ -202,8 +202,8 @@ class OCRTranslator(QDialog):
 def main():
     register(Cleanup)
     app = QApplication(sys.argv)
-    app.setOrganizationName("OCR Translator")
-    app.setOrganizationDomain("com.ozmartians.OCRTranslator")
+    app.setOrganizationName("ozmartians.com")
+    app.setOrganizationDomain("com.ozmartians.ocrtranslator")
     app.setApplicationName("OCR Translator")
     app.setQuitOnLastWindowClosed(True)
     translator = OCRTranslator()
