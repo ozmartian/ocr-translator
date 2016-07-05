@@ -206,8 +206,8 @@ def main():
     app.setOrganizationDomain("com.ozmartians.ocrtranslator")
     app.setApplicationName("OCR Translator")
     app.setQuitOnLastWindowClosed(True)
-    translator = OCRTranslator()
-    translator.show()
+    ocrtranslator = OCRTranslator()
+    ocrtranslator.show()
     sys.exit(app.exec_())
 
 
