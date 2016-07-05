@@ -258,7 +258,7 @@ var imgEditor = {
             }
         });
         window.onload = function() {
-            $('[data-toggle="tooltip"]').tooltip();
+            $('div.tooltip').remove();
             if (imgEditor.imageparam !== null) {
                 $('.darkroom-button-group:first-child').remove();
                 return;
