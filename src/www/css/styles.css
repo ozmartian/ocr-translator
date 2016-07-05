@@ -458,3 +458,17 @@ select#language option {
         background-position: 25% center;
     }
 }
+
+span.glyphicon-copy {
+    z-index: 9999;
+    float: right;
+    position: relative;
+    top: 35px;
+    right: 5px;
+    font-size: 16pt;
+    cursor: pointer;
+}
+
+span.glyphicon-copy:hover {
+    opacity: 0.65;
+}

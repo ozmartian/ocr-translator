@@ -30,6 +30,18 @@ var OCR = {
         el.style.height = 0;
         el.style.height = Math.max(minHeight, el.scrollHeight + diff) + 'px';
     },
+    copy2Clip: function() {
+        var clipBtn = document.querySelector('span.glyphicon-copy');
+        clipBtn.addEventListener('mousedown', function(e) {
+            document.querySelector('textarea#result').select();
+            try {
+                var success = document.execCommand('copy');
+            } catch (err) {
+                console.error('Unable to copy: ' + err.msg);
+            }
+            window.getSelection().removeAllRanges();
+        });
+    },
     recognize: function(image, index) {
         if (!index) {
             index = 0;
@@ -60,6 +72,7 @@ var OCR = {
                     .addClass('in')
                     .css('display', 'inline-block');
                 OCR.adjustTextarea(document.getElementById('result'));
+                OCR.copy2Clip();
                 imgEditor.scanner(0)
                 translate.init(ocrText);
                 return true;
