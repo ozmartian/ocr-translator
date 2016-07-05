@@ -66,7 +66,7 @@ var OCR = {
             } else {
                 imgEditor.scanner(0);
                 document.body.style.cursor = "default";
-                alert("An error occurred. Check the console log for more details.");
+                alert("An error occurred. Check error logs for details.");
                 console.log(res);
                 return false;
             }
@@ -192,6 +192,11 @@ var imgEditor = {
         if (!results[2]) return '';
         return decodeURIComponent(results[2].replace(/\+/g, " "));
     },
+    disableLang: function() {
+        $('select#language')
+            .attr("disabled", "disabled")
+            .css("opacity", 0.8);
+    },
     scanner: function(startstop) {
         $('[data-toggle="tooltip"]').tooltip('hide');
         if (typeof(startstop) === 'undefined') {
@@ -230,6 +235,7 @@ var imgEditor = {
             plugins: {
                 save: {
                     callback: function() {
+                        imgEditor.disableLang();
                         imgEditor.scanner(1);
                         document.body.style.cursor = "wait";
                         var newImage = dkrm.canvas.toDataURL();

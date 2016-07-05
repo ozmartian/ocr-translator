@@ -163,6 +163,7 @@ textarea {
     text-align: center;
     font-size: 1.4rem;
     position: relative;
+    white-space: pre;
 }
 
 .youdao {
