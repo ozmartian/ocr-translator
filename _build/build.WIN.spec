@@ -18,7 +18,7 @@ data_files = [
     ('../src/www/index.html', 'www/')
 ]
 
-a = Analysis(['..\\src\\ocrtranslator.py'],
+a = Analysis(['..//src//ocrtranslator.py'],
              pathex=['C://DEV//ocr-translator//src'],
              binaries=[],
              datas=data_files,

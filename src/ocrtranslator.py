@@ -16,7 +16,7 @@ from urllib.parse import urlencode
 from PyQt5.QtCore import QPoint, QRect, QSize, Qt, QTimer, QUrl
 from PyQt5.QtGui import (QBrush, QColor, QFont, QIcon, QPainter, QPen, QPixmap,
                          QStaticText)
-from PyQt5.QtWebEngineWidgets import QWebEngineView
+from PyQt5.QtWebKitWidgets import QWebView
 from PyQt5.QtWidgets import QApplication, QDialog, QRubberBand, qApp
 
 warnings.filterwarnings("ignore")
@@ -92,7 +92,8 @@ class OCRTranslator(QDialog):
         self.shotfilename = None
         self.info = InfoPanel(parent=self)
         self.info.setFixedSize(QSize(500, 200))
-        self.info.setGeometry(self.desktopGeometry.x() + self.desktopGeometry.width() - 510, self.desktopGeometry.height() - 210, 500, 200)
+        # self.info.setGeometry((self.desktopGeometry.x() + self.desktopGeometry.width()) - 510, self.desktopGeometry.height() - 210, 500, 200)
+        self.info.setGeometry(self.desktopGeometry.width() - 510, self.desktopGeometry.height() - 210, 500, 200)
         self.info.show()
 
     def mousePressEvent(self, ev):
@@ -175,7 +176,7 @@ class OCRTranslator(QDialog):
         self.t = Thread(target=self.webServer)
         self.t.daemon = True
         self.t.start()
-        self.view = QWebEngineView()
+        self.view = QWebView()
         self.view.setWindowTitle("OCR Translator")
         self.view.setWindowIcon(QIcon(os.path.join(self.getFilePath(), "www", "img", "app-icon.png")))
         self.view.setContextMenuPolicy(Qt.NoContextMenu)

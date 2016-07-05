@@ -8,4 +8,4 @@ _build/work
 _build/nsis
 .idea
 virtualenv
-
+launch.json
