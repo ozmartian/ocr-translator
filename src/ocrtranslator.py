@@ -146,7 +146,8 @@ class OCRTranslator(QDialog):
                 maxHeight = rect.height()
         return QRect(minX, 0, totalWidth, maxHeight)
 
-    @staticmethod def getFilePath():
+    @staticmethod
+    def getFilePath():
         if getattr(sys, 'frozen', False):
             return sys._MEIPASS
         return os.path.dirname(os.path.realpath(sys.argv[0]))
