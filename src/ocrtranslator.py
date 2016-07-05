@@ -24,52 +24,6 @@ warnings.filterwarnings("ignore")
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 signal.signal(signal.SIGTERM, signal.SIG_DFL)
 
-def Cleanup():
-    temppath = os.path.join(GetFilePath(), "www", "temp", "**")
-    try:
-        filelist = glob(temppath)
-        for file in filelist:
-            os.remove(file)
-    except:
-        print("Error deleting file " + temppath + ":", sys.exc_info()[0])
-        pass
-
-def GetDesktopGeometry():
-    totalWidth = 0
-    maxHeight = 0
-    minX = 0
-    screens = (qApp.screens()[i] for i in range(qApp.desktop().screenCount()))
-    rects = [screen.geometry() for screen in screens]
-    for rect in rects:
-        totalWidth += rect.width()
-        if rect.x() < minX:
-            minX = rect.x()
-        if rect.height() > maxHeight:
-            maxHeight = rect.height()
-    return QRect(minX, 0, totalWidth, maxHeight)
-
-def GetFilePath():
-    if getattr(sys, 'frozen', False):
-        return sys._MEIPASS
-    return os.path.dirname(os.path.realpath(sys.argv[0]))
-
-def GetAppFrameSize(imageSize):
-    viewWidth = imageSize.width() + 85
-    if viewWidth < 600:
-        viewWidth = 600
-    viewHeight = imageSize.height() + 185
-    if viewHeight < 550:
-        viewHeight = 550
-    return QSize(viewWidth, viewHeight)
-
-def WebServer(url, port):
-    if getattr(sys, 'frozen', False):
-        os.chdir(sys._MEIPASS)  
-        for r, d, f in os.walk(sys._MEIPASS):
-            os.chmod(r, 0o755)
-    httpd = HTTPServer((url, port), OCRHTTPHandler)
-    httpd.serve_forever()
-
 
 class OCRHTTPHandler(SimpleHTTPRequestHandler):
     def __init__(self, *arg, **kwargs):
@@ -101,11 +55,11 @@ class InfoPanel(QDialog):
         super(InfoPanel, self).__init__(parent, f)
         self.setStyleSheet("color: #FFF;")
         self.setModal(True)
-        self.logo = QPixmap(os.path.join(GetFilePath(), "www", "img", "infopanel-logo.png"), "PNG")
+        self.logo = QPixmap(os.path.join(OCRTranslator.getFilePath(), "www", "img", "infopanel-logo.png"), "PNG")
         self.body = QStaticText()
         self.body.setTextFormat(Qt.RichText)
         self.body.setTextWidth(500)
-        file = open(os.path.join(GetFilePath(), "resources", "info.html"), "r")
+        file = open(os.path.join(OCRTranslator.getFilePath(), "resources", "info.html"), "r")
         self.body.setText(file.read())
 
     def paintEvent(self, ev):
@@ -124,7 +78,7 @@ class OCRTranslator(QDialog):
     def __init__(self, parent=None, f=Qt.Tool | Qt.FramelessWindowHint | Qt.X11BypassWindowManagerHint):
         super(OCRTranslator, self).__init__(parent, f)
         self.isFullScreen()
-        self.desktopGeometry = GetDesktopGeometry()
+        self.desktopGeometry = self.getDesktopGeometry()
         self.setGeometry(self.desktopGeometry)
         self.setStyleSheet("background-color: #000;")
         self.setModal(True)
@@ -173,31 +127,77 @@ class OCRTranslator(QDialog):
         w = self.end.x() - self.start.x()
         h = self.end.y() - self.start.y()
         self.screenshot = qApp.screens()[0].grabWindow(qApp.desktop().winId(), x, y, w, h)
-        self.shotfilename = os.path.join(GetFilePath(), "www", "temp", strftime('%Y%m%d-%H%M%S')) + ".png"
+        self.shotfilename = os.path.join(self.getFilePath(), "www", "temp", strftime('%Y%m%d-%H%M%S')) + ".png"
         self.screenshot.save(self.shotfilename, "PNG", 100)
         if not self.shotfilename is None and type(self.screenshot) is QPixmap:
             self.openTranslator()
 
+    def getDesktopGeometry(self):
+        totalWidth = 0
+        maxHeight = 0
+        minX = 0
+        screens = (qApp.screens()[i] for i in range(qApp.desktop().screenCount()))
+        rects = [screen.geometry() for screen in screens]
+        for rect in rects:
+            totalWidth += rect.width()
+            if rect.x() < minX:
+                minX = rect.x()
+            if rect.height() > maxHeight:
+                maxHeight = rect.height()
+        return QRect(minX, 0, totalWidth, maxHeight)
+
+    @staticmethod def getFilePath():
+        if getattr(sys, 'frozen', False):
+            return sys._MEIPASS
+        return os.path.dirname(os.path.realpath(sys.argv[0]))
+
+    def getAppFrameSize(self):
+        viewWidth = self.screenshot.width() + 85
+        if viewWidth < 600:
+            viewWidth = 600
+        viewHeight = self.screenshot.height() + 185
+        if viewHeight < 550:
+            viewHeight = 550
+        return QSize(viewWidth, viewHeight)
+
+    def webServer(self):
+        if getattr(sys, 'frozen', False):
+            os.chdir(sys._MEIPASS)  
+            for r, d, f in os.walk(sys._MEIPASS):
+                os.chmod(r, 0o755)
+        httpd = HTTPServer((self.address, self.port), OCRHTTPHandler)
+        httpd.serve_forever()
+
     def openTranslator(self):
         self.address = "127.0.0.1"
         self.port = randint(2000, 5000)
-        self.t = Thread(target=WebServer, args=(self.address, self.port))
+        self.t = Thread(target=self.webServer)
         self.t.daemon = True
         self.t.start()
         self.view = QWebEngineView()
         self.view.setWindowTitle("OCR Translator")
-        self.view.setWindowIcon(QIcon(os.path.join(GetFilePath(), "www", "img", "app-icon.png")))
+        self.view.setWindowIcon(QIcon(os.path.join(self.getFilePath(), "www", "img", "app-icon.png")))
         self.view.setContextMenuPolicy(Qt.NoContextMenu)
         qryparam = urlencode({'img': self.shotfilename.split('\\').pop().split('/').pop()})
         self.url = QUrl("http://" + self.address + ":" + str(self.port) + "/www/index.html#?" + qryparam)
         self.view.load(self.url)
-        self.view.setMinimumSize(GetAppFrameSize(self.screenshot))
+        self.view.setMinimumSize(self.getAppFrameSize())
         self.view.closeEvent = self.closeEvent
         self.view.show()
 
     def closeEvent(self, ev):
         qApp.quit()
 
+
+def Cleanup():
+    temppath = os.path.join(OCRTranslator.getFilePath(), "www", "temp", "**")
+    try:
+        filelist = glob(temppath)
+        for file in filelist:
+            os.remove(file)
+    except:
+        print("Error deleting file " + temppath + ":", sys.exc_info()[0])
+        pass
 
 def main():
     register(Cleanup)
