@@ -211,13 +211,14 @@ var imgEditor = {
             .css("opacity", 0.8);
     },
     scanner: function(startstop) {
-        $('[data-toggle="tooltip"]').tooltip('hide');
         if (typeof(startstop) === 'undefined') {
             startstop = 0;
         }
         if (startstop) {
+            $('[data-toggle="tooltip"]').tooltip('hide');
             $('.darkroom-container').addClass('scanner');
         } else {
+            $('[data-toggle="tooltip"]').tooltip();
             $('.darkroom-container').removeClass('scanner');
         }
     },
