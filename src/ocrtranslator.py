@@ -49,8 +49,8 @@ class Selector(QRubberBand):
         pen.setColor(QColor(Qt.white))
         painter = QPainter(self)
         painter.setPen(pen)
-        painter.setBrush(QBrush(QColor(100, 100, 100)))
-        painter.setOpacity(0.7)
+        painter.setBrush(QBrush(QColor(0, 0, 0)))
+        painter.setOpacity(0.8)
         painter.drawRect(ev.rect())
 
 
@@ -69,7 +69,7 @@ class InfoPanel(QDialog):
     def paintEvent(self, ev):
         painter = QPainter(self)
         painter.setOpacity(1)
-        painter.setFont(QFont("Sans Serif", 14, QFont.Medium))
+        painter.setFont(QFont('sans-serif', 14, QFont.Medium))
         painter.drawPixmap(0, 0, self.logo)
         painter.drawStaticText(0, 55, self.body)
  
@@ -81,7 +81,6 @@ class InfoPanel(QDialog):
 class OCRTranslator(QDialog):
     def __init__(self, parent=None, f=Qt.Tool | Qt.FramelessWindowHint | Qt.X11BypassWindowManagerHint):
         super(OCRTranslator, self).__init__(parent, f)
-        self.isFullScreen()
         self.desktopGeometry = self.getDesktopGeometry()
         self.setGeometry(self.desktopGeometry)
         self.setStyleSheet("background-color: #000;")
@@ -89,8 +88,7 @@ class OCRTranslator(QDialog):
         self.setWindowOpacity(0.7)
         self.setCursor(Qt.CrossCursor)
         self.rubberBand = Selector(QRubberBand.Rectangle, self)
-        self.start = QPoint()
-        self.end = QPoint()
+        self.start, self.end = QPoint(), QPoint
         self.hasSelected = False
         self.screenshot = QPixmap()
         self.shotfilename = None

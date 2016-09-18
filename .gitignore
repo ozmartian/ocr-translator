@@ -9,3 +9,4 @@ _build/nsis
 .idea
 virtualenv
 launch.json
+src/ocrtranslator

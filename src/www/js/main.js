@@ -1,8 +1,8 @@
 var OCR = {
     apiKey: "9235904c3b88957",
     apiUrl: [
-        "https://apifree2.ocr.space/parse/image",
-        "https://api.ocr.space/parse/image"
+        // "http://apifree2.ocr.space/parse/image",
+        "http://api.ocr.space/parse/image"
     ],
     timeout: 8000,
     dataURI2Blob: function(dataURI) {
