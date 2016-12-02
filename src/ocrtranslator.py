@@ -69,10 +69,15 @@ class InfoPanel(QDialog):
         content.setTextFormat(Qt.RichText)
         with open(os.path.join(OCRTranslator.getFilePath(), "resources", "info.html"), "r") as file:
             content.setText(file.read())
+            content.setStyleSheet('''
+                                    table { background: #FFF; color: #000; border-radius:6px; border:1px solid #000; }
+                                    td > b { font-size: 11pt; }
+                                    td { font-size: 10pt; }
+                                    ''')
         layout = QVBoxLayout()
-        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setContentsMargins(0, 15, 15, 0)
         layout.addWidget(QLabel(pixmap=logo), 0, Qt.AlignRight)
-        layout.addWidget(content)
+        layout.addWidget(content, 0, Qt.AlignRight)
         self.setLayout(layout)
  
     def keyPressEvent(self, ev):
@@ -96,7 +101,7 @@ class OCRTranslator(QDialog):
         self.shotfilename = None
         self.info = InfoPanel(self)
         self.info.setFixedSize(QSize(450, 100))
-        self.info.setGeometry(OCRTranslator.getDesktopGeometry().width() - 460, 0, 450, 100)
+        self.info.setGeometry(OCRTranslator.getDesktopGeometry().width() - 450, 0, 450, 100)
         self.info.show()
 
     def mousePressEvent(self, ev):
