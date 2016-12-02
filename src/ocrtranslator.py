@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import atexit
 import os
 import signal
 import sys
 import warnings
-from atexit import register
+
 from glob import glob
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from random import randint
@@ -16,7 +17,8 @@ from urllib.parse import urlencode
 from PyQt5.QtCore import QPoint, QRect, QSize, Qt, QTimer, QUrl
 from PyQt5.QtGui import (QBrush, QColor, QFont, QIcon, QPainter, QPen, QPixmap,
                          QStaticText)
-from PyQt5.QtWidgets import QApplication, QDialog, QRubberBand, qApp
+from PyQt5.QtWidgets import (QApplication, QDialog, QLabel, QRubberBand,
+                         QStyleFactory, QVBoxLayout, QWidget, qApp)
 
 if sys.version_info < (3,5):
     from PyQt5.QtWebKitWidgets import QWebView as QWebEngineView
@@ -41,37 +43,37 @@ class OCRHTTPHandler(SimpleHTTPRequestHandler):
 class Selector(QRubberBand):
     def __init__(self, *arg, **kwargs):
         super(Selector, self).__init__(*arg, **kwargs)
+        self.setStyle(QStyleFactory.create('Fusion'))
 
     def paintEvent(self, ev):
         pen = QPen()
         pen.setStyle(Qt.DotLine)
         pen.setWidth(2)
         pen.setColor(QColor(Qt.white))
+        brush = QBrush()
+        brush.setStyle(Qt.Dense1Pattern)
+        brush.setColor(QColor(255, 255, 255, 50))
         painter = QPainter(self)
         painter.setPen(pen)
-        painter.setBrush(QBrush(QColor(0, 0, 0)))
-        painter.setOpacity(0.8)
+        painter.setBrush(brush)
         painter.drawRect(ev.rect())
 
 
 class InfoPanel(QDialog):
     def __init__(self, parent, f=Qt.WA_TranslucentBackground | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.X11BypassWindowManagerHint):
         super(InfoPanel, self).__init__(parent, f)
-        self.setStyleSheet("color: #FFF;")
+        self.setAutoFillBackground(True)
         self.setModal(True)
-        self.logo = QPixmap(os.path.join(OCRTranslator.getFilePath(), "www", "img", "infopanel-logo.png"), "PNG")
-        self.body = QStaticText()
-        self.body.setTextFormat(Qt.RichText)
-        self.body.setTextWidth(500)
-        file = open(os.path.join(OCRTranslator.getFilePath(), "resources", "info.html"), "r")
-        self.body.setText(file.read())
-
-    def paintEvent(self, ev):
-        painter = QPainter(self)
-        painter.setOpacity(1)
-        painter.setFont(QFont('sans-serif', 14, QFont.Medium))
-        painter.drawPixmap(0, 0, self.logo)
-        painter.drawStaticText(0, 55, self.body)
+        logo = QPixmap(os.path.join(OCRTranslator.getFilePath(), "www", "img", "infopanel-logo.png"), "PNG")
+        content = QLabel()
+        content.setTextFormat(Qt.RichText)
+        with open(os.path.join(OCRTranslator.getFilePath(), "resources", "info.html"), "r") as file:
+            content.setText(file.read())
+        layout = QVBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.addWidget(QLabel(pixmap=logo), 0, Qt.AlignRight)
+        layout.addWidget(content)
+        self.setLayout(layout)
  
     def keyPressEvent(self, ev):
         if ev.key() == Qt.Key_Escape:
@@ -83,19 +85,18 @@ class OCRTranslator(QDialog):
         super(OCRTranslator, self).__init__(parent, f)
         self.desktopGeometry = self.getDesktopGeometry()
         self.setGeometry(self.desktopGeometry)
-        self.setStyleSheet("background-color: #000;")
+        self.setStyleSheet("background-color: #000; opacity:")
         self.setModal(True)
         self.setWindowOpacity(0.7)
         self.setCursor(Qt.CrossCursor)
         self.rubberBand = Selector(QRubberBand.Rectangle, self)
-        self.start, self.end = QPoint(), QPoint
+        self.start, self.end = QPoint(), QPoint()
         self.hasSelected = False
         self.screenshot = QPixmap()
         self.shotfilename = None
-        self.info = InfoPanel(parent=self)
-        self.info.setFixedSize(QSize(500, 200))
-        # self.info.setGeometry((self.desktopGeometry.x() + self.desktopGeometry.width()) - 510, self.desktopGeometry.height() - 210, 500, 200)
-        self.info.setGeometry(self.desktopGeometry.width() - 510, self.desktopGeometry.height() - 210, 500, 200)
+        self.info = InfoPanel(self)
+        self.info.setFixedSize(QSize(450, 100))
+        self.info.setGeometry(OCRTranslator.getDesktopGeometry().width() - 460, 0, 450, 100)
         self.info.show()
 
     def mousePressEvent(self, ev):
@@ -135,7 +136,8 @@ class OCRTranslator(QDialog):
         if not self.shotfilename is None and type(self.screenshot) is QPixmap:
             self.openTranslator()
 
-    def getDesktopGeometry(self):
+    @staticmethod
+    def getDesktopGeometry():
         totalWidth = 0
         maxHeight = 0
         minX = 0
@@ -204,10 +206,8 @@ def Cleanup():
         pass
 
 def main():
-    register(Cleanup)
+    atexit.register(Cleanup)
     app = QApplication(sys.argv)
-    app.setOrganizationName("ozmartians.com")
-    app.setOrganizationDomain("com.ozmartians.ocrtranslator")
     app.setApplicationName("OCR Translator")
     app.setQuitOnLastWindowClosed(True)
     ocrtranslator = OCRTranslator()

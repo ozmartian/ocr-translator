@@ -10,3 +10,5 @@ _build/nsis
 virtualenv
 launch.json
 src/ocrtranslator
+src/python*.dll
+src/ocrtranslator.exe
