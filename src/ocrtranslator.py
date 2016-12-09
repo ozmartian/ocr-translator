@@ -18,7 +18,7 @@ from PyQt5.QtCore import QPoint, QRect, QSize, Qt, QTimer, QUrl
 from PyQt5.QtGui import (QBrush, QColor, QFont, QIcon, QPainter, QPen, QPixmap,
                          QStaticText)
 from PyQt5.QtWidgets import (QApplication, QDialog, QLabel, QRubberBand,
-                         QStyleFactory, QVBoxLayout, QWidget, qApp)
+                         QVBoxLayout, QWidget, qApp)
 
 if sys.version_info < (3,5):
     from PyQt5.QtWebKitWidgets import QWebView as QWebEngineView
@@ -43,7 +43,6 @@ class OCRHTTPHandler(SimpleHTTPRequestHandler):
 class Selector(QRubberBand):
     def __init__(self, *arg, **kwargs):
         super(Selector, self).__init__(*arg, **kwargs)
-        self.setStyle(QStyleFactory.create('Fusion'))
 
     def paintEvent(self, ev):
         pen = QPen()
@@ -51,8 +50,8 @@ class Selector(QRubberBand):
         pen.setWidth(2)
         pen.setColor(QColor(Qt.white))
         brush = QBrush()
-        brush.setStyle(Qt.Dense1Pattern)
-        brush.setColor(QColor(255, 255, 255, 50))
+        brush.setStyle(Qt.SolidPattern)
+        brush.setColor(QColor(0, 0, 0))
         painter = QPainter(self)
         painter.setPen(pen)
         painter.setBrush(brush)
@@ -90,11 +89,12 @@ class OCRTranslator(QDialog):
         super(OCRTranslator, self).__init__(parent, f)
         self.desktopGeometry = self.getDesktopGeometry()
         self.setGeometry(self.desktopGeometry)
-        self.setStyleSheet("background-color: #000; opacity:")
+        self.setStyleSheet("background-color: #FFF;")
         self.setModal(True)
-        self.setWindowOpacity(0.7)
+        self.setWindowOpacity(0.4)
         self.setCursor(Qt.CrossCursor)
         self.rubberBand = Selector(QRubberBand.Rectangle, self)
+        self.rubberBand.setWindowOpacity(0.7)
         self.start, self.end = QPoint(), QPoint()
         self.hasSelected = False
         self.screenshot = QPixmap()
@@ -212,6 +212,7 @@ def Cleanup():
 
 def main():
     atexit.register(Cleanup)
+    qApp.setStyle('Fusion')
     app = QApplication(sys.argv)
     app.setApplicationName("OCR Translator")
     app.setQuitOnLastWindowClosed(True)
