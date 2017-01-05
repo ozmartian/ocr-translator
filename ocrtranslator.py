@@ -18,15 +18,14 @@ from PyQt5.QtCore import QPoint, QRect, QSize, Qt, QTimer, QUrl
 from PyQt5.QtGui import (QBrush, QColor, QFont, QIcon, QPainter, QPen, QPixmap,
                          QStaticText)
 from PyQt5.QtWidgets import (QApplication, QDialog, QLabel, QRubberBand,
-                         QStyleFactory, QVBoxLayout, QWidget, qApp)
+                         QVBoxLayout, QWidget, qApp)
 
-if sys.version_info < (3,5):
+try:
     from PyQt5.QtWebKitWidgets import QWebView as QWebEngineView
-else:
+except ImportError:
     from PyQt5.QtWebEngineWidgets import QWebEngineView
 
 warnings.filterwarnings("ignore")
-
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 signal.signal(signal.SIGTERM, signal.SIG_DFL)
 
@@ -43,7 +42,6 @@ class OCRHTTPHandler(SimpleHTTPRequestHandler):
 class Selector(QRubberBand):
     def __init__(self, *arg, **kwargs):
         super(Selector, self).__init__(*arg, **kwargs)
-        self.setStyle(QStyleFactory.create('Fusion'))
 
     def paintEvent(self, ev):
         pen = QPen()
@@ -51,8 +49,8 @@ class Selector(QRubberBand):
         pen.setWidth(2)
         pen.setColor(QColor(Qt.white))
         brush = QBrush()
-        brush.setStyle(Qt.Dense1Pattern)
-        brush.setColor(QColor(255, 255, 255, 50))
+        brush.setStyle(Qt.SolidPattern)
+        brush.setColor(QColor(0, 0, 0))
         painter = QPainter(self)
         painter.setPen(pen)
         painter.setBrush(brush)
@@ -69,10 +67,12 @@ class InfoPanel(QDialog):
         content.setTextFormat(Qt.RichText)
         with open(os.path.join(OCRTranslator.getFilePath(), "resources", "info.html"), "r") as file:
             content.setText(file.read())
+            content.setStyleSheet('''table { background: #FFF; color: #000; border-radius:6px; border:1px solid #000; }
+                                    td > b { font-size: 11pt; } td { font-size: 10pt; }''')
         layout = QVBoxLayout()
-        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setContentsMargins(0, 15, 15, 0)
         layout.addWidget(QLabel(pixmap=logo), 0, Qt.AlignRight)
-        layout.addWidget(content)
+        layout.addWidget(content, 0, Qt.AlignRight)
         self.setLayout(layout)
  
     def keyPressEvent(self, ev):
@@ -85,11 +85,12 @@ class OCRTranslator(QDialog):
         super(OCRTranslator, self).__init__(parent, f)
         self.desktopGeometry = self.getDesktopGeometry()
         self.setGeometry(self.desktopGeometry)
-        self.setStyleSheet("background-color: #000; opacity:")
+        self.setStyleSheet("background-color: #FFF;")
         self.setModal(True)
-        self.setWindowOpacity(0.7)
+        self.setWindowOpacity(0.4)
         self.setCursor(Qt.CrossCursor)
         self.rubberBand = Selector(QRubberBand.Rectangle, self)
+        self.rubberBand.setWindowOpacity(0.7)
         self.start, self.end = QPoint(), QPoint()
         self.hasSelected = False
         self.screenshot = QPixmap()

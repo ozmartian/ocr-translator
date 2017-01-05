@@ -1,0 +1,474 @@
+* {
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+    background: #FFF url('../img/window-background.jpg') no-repeat;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 0;
+    background-position: 50% 100%;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+body {
+    width: 100%;
+    height: 100%;
+    min-width: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    min-height: 100%;
+    position: absolute;
+    display: table;
+    text-align: center;
+    font-family: Roboto, sans-serif;
+    font-weight: 400;
+    color: #555;
+    margin: 0 auto;
+    background: transparent;
+}
+
+body > div.row {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+a {
+    text-decoration: none;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+.copy {
+    font-size: 62.5%;
+}
+
+.copy p,
+.copy pre,
+.copy ul,
+.copy dl {
+    font-size: 1.6em;
+    line-height: 1.5;
+}
+
+.copy p.intro {
+    font-size: 1.8em;
+    line-height: 1.5;
+    font-weight: 300;
+}
+
+.copy h2 {
+    font-size: 2.5em;
+    font-weight: 300;
+}
+
+.copy pre {
+    font-family: monospace;
+    padding: 10px 15px;
+    border: 1px solid #e2e2e2;
+    border-bottom: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+}
+
+.copy dt {
+    font-weight: bold;
+}
+
+h1 {
+    font-size: 52px;
+    margin: 0;
+    padding: 0;
+    font-weight: 100;
+    color: #eee;
+}
+
+.hero {
+    font-size: 22px;
+    font-weight: 100;
+    color: #ccc;
+    margin: 0;
+    padding: 0;
+}
+
+.image-container,
+#result {
+    display: inline-block;
+}
+
+.darkroom-image-container,
+.image-container.target {
+    background: transparent;
+}
+
+.field-wrapper > input {
+    width: 100%;
+}
+
+#result {
+    font-family: "Microsoft YaHei", monospace;
+    font-size: 1.5rem;
+    font-weight: 500;
+    text-align: center;
+    outline: none !important;
+    margin-top: 8px;
+    width: 100%;
+    text-shadow: none;
+    overflow: visible;
+    padding: 8px;
+    white-space: nowrap;
+    box-shadow: none;
+    border: none;
+}
+
+.hide,
+#result.hide {
+    display: none;
+}
+
+form > textarea {
+    box-shadow: 0 1px 10px #666;
+}
+
+textarea {
+    resize: none;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow: hidden;
+    border: none;
+    outline: none;
+    font-family: Roboto, sans-serif;
+}
+
+.youdao,
+.yandex {
+    text-align: center;
+    font-size: 1.4rem;
+    position: relative;
+    white-space: pre;
+}
+
+.youdao {
+    background: url(../img/youdao-logo.png) no-repeat center 5px;
+    background-size: 75px;
+    color: #0F4605;
+    background-color: #EDE7F6;
+    box-shadow: 0 1px 10px #666;
+}
+
+.yandex {
+    background: url(../img/yandex-logo.png) no-repeat center 5px;
+    background-size: 45px;
+    color: #3C1084;
+    background-color: #E8F5E9;
+    margin-top: 1px;
+}
+
+#nprogress .bar {
+    top: 40px;
+    height: 10px !important;
+}
+
+#nprogress .spinner {
+    top: 12px !important;
+}
+
+#nprogress .peg {
+    display: none !important;
+}
+
+.darkroom-toolbar {
+    border: none;
+    border-bottom: 2px solid #000;
+    border-radius: 0;
+    box-shadow: 0 1px 10px #555;
+}
+
+.darkroom-button:active,
+.darkroom-button:hover {
+    height: 38px;
+    cursor: pointer;
+    position: relative;
+    top: -1px;
+    background-color: #000;
+}
+
+.darkroom-button:hover .darkroom-icon {
+    position: relative;
+    top: 1px;
+}
+
+.darkroom-button:hover:enabled .darkroom-icon,
+.darkroom-button.darkroom-button-active .darkroom-icon {
+    opacity: 0.4;
+}
+
+#darkroom-icons {
+    display: none;
+}
+
+img.ocr-placeholder {
+    width: 400px;
+    height: 300px;
+    max-width: 400px;
+    max-height: 300px;
+}
+
+
+/*.darkroom-image-container {
+    border: 1px solid #AAA;
+    border-radius: 3px;
+    -webkit-box-shadow: 0 1px 15px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 1px 15px rgba(0, 0, 0, 0.4);
+}*/
+
+.fade {
+    opacity: 0;
+    -webkit-transition: opacity 0.30s ease;
+    -moz-transition: opacity 0.30s ease;
+    -o-transition: opacity 0.30s ease;
+    transition: opacity 0.30s ease;
+}
+
+.fade.in {
+    opacity: 1;
+}
+
+.btn-default {
+    text-transform: uppercase;
+}
+
+.glyphicon {
+    top: 2px;
+}
+
+.reset {
+    width: 100%;
+}
+
+.reset button {
+    outline: none !important;
+    border: 1px #0c7cd5 solid;
+    box-shadow: none;
+    position: fixed;
+    top: 5px;
+    right: 15px;
+    z-index: 9999;
+}
+
+.reset button:hover {
+    border: 1px #b2dbfb solid;
+    cursor: pointer;
+}
+
+.translations {
+    margin-bottom: 20px;
+    line-height: 1.4;
+    font-weight: 400;
+    font-family: Roboto, sans-serif;
+}
+
+.translations div {
+    padding: 36px 0 20px;
+    display: block !important;
+}
+
+.tooltip {
+    top: 35px !important;
+    z-index: 0 !important;
+}
+
+.tooltip.bottom {
+    margin-top: 0;
+}
+
+.tooltip > .tooltip-inner {
+    font-weight: 500;
+    font-family: Tahoma, sans-serif;
+    font-size: 1.3rem;
+    color: #FFF;
+    background: #000;
+    border: 1px solid black;
+    border-radius: 0;
+    padding: 2px 16px;
+    box-shadow: 0 1px 6px #222;
+    letter-spacing: 1px;
+    position: relative;
+    top: -4px;
+    line-height: 28px;
+    white-space: nowrap;
+}
+
+.fade {
+    -webkit-transition: opacity .01s ease;
+    -o-transition: opacity .01s ease;
+    transition: opacity .01s ease;
+}
+
+.modal {
+    top: 30%;
+}
+
+.modal-backdrop {
+    background-color: #FFF;
+    opacity: 0.5 !important;
+}
+
+.modal-header {
+    padding: 15px 15px 0;
+}
+
+.modal-title {
+    font-size: 2.2rem;
+    color: red;
+}
+
+.footer {
+    bottom: 0;
+    height: 40px;
+    width: 100%;
+    background: #000;
+    position: fixed;
+    box-shadow: 0 -1px 10px #555;
+    z-index: 9999;
+}
+
+.footer > .tagline {
+    color: #FFF;
+    position: fixed;
+    float: left;
+    font-size: 1.3rem;
+    display: block;
+    line-height: 36px;
+    left: 20px;
+    opacity: 0.85;
+}
+
+
+/*.footer > .tagline img {
+    position: relative;
+    top: -2px;
+}*/
+
+.footer > .tagline a {
+    position: relative;
+    top: 2px;
+    left: 2px;
+    font-family: Tahoma, sans-serif;
+    font-weight: 300;
+}
+
+.footer > .logo {
+    width: 280px;
+    height: 85px;
+    background: transparent url('../img/app-logo.png') no-repeat center right;
+    background-size: 280px 85px;
+    right: 0;
+    bottom: 0;
+    position: absolute;
+    display: inline-block;
+}
+
+.overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: -1;
+}
+
+.darkroom-toolbar .tooltip > .tooltip-arrow {
+    display: none;
+}
+
+.spacer {
+    margin-top: 55px;
+}
+
+.output {
+    margin-bottom: 15px;
+}
+
+select#language {
+    position: fixed;
+    width: auto;
+    top: 8px;
+    z-index: 9999;
+    color: #444;
+    padding: 2px 8px;
+    box-shadow: none;
+    height: auto;
+    background: #FFF;
+    border-radius: 5px;
+    outline: 0;
+    left: 20px;
+}
+
+select#language,
+select#language option {
+    cursor: pointer;
+    font-family: Roboto;
+}
+
+.scanner:after {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85) 55%, rgba(176, 224, 230, 1) 56%, rgba(0, 191, 255, 1) 57%, rgba(0, 0, 0, 0.85) 56%, rgba(0, 0, 0, 0.85));
+    background-size: 300% 100%;
+    background-repeat: no-repeat;
+    background-position: 84% center;
+    animation: scan 5s infinite ease;
+    -webkit-animation: scan 5s infinite ease;
+}
+
+@keyframes scan {
+    100% {
+        background-position: 25% center;
+    }
+}
+
+@-webkit-keyframes scan {
+    100% {
+        background-position: 25% center;
+    }
+}
+
+span.glyphicon-copy {
+    z-index: 9999;
+    float: right;
+    position: relative;
+    top: 35px;
+    right: 5px;
+    font-size: 16pt;
+    cursor: pointer;
+}
+
+span.glyphicon-copy:hover {
+    opacity: 0.65;
+}
