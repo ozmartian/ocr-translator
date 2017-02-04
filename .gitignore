@@ -9,6 +9,6 @@ _build/nsis
 .idea
 virtualenv
 launch.json
-src/ocrtranslator
-src/python*.dll
-src/ocrtranslator.exe
+ocrtranslator
+python*.dll
+ocrtranslator.exe
