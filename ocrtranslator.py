@@ -14,7 +14,7 @@ from threading import Thread
 from time import strftime
 from urllib.parse import urlencode
 
-from PyQt5.QtCore import QPoint, QRect, QSize, Qt, QTimer, QUrl
+from PyQt5.QtCore import QFileInfo, QPoint, QRect, QSize, Qt, QTimer, QUrl
 from PyQt5.QtGui import (QBrush, QColor, QFont, QIcon, QPainter, QPen, QPixmap,
                          QStaticText)
 from PyQt5.QtWidgets import (QApplication, QDialog, QLabel, QRubberBand,
@@ -172,6 +172,8 @@ class OCRTranslator(QDialog):
             os.chdir(sys._MEIPASS)  
             for r, d, f in os.walk(sys._MEIPASS):
                 os.chmod(r, 0o755)
+        else:
+        	os.chdir(os.path.join(QFileInfo(__file__).absolutePath(), 'www'))
         httpd = HTTPServer((self.address, self.port), OCRHTTPHandler)
         httpd.serve_forever()
 
@@ -186,7 +188,7 @@ class OCRTranslator(QDialog):
         self.view.setWindowIcon(QIcon(os.path.join(self.getFilePath(), "www", "img", "app-icon.png")))
         self.view.setContextMenuPolicy(Qt.NoContextMenu)
         qryparam = urlencode({'img': self.shotfilename.split('\\').pop().split('/').pop()})
-        self.url = QUrl("http://" + self.address + ":" + str(self.port) + "/www/index.html#?" + qryparam)
+        self.url = QUrl("http://" + self.address + ":" + str(self.port) + "/index.html#?" + qryparam)
         self.view.load(self.url)
         self.view.setMinimumSize(self.getAppFrameSize())
         self.view.closeEvent = self.closeEvent
@@ -208,6 +210,7 @@ def Cleanup():
 
 def main():
     atexit.register(Cleanup)
+    QApplication.setStyle('Fusion')
     app = QApplication(sys.argv)
     app.setApplicationName("OCR Translator")
     app.setQuitOnLastWindowClosed(True)
